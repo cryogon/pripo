@@ -3,7 +3,10 @@
 </script>
 <template>
     <nav>
-        <h2 class="icon">pripo</h2>
+        <div class="icon">
+           <AppIcon/>
+            <h2>pripo</h2>
+        </div>
         <ul class="options">
             <li><NuxtLink to="/contact">Contact</NuxtLink></li>
         </ul>
@@ -26,7 +29,10 @@
         list-style: none;
     }
     .icon{
+        display: flex;
         cursor:pointer;
+        align-items: center;
+        gap:0.6rem;
     }
     nav button{
         max-width:5rem;
