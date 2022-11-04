@@ -1,6 +1,12 @@
-# Nuxt 3 Minimal Starter
+# Pripo
 
-Look at the [nuxt 3 documentation](https://v3.nuxtjs.org) to learn more.
+*A Platform Where You Can Post Anything Anonymously*
+
+## Changelogs
+- Added Title In Blog Card
+- Added Recent Comment in Blog Card
+- Added Blog Page With Dynamic Routing
+- Added isPublic Property for each Blog
 
 ## Setup
 
