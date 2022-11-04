@@ -29,5 +29,8 @@ export default defineNuxtConfig({
     css:[
         "postcss",
         "assets/main.css"
+    ],
+    modules:[
+        '@pinia/nuxt'
     ]
 })

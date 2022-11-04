@@ -2,7 +2,7 @@
 
 :root {
   --color-dark: #fff;
-  --color-background-dark: rgb(16, 16, 16);
+  --color-background-dark: #161616;
   --color-light: #000;
   --color-background-light: rgb(237, 237, 237);
   --nav-background-dark: #080808aa;
@@ -11,12 +11,14 @@
   --button-hover-color-dark:#fff1;
   --link-hover-background-light:#0001;
   --link-hover-background-dark:rgba(211, 211, 211, 0.155);
+  --card-background:#d4d4d4;
 
   --color-text: var(--color-light);
   --color-background: var(--color-background-light);
   --nav-background: var(--nav-background-light);
   --button-hover-color: var(--button-hover-color-light);
   --link-hover-background:var(--link-hover-background-light);
+  --link-color:cadetblue;
 }
 @media screen and (prefers-color-scheme: dark) {
   :root {
@@ -25,6 +27,7 @@
     --nav-background: var(--nav-background-dark);
     --button-hover-color: var(--button-hover-color-dark);
     --link-hover-background:var(--link-hover-background-dark);
+    --card-background:#121212;
   }
 }
 
@@ -41,7 +44,7 @@ body {
 }
 
 a {
-  color: cadetblue;
+  color: var(--link-color);
   padding: 0.3rem;
   border-radius: 0.4rem;
   text-decoration: none;

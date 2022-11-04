@@ -10,5 +10,7 @@
   "devDependencies": {
     "nuxt": "3.0.0-rc.12"
   },
-  "dependencies": {}
+  "dependencies": {
+    "@pinia/nuxt": "^0.4.3"
+  }
 }
