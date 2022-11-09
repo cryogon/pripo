@@ -72,11 +72,12 @@ function postComment(userPfp: string, username: string, content: string): void {
 
       <div class="comments" v-for="comment in comments" :key="comment.content">
         <img :src="comment.userPfp" alt="user" class="userIcon" />
-        <div class="currentUser">
-          {{ comment.username }}
-          <span class="time-commented">{{ comment.postedOn }}</span>
-        </div>
+
         <div class="postedComment">
+          <span class="currentUser">
+            {{ comment.username }}
+            <span class="time-commented">{{ comment.postedOn }}</span>
+          </span>
           {{ comment.content }}
         </div>
       </div>
@@ -155,16 +156,14 @@ function postComment(userPfp: string, username: string, content: string): void {
 }
 
 .comments {
-  display: grid;
-  grid-template-columns: 3rem 1fr;
-  grid-template-rows: 1rem 1fr;
+  display: flex;
   align-items: center;
   margin-block: 1rem;
   gap: 10px;
 }
 .postedComment {
   background: var(--card-background);
-  min-height: 4rem;
+  min-height: 6rem;
   width: 49rem;
   padding: 0.5rem 1rem;
   white-space: pre-wrap;
@@ -175,5 +174,6 @@ function postComment(userPfp: string, username: string, content: string): void {
   display: flex;
   justify-content: space-between;
   opacity: 0.6;
+  margin-block-end: 0.4rem;
 }
 </style>
