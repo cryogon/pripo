@@ -3,7 +3,7 @@ import AppIcon from "./AppIcon.vue";
 import router from "@/router";
 import { RouterLink } from "vue-router";
 import { ref } from "vue";
-const user = ref(true);
+const user = ref(false);
 </script>
 <template>
   <nav>
