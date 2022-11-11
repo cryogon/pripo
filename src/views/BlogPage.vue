@@ -28,6 +28,19 @@ function postComment(userPfp: string, username: string, content: string): void {
     commentInp.value.value = "";
   }
 }
+
+//Have To Do
+function windowChange(postedOn: string) {
+  const media = window.matchMedia("(max-width:800px)");
+  if (media.matches) {
+    const date = Intl.DateTimeFormat("en", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    }).format(Date.parse(postedOn));
+    postedOn = date;
+  }
+}
 </script>
 
 <template>
@@ -70,7 +83,12 @@ function postComment(userPfp: string, username: string, content: string): void {
         </button>
       </div>
 
-      <div class="comments" v-for="comment in comments" :key="comment.content">
+      <div
+        class="comments"
+        v-for="comment in comments"
+        :key="comment.content"
+        @click="windowChange(comment.postedOn)"
+      >
         <img :src="comment.userPfp" alt="user" class="userIcon" />
 
         <div class="postedComment">

@@ -3,6 +3,10 @@ import { defineStore } from "pinia";
 export const usePripoStore = defineStore("pripo", {
   state: () => ({
     currentTitle: "pripo",
+    user: {
+      name: "Jatin Thakur",
+      pfp: "/mypfp.jpg",
+    },
     blogs: [
       {
         id: 1,
@@ -72,7 +76,7 @@ interface blogType {
   date_posted: string;
   likes: number;
   shares: number;
-  comment: {
+  comment?: {
     userPfp: string;
     username: string;
     content: string;
