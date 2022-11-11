@@ -1,9 +1,39 @@
 <script setup lang="ts">
+import router from "@/router";
+import { usePripoStore } from "@/stores";
 import { ref } from "vue";
 localStorage.setItem("currentTitle", "Post");
 const postTitle = ref("");
 const postContent = ref("");
 const content = ref();
+const isPublic = ref();
+const blogTags = ref();
+const store = usePripoStore();
+const time = Intl.DateTimeFormat("en", {
+  day: "2-digit",
+  month: "long",
+  year: "numeric",
+}).format(new Date());
+function postBlog() {
+  try {
+    store.blogs.push({
+      id: 4,
+      title: postTitle.value,
+      content: postContent.value,
+      date_posted: time,
+      isPublic: isPublic.value.checked,
+      likes: 0,
+      shares: 0,
+      tags: blogTags.value.split(" "),
+      user: store.user.name,
+      userPfp: store.user.pfp,
+    });
+    router.push("/");
+  } catch (err) {
+    alert("Fill All Boxes");
+    console.warn("Fill all boxes");
+  }
+}
 </script>
 <template>
   <div class="post">
@@ -38,16 +68,21 @@ const content = ref();
       <span class="paragraphIcon icon" @click="content.value += '<p></p>'">
         <fa-icon icon="paragraph" />
       </span>
-      <span class="postButton">
+      <span class="postButton" @click="postBlog">
         <fa-icon :icon="['regular', 'paper-plane']" class="postIcon" />
       </span>
     </div>
     <div class="postTags">
-      <input type="text" placeholder="Tags (Seprated By Space)" class="tags" />
+      <input
+        type="text"
+        placeholder="Tags (Seprated By Space)"
+        class="tags"
+        v-model="blogTags"
+      />
     </div>
     <div class="isPublic">
       <label for="isPublic">isPublic: </label>
-      <input type="checkbox" id="isPublic" />
+      <input type="checkbox" id="isPublic" ref="isPublic" />
     </div>
   </div>
 </template>
