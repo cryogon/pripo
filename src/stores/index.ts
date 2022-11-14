@@ -2,35 +2,55 @@ import { defineStore } from "pinia";
 
 export const usePripoStore = defineStore("pripo", {
   state: () => ({
-    currentTitle: "pripo",
     user: {
+      id: 1,
       name: "Jatin Thakur",
       pfp: "/mypfp.jpg",
-    },
+    } as User,
     blogs: [
       {
         id: 1,
-        user: "Jatin Thakur",
-        userPfp: "/mypfp.jpg",
+        user: {
+          id: 1,
+          name: "Jatin Thakur",
+          pfp: "/mypfp.jpg",
+        },
         tags: ["Cooking", "Hotels"],
         title: "What is a Michelin Star and How Do You Get One?",
         content: `Michelin star is the ultimate hallmark of culinary excellence. Michelin stars are awarded to restaurants judged to be of a particularly high standard. Eateries that make the grade can be awarded one, two, or three stars, and the accolade is much-coveted by chefs around the world. The star system was first introduced in 1926, with a single star denoting “a very good restaurant”. The second and third stars were added in 1933, with two stars meaning "excellent cooking that is worth a detour", and three stars "exceptional cuisine that is worth a special journey".The Michelin Guide has been published annually since 1900 and was originally intended to help drivers find mechanics, hotels, and of course, good restaurants, on their travels.
 In the years that followed, the popularity of the scheme spread overseas, with guides published for major cities around the world. The company also enlisted the help of the legendary Michelin Inspectors, and developed the rigorous system of testing that has made the Michelin Guide the fine-dining bible it is today.`,
         isPublic: true,
-        date_posted: "yesterday",
+        date_posted: "Sun Nov 03 2022 22:50:25 GMT+0530 (India Standard Time)",
         comment: [
           {
-            userPfp: "/anya.jpg",
-            username: "cryogon",
+            id: 0,
+            user: {
+              id: 4,
+              pfp: "/anya.jpg",
+              name: "cryogon",
+            },
             content: "Nice Story Dude",
             postedOn: "Sun Nov 05 2022 22:50:25 GMT+0530 (India Standard Time)",
+            likes: {
+              count: 10,
+              users: [
+                {
+                  id: 1,
+                  name: "Jatin Thakur",
+                  pfp: "/mypfp.jpg",
+                },
+              ],
+            },
           },
         ],
       },
       {
         id: 2,
-        user: "Jay Thakur",
-        userPfp: "/mypfp.jpg",
+        user: {
+          id: 2,
+          name: "Jay Thakur",
+          pfp: "/mypfp.jpg",
+        },
         tags: ["Computing", "Network"],
         title:
           "What is a DNS server and How  do DNS servers resolve a DNS query?",
@@ -41,12 +61,15 @@ First the resolver queries the root nameserver. The root server is the first ste
 Next the resolver queries the TLD server. The TLD server responds with the IP address of the domain’s authoritative nameserver. The recursor then queries the authoritative nameserver, which will respond with the IP address of the origin server.
 The resolver will finally pass the origin server IP address back to the client. Using this IP address, the client can then initiate a query directly to the origin server, and the origin server will respond by sending website data that can be interpreted and displayed by the web browser.`,
         isPublic: false,
-        date_posted: "2 days ago",
+        date_posted: "Sun Nov 02 2022 22:50:25 GMT+0530 (India Standard Time)",
       },
       {
         id: 3,
-        user: "Aditya Thakur",
-        userPfp: "/mypfp.jpg",
+        user: {
+          id: 3,
+          name: "Aditya Thakur",
+          pfp: "/mypfp.jpg",
+        },
         tags: ["Story", "Daily"],
         title: "This is placeholder title",
         content: `Lorem ipsum dolor sit amet consectetur adipisicing elit. 
@@ -59,27 +82,39 @@ The resolver will finally pass the origin server IP address back to the client. 
           consequatur dignissimos, quibusdam, adipisci exercitationem impedit, quod obcaecati dolore explicabo veritatis distinctio repellendus 
           officiis delectus. Culpa atque voluptate facere, excepturi enim cupiditate.`,
         isPublic: false,
-        date_posted: "3 days ago",
+        date_posted: "Sun Nov 01 2022 22:50:25 GMT+0530 (India Standard Time)",
       },
-    ] as blogType[],
+    ] as Blog[],
   }),
 });
 
-interface blogType {
+interface Blog {
   id: number;
-  user: string;
-  userPfp: string;
+  user: User;
   tags: string[];
   title: string;
   content: string;
   isPublic: boolean;
-  date_posted: string;
+  date_posted: Date | string;
   likes: number;
   shares: number;
-  comment?: {
-    userPfp: string;
-    username: string;
-    content: string;
-    postedOn: string;
-  }[];
+  comment?: Comment[];
+}
+
+interface User {
+  id: number;
+  name: string;
+  pfp: string;
+}
+
+interface Comment {
+  id: number;
+  user: User;
+  content: string;
+  postedOn: Date;
+  likes: Likes;
+}
+interface Likes {
+  count: number;
+  users: User[];
 }

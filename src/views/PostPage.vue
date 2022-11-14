@@ -25,8 +25,7 @@ function postBlog() {
       likes: 0,
       shares: 0,
       tags: blogTags.value.split(" "),
-      user: store.user.name,
-      userPfp: store.user.pfp,
+      user: store.user,
     });
     router.push("/");
   } catch (err) {
