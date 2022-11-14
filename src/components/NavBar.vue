@@ -3,6 +3,8 @@ import AppIcon from "./AppIcon.vue";
 import router from "@/router";
 import { RouterLink } from "vue-router";
 import { ref } from "vue";
+import { usePripoStore } from "@/stores";
+const store = usePripoStore();
 const user = ref(false);
 </script>
 <template>
@@ -24,6 +26,9 @@ const user = ref(false);
         </button>
         <img src="/mypfp.jpg" alt="userImg" class="userpfp" />
         <div class="dropDownMenu">
+          <router-link class="hoverItem" :to="`/user/${store.user.id}`"
+            >Profile</router-link
+          >
           <span class="hoverItem">Theme</span>
           <span class="hoverItem" @click="user = false" role="button"
             >Logout</span
@@ -96,15 +101,15 @@ nav {
       flex-direction: column;
       align-items: center;
       padding: 0.3rem;
-      top: 3rem;
-      right: -2rem;
+      top: 4rem;
+      right: -1rem;
       min-width: 6rem;
       min-height: 7rem;
-      margin: 1rem;
       &:hover {
         display: flex;
       }
       .hoverItem {
+        color: var(--color-text);
         padding: 0.3rem 1rem;
         &:hover {
           background: var(--nav-background);

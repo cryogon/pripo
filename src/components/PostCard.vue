@@ -3,20 +3,34 @@ import router from "@/router";
 
 defineProps<{
   id: number;
-  userPfp: string;
-  username: string;
+  user: {
+    id: number;
+    name: string;
+    pfp: string;
+  };
   tags?: string[];
   title: string;
   content: string;
   isPublic: boolean;
-  date_posted: string;
+  date_posted: string | Date;
   comment?: {
-    userPfp: string;
-    username: string;
+    user: {
+      id: number;
+      pfp: string;
+      name: string;
+    };
     content: string;
-    postedOn: string;
+    postedOn: Date | string;
   }[];
 }>();
+
+function showFormatedDate(date: Date | string | number) {
+  return Intl.DateTimeFormat("en", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  }).format(new Date(date));
+}
 
 function navigateTo(url: string) {
   router.push(url);
@@ -27,13 +41,13 @@ function navigateTo(url: string) {
   <div class="container">
     <h4 class="header">
       <img
-        :src="userPfp"
+        :src="user.pfp"
         alt="userProfile"
         class="user-profile-picture"
         v-if="isPublic"
       />
       <div class="user-profile-picture" v-else></div>
-      <span class="username">{{ isPublic ? username : "Anonymous" }}</span>
+      <span class="username">{{ isPublic ? user.name : "Anonymous" }}</span>
       <span class="tags">
         about
         <span class="tag" v-for="tag in tags" :key="tag">
@@ -41,7 +55,8 @@ function navigateTo(url: string) {
         ></span
       >
       <span class="post-date"
-        >posted <span class="date"> {{ date_posted }}</span></span
+        >posted
+        <span class="date"> {{ showFormatedDate(date_posted) }}</span></span
       >
     </h4>
     <p class="content" @click="navigateTo(`/blogs/${id}`)">
@@ -50,10 +65,10 @@ function navigateTo(url: string) {
     </p>
     <div class="recent-comment" v-if="comment">
       <img
-        :src="comment[0].userPfp"
+        :src="comment[0].user.pfp"
         class="comment-user-profile"
         alt="user"
-        v-if="isPublic && comment[0].userPfp"
+        v-if="isPublic && comment[0].user.pfp"
       />
       <div class="comment-user-profile" v-else></div>
       <span class="comment">{{ comment[0]?.content }}</span>

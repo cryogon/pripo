@@ -10,9 +10,11 @@ import {
   faStrikethrough,
   faHeading,
   faParagraph,
+  faEllipsisVertical,
+  faReply,
 } from "@fortawesome/free-solid-svg-icons";
 
-import { faPaperPlane } from "@fortawesome/free-regular-svg-icons";
+import { faPaperPlane, faThumbsUp } from "@fortawesome/free-regular-svg-icons";
 import "./assets/main.css";
 
 library.add(
@@ -21,7 +23,10 @@ library.add(
   faStrikethrough,
   faHeading,
   faParagraph,
-  faPaperPlane
+  faPaperPlane,
+  faEllipsisVertical,
+  faThumbsUp,
+  faReply
 );
 
 const app = createApp(App);
