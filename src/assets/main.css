@@ -12,24 +12,42 @@
   --link-hover-background-light:#0001;
   --link-hover-background-dark:rgba(211, 211, 211, 0.155);
   --card-background:#d4d4d4;
+  --dropdown-background-light:#f1f1f1;
+  --dropdown-background-dark:#202020;
+}
 
+:root{
   --color-text: var(--color-light);
   --color-background: var(--color-background-light);
   --nav-background: var(--nav-background-light);
   --button-hover-color: var(--button-hover-color-light);
   --link-hover-background:var(--link-hover-background-light);
   --link-color:cadetblue;
+  --dropdown-background: var(--dropdown-background-light);
 }
-@media screen and (prefers-color-scheme: dark) {
-  :root {
+
+html.dark{
+  --color-text: var(--color-dark);
+  --color-background: var(--color-background-dark);
+  --nav-background: var(--nav-background-dark);
+  --button-hover-color: var(--button-hover-color-dark); 
+  --link-hover-background:var(--link-hover-background-dark);
+  --card-background:#121212;
+  --dropdown-background: var(--dropdown-background-dark);
+ 
+}
+
+/* @media screen and (prefers-color-scheme: dark) {
+  html:not(.dark) {
     --color-text: var(--color-dark);
     --color-background: var(--color-background-dark);
     --nav-background: var(--nav-background-dark);
     --button-hover-color: var(--button-hover-color-dark);
     --link-hover-background:var(--link-hover-background-dark);
     --card-background:#121212;
+    --dropdown-background: var(--dropdown-background-dark);
   }
-}
+} */
 
 * {
   margin: 0;
@@ -42,6 +60,7 @@ body {
   color: var(--color-text);
   background-color: var(--color-background);
   transition: background 200ms;
+  
 }
 
 a {

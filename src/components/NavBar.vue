@@ -2,43 +2,79 @@
 import AppIcon from "./AppIcon.vue";
 import router from "@/router";
 import { RouterLink } from "vue-router";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { usePripoStore } from "@/stores";
+import { useDark, useWindowScroll, useToggle } from "@vueuse/core";
+
 const store = usePripoStore();
-const user = ref(false);
+const user = ref(true);
+const isDropDownVisible = ref(false);
+const isDark = useDark();
+const toggleDark = useToggle(isDark);
+const navbar = ref();
+const compactNavbar = ref(false);
+const { y } = useWindowScroll();
+watch(y, () => {
+  if (y.value > 5) {
+    compactNavbar.value = true;
+  } else {
+    compactNavbar.value = false;
+  }
+});
+router.afterEach(() => {
+  isDropDownVisible.value = false;
+});
 </script>
 <template>
-  <nav>
-    <div class="icon" @click="router.push('/')">
-      <AppIcon class="iconImage" />
-      <h2>pripo</h2>
-    </div>
-    <ul class="options">
-      <li><router-link to="/contact">Contact</router-link></li>
-    </ul>
-    <div class="buttons">
-      <button class="login" v-if="!user" type="submit" @click="user = true">
-        Login
-      </button>
-      <div class="userBar" v-else>
-        <button class="postButton" type="submit" @click="router.push('/post')">
-          Post
+  <header>
+    <nav ref="navbar" :class="{ compact: compactNavbar }">
+      <div class="icon" @click="router.push('/')">
+        <AppIcon class="iconImage" />
+        <h2>pripo</h2>
+      </div>
+      <ul class="options">
+        <li><router-link to="/contact">Contact</router-link></li>
+      </ul>
+      <div class="buttons">
+        <button class="login" v-if="!user" type="submit" @click="user = true">
+          Login
         </button>
-        <img src="/mypfp.jpg" alt="userImg" class="userpfp" />
-        <div class="dropDownMenu">
-          <router-link class="hoverItem" :to="`/user/${store.user.id}`"
-            >Profile</router-link
+        <div class="userBar" v-else>
+          <button
+            class="postButton"
+            type="submit"
+            @click="router.push('/post')"
           >
-          <span class="hoverItem">Theme</span>
-          <span class="hoverItem" @click="user = false" role="button"
-            >Logout</span
-          >
+            Post
+          </button>
+          <img
+            src="/mypfp.jpg"
+            alt="userImg"
+            class="userpfp"
+            @click="isDropDownVisible = !isDropDownVisible"
+          />
+          <div :class="{ visible: isDropDownVisible }" class="dropDownMenu">
+            <router-link class="hoverItem" :to="`/user/${store.user.id}`"
+              >Profile</router-link
+            >
+            <span class="hoverItem" @click="toggleDark()">{{
+              isDark ? "Dark" : "Light"
+            }}</span>
+            <span class="hoverItem" @click="user = false" role="button"
+              >Logout</span
+            >
+          </div>
         </div>
       </div>
-    </div>
-  </nav>
+    </nav>
+  </header>
 </template>
 <style scoped lang="scss">
+header:has(.compact) {
+  position: sticky;
+  top: 0;
+  z-index: 9999;
+}
 nav {
   display: flex;
   background-color: var(--nav-background);
@@ -46,10 +82,12 @@ nav {
   padding-inline: min(7.5rem, 10vw);
   align-items: center;
   height: 6rem;
-  position: sticky;
-  top: 0;
+  transition: height 300ms;
   & ul {
     list-style: none;
+  }
+  &.compact {
+    height: 5rem;
   }
   .icon {
     display: flex;
@@ -89,32 +127,29 @@ nav {
       border-radius: 50%;
       width: 60px;
       height: 60px;
-      &:hover ~ .dropDownMenu {
-        display: flex;
-      }
     }
-    .dropDownMenu {
-      background-color: #202020;
-      box-shadow: 0.6rem 0.6rem 2rem #303030;
-      position: absolute;
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      padding: 0.3rem;
-      top: 4rem;
-      right: -1rem;
-      min-width: 6rem;
-      min-height: 7rem;
-      &:hover {
-        display: flex;
-      }
-      .hoverItem {
-        color: var(--color-text);
-        padding: 0.3rem 1rem;
-        &:hover {
-          background: var(--nav-background);
-        }
-      }
+    .visible {
+      display: flex;
+    }
+  }
+}
+.dropDownMenu {
+  background-color: var(--dropdown-background);
+  box-shadow: 0.6rem 0.6rem 2rem #303030;
+  position: absolute;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.3rem;
+  top: 4rem;
+  right: -1rem;
+  min-width: 6rem;
+  min-height: 7rem;
+  .hoverItem {
+    color: var(--color-text);
+    padding: 0.3rem 1rem;
+    &:hover {
+      background: var(--nav-background);
     }
   }
 }

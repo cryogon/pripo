@@ -16,7 +16,7 @@ localStorage.setItem("currentTitle", "Pripo");
       :tags="blog.tags"
       :date_posted="blog.date_posted"
       :is-public="blog.isPublic"
-      :comment="blog.comment"
+      :comment="blog.comments"
     />
   </main>
 </template>

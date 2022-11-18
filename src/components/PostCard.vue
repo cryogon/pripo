@@ -44,6 +44,8 @@ function navigateTo(url: string) {
         :src="user.pfp"
         alt="userProfile"
         class="user-profile-picture"
+        @click="navigateTo(`/user/${user.id}`)"
+        style="cursor: pointer"
         v-if="isPublic"
       />
       <div class="user-profile-picture" v-else></div>
@@ -59,10 +61,12 @@ function navigateTo(url: string) {
         <span class="date"> {{ showFormatedDate(date_posted) }}</span></span
       >
     </h4>
-    <p class="content" @click="navigateTo(`/blogs/${id}`)">
-      <span class="title">{{ title }}</span>
-      {{ content }}
-    </p>
+    <div>
+      <p class="content" @click="navigateTo(`/blogs/${id}`)">
+        <span class="title">{{ title }}</span>
+        {{ content }}
+      </p>
+    </div>
     <div class="recent-comment" v-if="comment">
       <img
         :src="comment[0].user.pfp"
@@ -81,10 +85,11 @@ function navigateTo(url: string) {
   align-items: center;
 }
 .user-profile-picture {
+  aspect-ratio: 1/1;
   width: 53px;
   height: 53px;
   border-radius: 50%;
-  background-color: white;
+  background-color: grey;
 }
 .username {
   padding-inline: 0.3rem;
@@ -109,10 +114,13 @@ function navigateTo(url: string) {
   background-color: var(--card-background);
   margin-block-start: 0.5rem;
   max-width: 80rem;
-  max-height: 15rem;
+  min-height: 5rem;
   overflow: hidden;
-  padding: 1rem;
+  padding: 1rem 1rem 0 1rem;
   line-height: 1.3rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 7;
+  -webkit-box-orient: vertical;
 }
 .title {
   display: block;
@@ -127,14 +135,14 @@ function navigateTo(url: string) {
 }
 .comment-user-profile {
   width: 38px;
-  height: 38px;
+  aspect-ratio: 1 / 1;
   border-radius: 50%;
   margin: 0.5rem;
-  margin-inline-start: 5rem;
+  margin-inline-start: 7%;
   background-color: white;
 }
 .comment {
   background-color: var(--card-background);
-  padding: 0.5rem 1rem;
+  padding: 0.5em 1rem;
 }
 </style>

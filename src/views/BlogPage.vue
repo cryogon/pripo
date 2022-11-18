@@ -79,12 +79,13 @@ function showFormatedDate(date: Date | string | number) {
     margin-bottom: 0.6rem;
   }
   .authorPfp {
+    cursor: pointer;
     width: 45px;
     height: 45px;
     border-radius: 50%;
   }
   .anonymous {
-    background-color: white;
+    background-color: grey;
   }
 }
 </style>

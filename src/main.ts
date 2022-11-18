@@ -12,6 +12,7 @@ import {
   faParagraph,
   faEllipsisVertical,
   faReply,
+  faChevronDown,
 } from "@fortawesome/free-solid-svg-icons";
 
 import { faPaperPlane, faThumbsUp } from "@fortawesome/free-regular-svg-icons";
@@ -26,7 +27,8 @@ library.add(
   faPaperPlane,
   faEllipsisVertical,
   faThumbsUp,
-  faReply
+  faReply,
+  faChevronDown
 );
 
 const app = createApp(App);

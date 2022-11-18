@@ -2,12 +2,13 @@
 import { usePripoStore } from "@/stores";
 import { ref } from "vue";
 import router from "@/router";
+import type { User } from "@/types";
 const params = router.currentRoute.value.params;
 const blogId = parseInt(params.id as string);
 const store = usePripoStore();
 const blog = store.blogs.filter((b) => b.id == (blogId as number))[0];
 const commentInp = ref();
-const comments = ref(blog.comment);
+const comments = ref(blog.comments);
 const user = store.user;
 
 function setRows(): void {
@@ -15,29 +16,36 @@ function setRows(): void {
     (commentInp.value.value.match(/\n/gm) || []).length + 2;
 }
 
-function postComment(
-  user: {
-    id: number;
-    pfp: string;
-    name: string;
-  },
-  content: string
-): void {
+function postComment(user: User, content: string): void {
   const postedOn = new Date();
-
-  if (content.length > 0 && comments.value) {
-    comments.value.push({
-      id: 1,
-      user,
-      content,
-      postedOn,
-      likes: {
-        count: 0,
-        users: [],
-      },
-    });
-    commentInp.value.value = "";
+  if (content.length > 0) {
+    if (comments.value) {
+      comments.value.push({
+        id: comments.value.length,
+        user,
+        content,
+        postedOn,
+        likes: {
+          count: 0,
+          users: [],
+        },
+      });
+    } else {
+      comments.value = [
+        {
+          id: 0,
+          user,
+          content,
+          postedOn,
+          likes: {
+            count: 0,
+            users: [],
+          },
+        },
+      ];
+    }
   }
+  commentInp.value.value = "";
 }
 function showFormatedDate(date: Date | string | number): string {
   return Intl.DateTimeFormat("en", {
@@ -176,6 +184,7 @@ function setLikes(id: number) {
     width: 45px;
     height: 45px;
     border-radius: 50%;
+    cursor: pointer;
   }
 
   .comments {
