@@ -15,15 +15,17 @@ const navbar = ref();
 const compactNavbar = ref(false);
 const { y } = useWindowScroll();
 watch(y, () => {
-  if (y.value > 5) {
+  if (Math.round(y.value) > 5) {
     compactNavbar.value = true;
-  } else {
-    compactNavbar.value = false;
   }
 });
 router.afterEach(() => {
   isDropDownVisible.value = false;
 });
+
+function toggleDropDown() {
+  isDropDownVisible.value = !isDropDownVisible.value;
+}
 </script>
 <template>
   <header>
@@ -51,15 +53,19 @@ router.afterEach(() => {
             src="/mypfp.jpg"
             alt="userImg"
             class="userpfp"
-            @click="isDropDownVisible = !isDropDownVisible"
+            @click="toggleDropDown"
           />
           <div :class="{ visible: isDropDownVisible }" class="dropDownMenu">
-            <router-link class="hoverItem" :to="`/user/${store.user.id}`"
+            <router-link
+              class="hoverItem"
+              :to="`/user/${store.user.id}`"
+              role="button"
               >Profile</router-link
             >
-            <span class="hoverItem" @click="toggleDark()">{{
+            <span class="hoverItem" @click="toggleDark()" role="button">{{
               isDark ? "Dark" : "Light"
             }}</span>
+            <span class="hoverItem" role="button">Settings</span>
             <span class="hoverItem" @click="user = false" role="button"
               >Logout</span
             >
@@ -147,6 +153,7 @@ nav {
   min-height: 7rem;
   .hoverItem {
     color: var(--color-text);
+    cursor: pointer;
     padding: 0.3rem 1rem;
     &:hover {
       background: var(--nav-background);

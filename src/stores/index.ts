@@ -44,6 +44,22 @@ In the years that followed, the popularity of the scheme spread overseas, with g
                 },
               ],
             },
+            reply: [
+              {
+                id: 0,
+                user: {
+                  id: 5,
+                  pfp: "/osuProfilePic.jpg",
+                  name: "Kumuko",
+                },
+                content: "I don't know why I am replying to this.",
+                postedOn:
+                  "Sun Nov 06 2022 22:50:25 GMT+0530 (India Standard Time)",
+                likes: {
+                  count: 0,
+                },
+              },
+            ],
           },
         ],
       },

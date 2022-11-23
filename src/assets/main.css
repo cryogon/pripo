@@ -85,3 +85,6 @@ button{
 .link:hover{
   background-color: var(--link-hover-background);
 }
+.userIcon{
+  box-shadow: 0 0 8px grey;
+}

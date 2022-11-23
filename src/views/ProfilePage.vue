@@ -1,12 +1,13 @@
 <script lang="ts" setup>
 import { useWindowScroll } from "@vueuse/core";
 import { ref, watch } from "vue";
-import { currUser, getBlogs } from "@/user";
-
-const user = currUser;
-const blogs = getBlogs();
+import { getUser } from "@/user";
+import router from "@/router";
+import type { RouteLocationRaw } from "vue-router";
+const user = getUser();
 const isCompact = ref(false);
 const { y } = useWindowScroll();
+
 watch(y, () => {
   if (y.value > 5) {
     isCompact.value = true;
@@ -14,14 +15,18 @@ watch(y, () => {
     isCompact.value = false;
   }
 });
+
+function navigateTo(url: RouteLocationRaw) {
+  router.push(url);
+}
 </script>
 
 <template>
   <main>
     <div class="user-display-container" :class="{ compact: isCompact }">
-      <img :src="user.pfp" alt="user" class="userPfp" />
-      <span class="fullname">{{ user.name }}</span>
-      <span class="username">@{{ user.unique_name }}</span>
+      <img :src="user.currUser.pfp" alt="user" class="userPfp" />
+      <span class="fullname">{{ user.currUser.name }}</span>
+      <span class="username">@{{ user.currUser.unique_name }}</span>
     </div>
     <span class="scrollDown" :class="{ compact: isCompact }">
       <fa-icon icon="chevron-down" class="scrollDownIcon" />
@@ -32,7 +37,12 @@ watch(y, () => {
     </ul>
     <div class="main-data-container">
       <div class="postsContainer">
-        <div class="post" v-for="blog in blogs" :key="blog.id">
+        <div
+          class="post"
+          v-for="blog in user.blogs"
+          :key="blog.id"
+          @click="navigateTo(`/blogs/${blog.id}`)"
+        >
           <span class="blogTitle">
             {{ blog.title }}
           </span>
@@ -52,8 +62,8 @@ main {
   .user-display-container {
     display: grid;
     gap: 10px;
-    transition: margin 0.5s;
     margin-bottom: 50rem;
+    transition: margin 0.5s;
     .userPfp {
       width: 20rem;
       aspect-ratio: 1 / 1;
@@ -67,11 +77,14 @@ main {
       padding-inline-start: 2rem;
     }
     &.compact {
-      align-self: flex-start;
       grid-template-columns: 9rem 1fr;
       align-items: center;
       margin-inline-start: 9vw;
       margin-block: 5rem 3rem;
+      align-self: flex-start;
+      animation: moveleft 0.4s ease-out;
+      @keyframes moveleft {
+      }
       .userPfp {
         width: 10rem;
         grid-row: 1 / span 2;
@@ -112,6 +125,7 @@ main {
     list-style: none;
     gap: 5rem;
     font-size: 20px;
+
     .option {
       cursor: pointer;
     }
@@ -126,6 +140,19 @@ main {
     margin-block-start: 2rem;
     width: 90%;
     min-height: 30rem;
+
+    .postsContainer {
+      .post {
+        padding: 0.4rem;
+        min-height: 3rem;
+        background-color: var(--card-background);
+        margin-block-end: 1rem;
+        .blogTitle {
+          font-size: 20px;
+          letter-spacing: 0.3px;
+        }
+      }
+    }
   }
 }
 </style>

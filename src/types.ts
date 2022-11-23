@@ -25,6 +25,7 @@ export interface Comment {
   content: string;
   postedOn: Date;
   likes: Likes;
+  reply?: Comment[];
 }
 export interface Likes {
   count: number;
