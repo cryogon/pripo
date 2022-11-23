@@ -1,11 +1,13 @@
 import { defineStore } from "pinia";
-
+import type { Blog, User } from "@/types";
 export const usePripoStore = defineStore("pripo", {
   state: () => ({
     user: {
       id: 1,
       name: "Jatin Thakur",
+      unique_name: "cryogon",
       pfp: "/mypfp.jpg",
+      joined_at: "Sun Oct 28 2022 11:33:38 GMT+0530 (India Standard Time)",
     } as User,
     blogs: [
       {
@@ -13,6 +15,7 @@ export const usePripoStore = defineStore("pripo", {
         user: {
           id: 1,
           name: "Jatin Thakur",
+          unique_name: "cryogon",
           pfp: "/mypfp.jpg",
         },
         tags: ["Cooking", "Hotels"],
@@ -21,7 +24,7 @@ export const usePripoStore = defineStore("pripo", {
 In the years that followed, the popularity of the scheme spread overseas, with guides published for major cities around the world. The company also enlisted the help of the legendary Michelin Inspectors, and developed the rigorous system of testing that has made the Michelin Guide the fine-dining bible it is today.`,
         isPublic: true,
         date_posted: "Sun Nov 03 2022 22:50:25 GMT+0530 (India Standard Time)",
-        comment: [
+        comments: [
           {
             id: 0,
             user: {
@@ -32,7 +35,7 @@ In the years that followed, the popularity of the scheme spread overseas, with g
             content: "Nice Story Dude",
             postedOn: "Sun Nov 05 2022 22:50:25 GMT+0530 (India Standard Time)",
             likes: {
-              count: 10,
+              count: 0,
               users: [
                 {
                   id: 1,
@@ -41,6 +44,22 @@ In the years that followed, the popularity of the scheme spread overseas, with g
                 },
               ],
             },
+            reply: [
+              {
+                id: 0,
+                user: {
+                  id: 5,
+                  pfp: "/osuProfilePic.jpg",
+                  name: "Kumuko",
+                },
+                content: "I don't know why I am replying to this.",
+                postedOn:
+                  "Sun Nov 06 2022 22:50:25 GMT+0530 (India Standard Time)",
+                likes: {
+                  count: 0,
+                },
+              },
+            ],
           },
         ],
       },
@@ -49,6 +68,7 @@ In the years that followed, the popularity of the scheme spread overseas, with g
         user: {
           id: 2,
           name: "Jay Thakur",
+          unique_name: "jaythakur",
           pfp: "/mypfp.jpg",
         },
         tags: ["Computing", "Network"],
@@ -68,6 +88,7 @@ The resolver will finally pass the origin server IP address back to the client. 
         user: {
           id: 3,
           name: "Aditya Thakur",
+          unique_name: "doggo69",
           pfp: "/mypfp.jpg",
         },
         tags: ["Story", "Daily"],
@@ -87,34 +108,3 @@ The resolver will finally pass the origin server IP address back to the client. 
     ] as Blog[],
   }),
 });
-
-interface Blog {
-  id: number;
-  user: User;
-  tags: string[];
-  title: string;
-  content: string;
-  isPublic: boolean;
-  date_posted: Date | string;
-  likes: number;
-  shares: number;
-  comment?: Comment[];
-}
-
-interface User {
-  id: number;
-  name: string;
-  pfp: string;
-}
-
-interface Comment {
-  id: number;
-  user: User;
-  content: string;
-  postedOn: Date;
-  likes: Likes;
-}
-interface Likes {
-  count: number;
-  users: User[];
-}
