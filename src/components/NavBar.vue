@@ -15,8 +15,12 @@ const navbar = ref();
 const compactNavbar = ref(false);
 const { y } = useWindowScroll();
 watch(y, () => {
-  if (Math.round(y.value) > 5) {
+  console.log(y.value);
+  if (Math.round(y.value) > 130) {
     compactNavbar.value = true;
+  }
+  if (Math.round(y.value) <= 5) {
+    compactNavbar.value = false;
   }
 });
 router.afterEach(() => {
@@ -80,6 +84,15 @@ header:has(.compact) {
   position: sticky;
   top: 0;
   z-index: 9999;
+  animation: slidedown 300ms ease-out;
+}
+@keyframes slidedown {
+  from {
+    top: -5rem;
+  }
+  to {
+    top: 0;
+  }
 }
 nav {
   display: flex;
