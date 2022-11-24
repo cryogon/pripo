@@ -167,6 +167,7 @@ nav {
   right: -1rem;
   min-width: 6rem;
   min-height: 7rem;
+  z-index: 99999;
   .hoverItem {
     color: var(--color-text);
     cursor: pointer;
