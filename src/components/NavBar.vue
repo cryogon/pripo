@@ -80,6 +80,9 @@ function toggleDropDown() {
   </header>
 </template>
 <style scoped lang="scss">
+header {
+  z-index: 9999;
+}
 header:has(.compact) {
   position: sticky;
   top: 0;
