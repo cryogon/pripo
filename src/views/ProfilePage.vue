@@ -1,12 +1,14 @@
 <script lang="ts" setup>
 import { useWindowScroll } from "@vueuse/core";
 import { ref, watch } from "vue";
-import { getUser } from "@/user";
+import { getUser } from "../user";
 import router from "@/router";
 import type { RouteLocationRaw } from "vue-router";
-const user = getUser();
+import { useAuth0 } from "@auth0/auth0-vue";
+const { user } = useAuth0();
 const isCompact = ref(false);
 const { y } = useWindowScroll();
+const currentTab = ref<"posts" | "favorites">("posts");
 
 watch(y, () => {
   if (y.value > 5) {
@@ -15,31 +17,47 @@ watch(y, () => {
     isCompact.value = false;
   }
 });
-
+const blogs = getUser().blogs;
 function navigateTo(url: RouteLocationRaw) {
   router.push(url);
+}
+
+function changeTab(tab: "posts" | "favorites") {
+  currentTab.value = tab;
 }
 </script>
 
 <template>
   <main>
     <div class="user-display-container" :class="{ compact: isCompact }">
-      <img :src="user.currUser.pfp" alt="user" class="userPfp" />
-      <span class="fullname">{{ user.currUser.name }}</span>
-      <span class="username">@{{ user.currUser.unique_name }}</span>
+      <img :src="user.picture" alt="user" class="userPfp" />
+      <span class="fullname">{{ user.name }}</span>
+      <span class="username">@{{ user.nickname }}</span>
     </div>
     <span class="scrollDown" :class="{ compact: isCompact }">
       <fa-icon icon="chevron-down" class="scrollDownIcon" />
     </span>
     <ul class="optionContainer">
-      <li class="option active">Blogs</li>
-      <li class="option">Favorites</li>
+      <li
+        class="option"
+        :class="{ active: currentTab === 'posts' }"
+        @click="changeTab('posts')"
+      >
+        Blogs
+      </li>
+      <li
+        class="option"
+        :class="{ active: currentTab === 'favorites' }"
+        @click="changeTab('favorites')"
+      >
+        Favorites
+      </li>
     </ul>
     <div class="main-data-container">
-      <div class="postsContainer">
+      <div class="postsContainer" v-if="currentTab === 'posts'">
         <div
           class="post"
-          v-for="blog in user.blogs"
+          v-for="blog in blogs"
           :key="blog.id"
           @click="navigateTo(`/blogs/${blog.id}`)"
         >
@@ -48,6 +66,10 @@ function navigateTo(url: RouteLocationRaw) {
           </span>
         </div>
       </div>
+      <div
+        class="favoritePostsContainer"
+        v-else-if="currentTab === 'favorites'"
+      ></div>
     </div>
   </main>
 </template>
@@ -61,8 +83,10 @@ main {
 
   .user-display-container {
     display: grid;
+    position: relative;
     gap: 10px;
     margin-bottom: 50rem;
+
     transition: margin 0.5s;
     .userPfp {
       width: 20rem;

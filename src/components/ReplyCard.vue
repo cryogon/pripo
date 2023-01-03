@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Comment } from "@/types";
+import type { Comment, Likes } from "@/types";
 import ReplyInputBox from "./ReplyInputBox.vue";
 import { useEmitter } from "@/composables/EventEmitter";
 import { ref } from "vue";
@@ -36,9 +36,10 @@ emitter.on("replyInactive", () => {
  * @param id takes id of the comment to uniquely identify it
  */
 
-function setLikes() {
+function setLikes(like: Likes) {
   /*This Login is Broken And is needed to be fixed 
   since the flag always initilize with false and even if I take it outside it won't work properly for multiple comments */
+  like.count++;
 }
 </script>
 
@@ -71,7 +72,7 @@ function setLikes() {
             <fa-icon icon="reply" />
             <span class="replyCount"></span>
           </span>
-          <span class="likes reply-options-icon" @click="setLikes">
+          <span class="likes reply-options-icon" @click="setLikes(reply.likes)">
             <fa-icon :icon="['regular', 'thumbs-up']" class="likeIcon" />
             <span class="likeCount">{{ reply.likes?.count }}</span>
           </span>
@@ -111,6 +112,7 @@ function setLikes() {
       display: flex;
       justify-content: flex-end;
       gap: 15px;
+      cursor: pointer;
       .likes,
       .replyToggle {
         display: flex;

@@ -35,12 +35,15 @@ In the years that followed, the popularity of the scheme spread overseas, with g
             content: "Nice Story Dude",
             postedOn: "Sun Nov 05 2022 22:50:25 GMT+0530 (India Standard Time)",
             likes: {
-              count: 0,
+              count: 1,
               users: [
                 {
                   id: 1,
+                  joined_at:
+                    "Sun Oct 28 2022 11:33:38 GMT+0530 (India Standard Time)",
                   name: "Jatin Thakur",
                   pfp: "/mypfp.jpg",
+                  unique_name: "cryogon",
                 },
               ],
             },

@@ -7,12 +7,12 @@ import { ref } from "vue";
 
 const commentInp = ref();
 const { user } = storeToRefs(usePripoStore());
-
+let commentId = 0;
 const emit = defineEmits(["postComment"]);
 function postComment(user: User, content: string): void {
   if (content.trim().length > 0) {
     const data = {
-      id: 0,
+      id: commentId++,
       user,
       content,
       postedOn: new Date(),

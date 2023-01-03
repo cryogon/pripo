@@ -1,6 +1,6 @@
 export interface Blog {
   id: number;
-  user: User;
+  user: User | any;
   tags: string[];
   title: string;
   content: string;

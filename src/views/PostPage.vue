@@ -1,36 +1,36 @@
 <script setup lang="ts">
 import router from "@/router";
-import { usePripoStore } from "@/stores";
 import { ref } from "vue";
+import { useAuth0 } from "@auth0/auth0-vue";
+import { useMutation } from "@vue/apollo-composable";
+import { INSERT_BLOG } from "@/graphql";
 localStorage.setItem("currentTitle", "Post");
 const postTitle = ref("");
 const postContent = ref("");
 const content = ref();
-const isPublic = ref();
+const isPostPublic = ref(false);
 const blogTags = ref();
-const store = usePripoStore();
-const time = Intl.DateTimeFormat("en", {
-  day: "2-digit",
-  month: "long",
-  year: "numeric",
-}).format(new Date());
-function postBlog() {
+
+const { user } = useAuth0();
+
+console.log(user);
+function pushPostToDB() {
+  const variables = {
+    title: postTitle.value,
+    content: JSON.stringify(postContent.value),
+    isPublic: isPostPublic.value,
+    tags: blogTags.value?.split(" "),
+    username: user.value.nickname,
+    likes: 0,
+    shares: 0,
+    likedUser: [],
+  };
   try {
-    store.blogs.push({
-      id: 4,
-      title: postTitle.value,
-      content: postContent.value,
-      date_posted: time,
-      isPublic: isPublic.value.checked,
-      likes: 0,
-      shares: 0,
-      tags: blogTags.value.split(" "),
-      user: store.user,
-    });
+    const { mutate: postBlog } = useMutation(INSERT_BLOG, { variables });
+    postBlog();
     router.push("/");
-  } catch (err) {
+  } catch {
     alert("Fill All Boxes");
-    console.warn("Fill all boxes");
   }
 }
 </script>
@@ -67,7 +67,7 @@ function postBlog() {
       <span class="paragraphIcon icon" @click="content.value += '<p></p>'">
         <fa-icon icon="paragraph" />
       </span>
-      <span class="postButton" @click="postBlog">
+      <span class="postButton" @click="pushPostToDB">
         <fa-icon :icon="['regular', 'paper-plane']" class="postIcon" />
       </span>
     </div>
@@ -79,9 +79,14 @@ function postBlog() {
         v-model="blogTags"
       />
     </div>
-    <div class="isPublic">
-      <label for="isPublic">isPublic: </label>
-      <input type="checkbox" id="isPublic" ref="isPublic" />
+    <div class="isPostPublic">
+      <label for="isPostPublic">Is Public: </label>
+      <input
+        type="checkbox"
+        id="isPostPublic"
+        :value="isPostPublic"
+        @change="isPostPublic = !isPostPublic"
+      />
     </div>
   </div>
 </template>
@@ -97,7 +102,7 @@ function postBlog() {
   .blogTitle,
   .contentOptions,
   .tags,
-  .isPublic {
+  .isPostPublic {
     background-color: var(--card-background);
     color: var(--text-color);
     padding-inline-start: 1rem;
@@ -164,7 +169,7 @@ function postBlog() {
     height: 2rem;
     width: 100%;
   }
-  .isPublic {
+  .isPostPublic {
     display: flex;
     gap: 10px;
     padding-top: 0.5rem;

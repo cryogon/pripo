@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import type { Comment } from "@/types";
+import type { Comment, Likes } from "@/types";
 import ReplyInputBox from "./ReplyInputBox.vue";
 import { useEmitter } from "@/composables/EventEmitter";
 import { ref } from "vue";
 import router from "@/router";
+import { getUser } from "@/user";
 const emitter = useEmitter();
 defineProps<{
   comment: Comment;
@@ -17,7 +18,7 @@ function showFormatedDate(date: Date | string | number): string {
   }).format(new Date(date));
 }
 const isReplyInputInactive = ref(true);
-
+const { currUser } = getUser();
 function replyToggle() {
   isReplyInputInactive.value = !isReplyInputInactive.value;
 }
@@ -36,9 +37,18 @@ function redirctToProfilePage(id: number) {
  * @param id takes id of the comment to uniquely identify it
  */
 
-function setLikes() {
+function setLikes(like: Likes) {
   /*This Login is Broken And is needed to be fixed 
   since the flag always initilize with false and even if I take it outside it won't work properly for multiple comments */
+  like.users.forEach((user) => {
+    if (user.unique_name.includes("cryogon")) {
+      like.count--;
+      like.users.pop();
+    } else {
+      like.count++;
+      like.users.push(currUser);
+    }
+  });
 }
 </script>
 <template>
@@ -74,7 +84,10 @@ function setLikes() {
             <fa-icon icon="reply" />
             <span class="replyCount"></span>
           </span>
-          <span class="likes comment-options-icon" @click="setLikes">
+          <span
+            class="likes comment-options-icon"
+            @click="setLikes(comment.likes)"
+          >
             <fa-icon :icon="['regular', 'thumbs-up']" class="likeIcon" />
             <span class="likeCount">{{ comment.likes?.count }}</span>
           </span>
@@ -114,6 +127,7 @@ function setLikes() {
       display: flex;
       justify-content: flex-end;
       gap: 15px;
+      cursor: pointer;
       .likes,
       .replyToggle {
         display: flex;

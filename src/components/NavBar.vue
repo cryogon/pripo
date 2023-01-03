@@ -5,9 +5,17 @@ import { RouterLink } from "vue-router";
 import { ref, watch } from "vue";
 import { usePripoStore } from "@/stores";
 import { useDark, useWindowScroll, useToggle } from "@vueuse/core";
+import { useAuth0 } from "@auth0/auth0-vue";
+const {
+  user: authUser,
+
+  isAuthenticated,
+  loginWithRedirect,
+  logout,
+} = useAuth0();
 
 const store = usePripoStore();
-const user = ref(true);
+const user = ref(authUser);
 const isDropDownVisible = ref(false);
 const isDark = useDark();
 const toggleDark = useToggle(isDark);
@@ -15,7 +23,6 @@ const navbar = ref();
 const compactNavbar = ref(false);
 const { y } = useWindowScroll();
 watch(y, () => {
-  console.log(y.value);
   if (Math.round(y.value) > 130) {
     compactNavbar.value = true;
   }
@@ -29,6 +36,23 @@ router.afterEach(() => {
 
 function toggleDropDown() {
   isDropDownVisible.value = !isDropDownVisible.value;
+
+  setTimeout(() => {
+    document.addEventListener(
+      "click",
+      () => {
+        isDropDownVisible.value = false;
+      },
+      { once: true }
+    );
+  }, 10);
+}
+
+function login() {
+  loginWithRedirect({ redirect_uri: window.location.origin });
+}
+function signout() {
+  logout({ returnTo: window.location.origin });
 }
 </script>
 <template>
@@ -42,10 +66,15 @@ function toggleDropDown() {
         <li><router-link to="/contact">Contact</router-link></li>
       </ul>
       <div class="buttons">
-        <button class="login" v-if="!user" type="submit" @click="user = true">
+        <button
+          class="login"
+          v-if="!isAuthenticated"
+          type="submit"
+          @click="login"
+        >
           Login
         </button>
-        <div class="userBar" v-else>
+        <div class="userBar" v-else-if="user && isAuthenticated">
           <button
             class="postButton"
             type="submit"
@@ -54,7 +83,7 @@ function toggleDropDown() {
             Post
           </button>
           <img
-            src="/mypfp.jpg"
+            :src="user.picture"
             alt="userImg"
             class="userpfp"
             @click="toggleDropDown"
@@ -70,9 +99,7 @@ function toggleDropDown() {
               isDark ? "Dark" : "Light"
             }}</span>
             <span class="hoverItem" role="button">Settings</span>
-            <span class="hoverItem" @click="user = false" role="button"
-              >Logout</span
-            >
+            <span class="hoverItem" @click="signout" role="button">Logout</span>
           </div>
         </div>
       </div>
