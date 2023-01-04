@@ -3,19 +3,10 @@ import AppIcon from "./AppIcon.vue";
 import router from "@/router";
 import { RouterLink } from "vue-router";
 import { ref, watch } from "vue";
-import { usePripoStore } from "@/stores";
 import { useDark, useWindowScroll, useToggle } from "@vueuse/core";
 import { useAuth0 } from "@auth0/auth0-vue";
-const {
-  user: authUser,
+const { user, isAuthenticated, loginWithRedirect, logout } = useAuth0();
 
-  isAuthenticated,
-  loginWithRedirect,
-  logout,
-} = useAuth0();
-
-const store = usePripoStore();
-const user = ref(authUser);
 const isDropDownVisible = ref(false);
 const isDark = useDark();
 const toggleDark = useToggle(isDark);
@@ -47,7 +38,6 @@ function toggleDropDown() {
     );
   }, 10);
 }
-
 function login() {
   loginWithRedirect({ redirect_uri: window.location.origin });
 }
@@ -91,7 +81,7 @@ function signout() {
           <div :class="{ visible: isDropDownVisible }" class="dropDownMenu">
             <router-link
               class="hoverItem"
-              :to="`/user/${store.user.id}`"
+              :to="`/user/${user.id}`"
               role="button"
               >Profile</router-link
             >

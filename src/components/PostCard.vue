@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import router from "@/router";
-
 defineProps<{
   id: number;
   user: {
     id: number;
-    name: string;
-    pfp: string;
+    username: string;
+    profile_picture: string;
   };
   tags?: string[];
   title: string;
@@ -14,13 +13,13 @@ defineProps<{
   isPublic: boolean;
   date_posted: string | Date;
   comment?: {
+    id: number;
+    content: string;
     user: {
       id: number;
-      pfp: string;
-      name: string;
+      username: string;
+      profile_picture: string;
     };
-    content: string;
-    postedOn: Date | string;
   }[];
 }>();
 
@@ -31,7 +30,6 @@ function showFormatedDate(date: Date | string | number) {
     year: "numeric",
   }).format(new Date(date));
 }
-
 function navigateTo(url: string) {
   router.push(url);
 }
@@ -41,41 +39,42 @@ function navigateTo(url: string) {
   <div class="container">
     <h4 class="header">
       <img
-        :src="user.pfp"
+        :src="user?.profile_picture"
         alt="userProfile"
         class="user-profile-picture"
-        @click="navigateTo(`/user/${user.id}`)"
+        @click="navigateTo(`/user/${user?.id}`)"
         style="cursor: pointer"
         v-if="isPublic"
       />
       <div class="user-profile-picture" v-else></div>
-      <span class="username">{{ isPublic ? user.name : "Anonymous" }}</span>
+      <span class="username">{{
+        isPublic ? user?.username : "Anonymous"
+      }}</span>
       <span class="tags">
-        about
-        <span class="tag" v-for="tag in tags" :key="tag">
-          {{ tag + " " }}</span
-        ></span
-      >
-      <span class="post-date"
-        >posted
-        <span class="date"> {{ showFormatedDate(date_posted) }}</span></span
-      >
+        posted about
+        <span class="tag" v-for="tag in tags" :key="tag"> {{ tag + " " }}</span>
+      </span>
+      <span class="post-date">
+        posted
+        <span class="date"> {{ showFormatedDate(date_posted) }}</span>
+      </span>
     </h4>
-    <div>
+    <div v-if="title && content">
       <p class="content" @click="navigateTo(`/blogs/${id}`)">
         <span class="title">{{ title }}</span>
         {{ content }}
       </p>
     </div>
-    <div class="recent-comment" v-if="comment">
+
+    <div class="recent-comment" v-if="comment && comment[0]?.id">
       <img
-        :src="comment[0].user.pfp"
+        :src="comment[0].user?.profile_picture"
         class="comment-user-profile"
         alt="user"
-        v-if="isPublic && comment[0].user.pfp"
+        v-if="isPublic && comment[0].user?.profile_picture"
       />
       <div class="comment-user-profile" v-else></div>
-      <span class="comment">{{ comment[0]?.content }}</span>
+      <span class="comment">{{ comment[0].content }}</span>
     </div>
   </div>
 </template>

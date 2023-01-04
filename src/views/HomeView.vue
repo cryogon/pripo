@@ -1,13 +1,15 @@
 <script lang="ts" setup>
-import { usePripoStore } from "@/stores";
 import PostCard from "@/components/PostCard.vue";
-const store = usePripoStore();
+import { usePripoStore } from "@/stores";
+import { storeToRefs } from "pinia";
+const { blogs } = storeToRefs(usePripoStore());
+
 localStorage.setItem("currentTitle", "Pripo");
 </script>
 <template>
-  <main>
+  <main v-if="blogs.result?.blogs">
     <PostCard
-      v-for="blog in store.blogs"
+      v-for="blog in blogs.result.blogs"
       :key="blog.id"
       :id="blog.id"
       :title="blog.title"
@@ -15,8 +17,8 @@ localStorage.setItem("currentTitle", "Pripo");
       :user="blog.user"
       :tags="blog.tags"
       :date_posted="blog.date_posted"
-      :is-public="blog.isPublic"
-      :comment="blog.comments"
+      :is-public="blog.is_public"
+      :comment="blog.comments || null"
     />
   </main>
 </template>

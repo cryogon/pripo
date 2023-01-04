@@ -28,9 +28,9 @@ export class Tree {
 export interface Comment {
   id: number;
   content: string;
+  username: string;
   parentId: number | null;
   likes: number;
-  shares: number;
   blogId: number;
   childrens: Comment[];
 }

@@ -1,4 +1,35 @@
-<script setup lang="ts"></script>
+<script setup lang="tsx">
+import { Tree } from "@/composables/Tree";
+import { usePripoStore } from "@/stores";
+import { storeToRefs } from "pinia";
+const { user } = storeToRefs(usePripoStore());
+console.log(user);
+const comment = {
+  id: 1,
+  content: "Nice Blog",
+  username: "cryogon",
+  parentId: null,
+  likes: 0,
+  blogId: 1,
+  childrens: [
+    {
+      id: 2,
+      content: "I agree",
+      username: "kumuko",
+      parentId: 1,
+      likes: 0,
+      blogId: 1,
+      childrens: [],
+    },
+  ],
+};
+const comments = new Tree();
+comments.add(comment);
+
+comments.traverse((comment: any) => {
+  console.log(comment);
+});
+</script>
 
 <template>
   <div>Just Test</div>

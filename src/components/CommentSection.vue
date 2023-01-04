@@ -1,22 +1,14 @@
 <script setup lang="ts">
-import { usePripoStore } from "@/stores";
-import { ref } from "vue";
-import router from "@/router";
 import CommentInputBox from "./CommentInputBox.vue";
 import CommentCard from "./CommentCard.vue";
 import ReplyCard from "./ReplyCard.vue";
-import { Tree } from "@/composables/Tree";
+defineProps<{
+  comments: any;
+}>();
 
-const params = router.currentRoute.value.params;
-const blogId = parseInt(params.id as string);
-const store = usePripoStore();
-const blog = store.blogs.filter((b) => b.id == (blogId as number))[0];
-
-const comments = ref(blog.comments);
-const tree = new Tree();
 function postComment(data: any) {
-  if (comments.value) comments.value.push(data);
-  else comments.value = [data];
+  // if (comments.value) comments.value.push(data);
+  // else comments.value = [data];
 }
 </script>
 

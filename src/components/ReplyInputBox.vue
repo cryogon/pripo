@@ -1,53 +1,42 @@
 <script setup lang="ts">
-import type { Comment } from "@/types";
+// import type { Comment } from "@/types";
+import { useMutation } from "@vue/apollo-composable";
 import { ref } from "vue";
-import { getUser } from "@/user";
-import { useEmitter } from "@/composables/EventEmitter";
+import gql from "graphql-tag";
 
-const props = defineProps<{
+defineProps<{
   isReplyInputInactive: boolean;
-  comment: Comment;
+  comment: any;
 }>();
-const emitter = useEmitter();
-const comment = ref(props.comment);
+
 const content = ref("");
-const user = getUser();
 
 /**
  * @method submitReply
  * @param id uniquely identifies the current comment user clicked on
  */
-function submitReply() {
-  if (comment.value && content.value.trim().length > 0) {
-    if (!comment.value.reply) {
-      comment.value.reply = [
-        {
-          id: 0,
-          content: content.value,
-          likes: {
-            count: 0,
-            users: [],
-          },
-          postedOn: new Date(),
-          user: user.currUser,
-        },
-      ];
-    } else {
-      comment.value.reply.push({
-        id: 0,
-        content: content.value,
-        likes: {
-          count: 0,
-          users: [],
-        },
-        postedOn: new Date(),
-        user: user.currUser,
-      });
-    }
-  }
-  emitter.emit("replyInactive");
-  content.value = "";
-  console.log(comment.value.reply);
+function submitReply(e: Event) {
+  // const { mutate } = useMutation(gql`
+  //   mutation submitComment(
+  //     $blogId: Int!
+  //     $content: String!
+  //     $parentId: Int!
+  //     $name: String!
+  //   ) {
+  //     insert_comments(
+  //       objects: {
+  //         blog_id: $blogId
+  //         content: $content
+  //         parent_id: $parentId
+  //         username: $name
+  //       }
+  //     ) {
+  //       affected_rows
+  //     }
+  //   }
+  // `);
+  console.log("Yoo");
+  console.log(e);
 }
 
 function setRows(e: any): void {

@@ -5,7 +5,7 @@ import router from "./router";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { DefaultApolloClient } from "@vue/apollo-composable";
-import { apolloProvider } from "./vue-apollo";
+import { apolloClient } from "./vue-apollo";
 import { createAuth0 } from "@auth0/auth0-vue";
 import {
   faBold,
@@ -36,7 +36,7 @@ library.add(
 
 const app = createApp({
   setup() {
-    provide(DefaultApolloClient, apolloProvider);
+    provide(DefaultApolloClient, apolloClient);
   },
   render: () => h(App),
 });

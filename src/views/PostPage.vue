@@ -17,7 +17,7 @@ console.log(user);
 function pushPostToDB() {
   const variables = {
     title: postTitle.value,
-    content: JSON.stringify(postContent.value),
+    content: postContent.value,
     isPublic: isPostPublic.value,
     tags: blogTags.value?.split(" "),
     username: user.value.nickname,

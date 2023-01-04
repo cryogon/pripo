@@ -1,13 +1,12 @@
 <script setup lang="ts">
-import type { Comment, Likes } from "@/types";
+// import type { Comment, Likes } from "@/types";
 import ReplyInputBox from "./ReplyInputBox.vue";
 import { useEmitter } from "@/composables/EventEmitter";
 import { ref } from "vue";
 import router from "@/router";
-import { getUser } from "@/user";
 const emitter = useEmitter();
 defineProps<{
-  comment: Comment;
+  comment: any;
 }>();
 
 function showFormatedDate(date: Date | string | number): string {
@@ -18,7 +17,6 @@ function showFormatedDate(date: Date | string | number): string {
   }).format(new Date(date));
 }
 const isReplyInputInactive = ref(true);
-const { currUser } = getUser();
 function replyToggle() {
   isReplyInputInactive.value = !isReplyInputInactive.value;
 }
@@ -37,24 +35,15 @@ function redirctToProfilePage(id: number) {
  * @param id takes id of the comment to uniquely identify it
  */
 
-function setLikes(like: Likes) {
+function setLikes(like: any) {
   /*This Login is Broken And is needed to be fixed 
   since the flag always initilize with false and even if I take it outside it won't work properly for multiple comments */
-  like.users.forEach((user) => {
-    if (user.unique_name.includes("cryogon")) {
-      like.count--;
-      like.users.pop();
-    } else {
-      like.count++;
-      like.users.push(currUser);
-    }
-  });
 }
 </script>
 <template>
   <div class="comment">
     <img
-      :src="comment.user.pfp"
+      :src="comment.user.profile_picture"
       alt="user"
       class="userIcon"
       @click="redirctToProfilePage(comment.user.id)"
@@ -64,11 +53,11 @@ function setLikes(like: Likes) {
         <span class="comment-header">
           <span class="currentUser">
             <span class="user-name">
-              {{ comment.user.name }}
+              {{ comment.user.username }}
             </span>
           </span>
           <span class="time-commented">{{
-            showFormatedDate(comment.postedOn)
+            showFormatedDate(comment.posted_on)
           }}</span>
         </span>
 
