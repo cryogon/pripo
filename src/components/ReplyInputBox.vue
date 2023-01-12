@@ -1,53 +1,29 @@
 <script setup lang="ts">
-import type { Comment } from "@/types";
+import { useMutation } from "@vue/apollo-composable";
 import { ref } from "vue";
-import { getUser } from "@/user";
-import { useEmitter } from "@/composables/EventEmitter";
-
-const props = defineProps<{
+import { POST_REPLY } from "@/graphql";
+import { useAuth0 } from "@auth0/auth0-vue";
+defineProps<{
   isReplyInputInactive: boolean;
-  comment: Comment;
+  comment: any;
 }>();
-const emitter = useEmitter();
-const comment = ref(props.comment);
+const { user } = useAuth0();
 const content = ref("");
-const user = getUser();
 
 /**
  * @method submitReply
  * @param id uniquely identifies the current comment user clicked on
  */
-function submitReply() {
-  if (comment.value && content.value.trim().length > 0) {
-    if (!comment.value.reply) {
-      comment.value.reply = [
-        {
-          id: 0,
-          content: content.value,
-          likes: {
-            count: 0,
-            users: [],
-          },
-          postedOn: new Date(),
-          user: user.currUser,
-        },
-      ];
-    } else {
-      comment.value.reply.push({
-        id: 0,
-        content: content.value,
-        likes: {
-          count: 0,
-          users: [],
-        },
-        postedOn: new Date(),
-        user: user.currUser,
-      });
-    }
-  }
-  emitter.emit("replyInactive");
+async function submitReply(cmnt: any) {
+  //Need to use Tree Ds here
+  const { mutate } = useMutation(POST_REPLY);
+  mutate({
+    blogId: cmnt.blog_id,
+    content: content.value,
+    name: user.value.preferred_username || user.value.nickname,
+    parent_id: cmnt.id,
+  });
   content.value = "";
-  console.log(comment.value.reply);
 }
 
 function setRows(e: any): void {
@@ -66,7 +42,7 @@ function setRows(e: any): void {
       @input="setRows"
       v-model="content"
     ></textarea>
-    <button type="submit" class="submit-reply" @click="submitReply">
+    <button type="submit" class="submit-reply" @click="submitReply(comment)">
       Reply
     </button>
   </div>

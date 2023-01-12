@@ -1,13 +1,16 @@
 <script setup lang="ts">
 import router from "@/router";
-import { usePripoStore } from "@/stores";
-import CommentSection from "@/components/CommentSection.vue";
 
+import CommentSection from "@/components/CommentSection.vue";
+import { useQuery } from "@vue/apollo-composable";
+import { GET_BLOG } from "@/graphql";
+import { ref, watch, provide } from "vue";
 const params = router.currentRoute.value.params;
 const blogId = parseInt(params?.id as string);
-const store = usePripoStore();
-const blog = store.blogs.filter((b) => b.id == blogId)[0];
-localStorage.setItem("currentTitle", blog.title + " - Pripo");
+provide("blog_id", blogId);
+const { result, loading, error, onError, stop } = useQuery(GET_BLOG, {
+  id: blogId,
+});
 
 function showFormatedDate(date: Date | string | number) {
   return Intl.DateTimeFormat("en", {
@@ -16,38 +19,52 @@ function showFormatedDate(date: Date | string | number) {
     year: "numeric",
   }).format(new Date(date));
 }
+let blog = ref<any>();
+watch(result, () => {
+  blog.value = result.value.blogs[0];
+  // console.log(result.value.blogs[0]);
+  localStorage.setItem(
+    "currentTitle",
+    result.value.blogs[0].title + " - Pripo"
+  );
+});
+onError(() => {
+  stop();
+});
 </script>
 
 <template>
-  <main class="container" v-if="blog.id !== undefined">
+  <main class="container" v-if="blog">
     <div class="author">
-      <div class="authorPfp anonymous" v-if="!blog.isPublic"></div>
+      <div class="authorPfp anonymous" v-if="!blog.is_public"></div>
       <img
-        :src="blog.user.pfp"
+        :src="blog.user.profile_picture"
         alt="author"
         class="authorPfp"
         @click="router.push(`/user/${blog.user.id}`)"
         v-else
       />
       <span class="author_name"
-        >Posted by {{ blog.isPublic ? blog.user.name : "Anonymous" }}</span
+        >Posted by {{ blog.is_public ? blog.user.username : "Anonymous" }}</span
       >
     </div>
     <h1 class="title">{{ blog.title }}</h1>
     <div class="content">
       <p>
-        {{ blog.content }}
+        {{ JSON.parse(blog.content) }}
       </p>
       <div class="tags">
         <span v-for="tag in blog.tags" :key="tag" class="link">#{{ tag }}</span>
       </div>
       <span class="date-posted"
-        >posted {{ showFormatedDate(blog.date_posted) }}</span
+        >posted on {{ showFormatedDate(blog.date_posted) }}</span
       >
     </div>
-    <CommentSection />
+    <CommentSection :blog-id="blogId" />
   </main>
-  <main v-else>Yoo</main>
+
+  <main v-else-if="loading && !error">Loading...</main>
+  <main v-else-if="error || !loading">Blog Not Found</main>
 </template>
 <style scoped lang="scss">
 .container {

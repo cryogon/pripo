@@ -1,12 +1,17 @@
 <script lang="ts" setup>
 import { useWindowScroll } from "@vueuse/core";
 import { ref, watch } from "vue";
-import { getUser } from "@/user";
 import router from "@/router";
 import type { RouteLocationRaw } from "vue-router";
-const user = getUser();
+import { useQuery } from "@vue/apollo-composable";
+import { GET_USER } from "@/graphql";
+
 const isCompact = ref(false);
 const { y } = useWindowScroll();
+const currentTab = ref<"posts" | "favorites">("posts");
+const uid = router.currentRoute.value.params?.id;
+const variables = ref({ id: uid });
+const { result: user } = useQuery(GET_USER, variables);
 
 watch(y, () => {
   if (y.value > 5) {
@@ -15,31 +20,46 @@ watch(y, () => {
     isCompact.value = false;
   }
 });
-
 function navigateTo(url: RouteLocationRaw) {
   router.push(url);
+}
+
+function changeTab(tab: "posts" | "favorites") {
+  currentTab.value = tab;
 }
 </script>
 
 <template>
-  <main>
+  <main v-if="user">
     <div class="user-display-container" :class="{ compact: isCompact }">
-      <img :src="user.currUser.pfp" alt="user" class="userPfp" />
-      <span class="fullname">{{ user.currUser.name }}</span>
-      <span class="username">@{{ user.currUser.unique_name }}</span>
+      <img :src="user.users[0].profile_picture" alt="user" class="userPfp" />
+      <span class="fullname">{{ user.users[0].name }}</span>
+      <span class="username">@{{ user.users[0].username }}</span>
     </div>
     <span class="scrollDown" :class="{ compact: isCompact }">
       <fa-icon icon="chevron-down" class="scrollDownIcon" />
     </span>
     <ul class="optionContainer">
-      <li class="option active">Blogs</li>
-      <li class="option">Favorites</li>
+      <li
+        class="option"
+        :class="{ active: currentTab === 'posts' }"
+        @click="changeTab('posts')"
+      >
+        Blogs
+      </li>
+      <li
+        class="option"
+        :class="{ active: currentTab === 'favorites' }"
+        @click="changeTab('favorites')"
+      >
+        Favorites
+      </li>
     </ul>
     <div class="main-data-container">
-      <div class="postsContainer">
+      <div class="postsContainer" v-if="currentTab === 'posts'">
         <div
           class="post"
-          v-for="blog in user.blogs"
+          v-for="blog in user.users[0].blogs"
           :key="blog.id"
           @click="navigateTo(`/blogs/${blog.id}`)"
         >
@@ -48,6 +68,10 @@ function navigateTo(url: RouteLocationRaw) {
           </span>
         </div>
       </div>
+      <div
+        class="favoritePostsContainer"
+        v-else-if="currentTab === 'favorites'"
+      ></div>
     </div>
   </main>
 </template>
@@ -61,8 +85,10 @@ main {
 
   .user-display-container {
     display: grid;
+    position: relative;
     gap: 10px;
     margin-bottom: 50rem;
+
     transition: margin 0.5s;
     .userPfp {
       width: 20rem;
@@ -150,6 +176,7 @@ main {
         .blogTitle {
           font-size: 20px;
           letter-spacing: 0.3px;
+          cursor: pointer;
         }
       }
     }

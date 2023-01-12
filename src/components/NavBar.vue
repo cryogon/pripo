@@ -3,19 +3,25 @@ import AppIcon from "./AppIcon.vue";
 import router from "@/router";
 import { RouterLink } from "vue-router";
 import { ref, watch } from "vue";
-import { usePripoStore } from "@/stores";
 import { useDark, useWindowScroll, useToggle } from "@vueuse/core";
-
-const store = usePripoStore();
-const user = ref(true);
+import { useAuth0 } from "@auth0/auth0-vue";
+import { setContext } from "@apollo/client/link/context";
 const isDropDownVisible = ref(false);
 const isDark = useDark();
 const toggleDark = useToggle(isDark);
 const navbar = ref();
 const compactNavbar = ref(false);
 const { y } = useWindowScroll();
+
+const {
+  user,
+  loginWithRedirect: login,
+  logout: signout,
+  isAuthenticated,
+  getAccessTokenSilently,
+} = useAuth0();
+
 watch(y, () => {
-  console.log(y.value);
   if (Math.round(y.value) > 130) {
     compactNavbar.value = true;
   }
@@ -29,9 +35,37 @@ router.afterEach(() => {
 
 function toggleDropDown() {
   isDropDownVisible.value = !isDropDownVisible.value;
+
+  setTimeout(() => {
+    document.addEventListener(
+      "click",
+      () => {
+        isDropDownVisible.value = false;
+      },
+      { once: true }
+    );
+  }, 10);
+}
+function logout() {
+  signout({ returnTo: window.location.origin });
+}
+
+if (isAuthenticated) {
+  const token = getAccessTokenSilently();
+  //FIXME: Temporary Solution: Have to find a way to use ApolloClient.setContext
+  token.then((d) => {
+    localStorage.setItem("token", d);
+  });
+  setContext((request, { headers }) => ({
+    headers: {
+      ...headers,
+      Authorization: `Bearer ${token}`,
+    },
+  }));
 }
 </script>
 <template>
+  <!-- <Suspense> -->
   <header>
     <nav ref="navbar" :class="{ compact: compactNavbar }">
       <div class="icon" @click="router.push('/')">
@@ -42,10 +76,15 @@ function toggleDropDown() {
         <li><router-link to="/contact">Contact</router-link></li>
       </ul>
       <div class="buttons">
-        <button class="login" v-if="!user" type="submit" @click="user = true">
+        <button
+          class="login"
+          v-if="!isAuthenticated"
+          type="submit"
+          @click="login"
+        >
           Login
         </button>
-        <div class="userBar" v-else>
+        <div class="userBar" v-else-if="user && isAuthenticated">
           <button
             class="postButton"
             type="submit"
@@ -54,7 +93,7 @@ function toggleDropDown() {
             Post
           </button>
           <img
-            src="/mypfp.jpg"
+            :src="user.picture"
             alt="userImg"
             class="userpfp"
             @click="toggleDropDown"
@@ -62,7 +101,7 @@ function toggleDropDown() {
           <div :class="{ visible: isDropDownVisible }" class="dropDownMenu">
             <router-link
               class="hoverItem"
-              :to="`/user/${store.user.id}`"
+              :to="`/user/${user.uid}`"
               role="button"
               >Profile</router-link
             >
@@ -70,14 +109,13 @@ function toggleDropDown() {
               isDark ? "Dark" : "Light"
             }}</span>
             <span class="hoverItem" role="button">Settings</span>
-            <span class="hoverItem" @click="user = false" role="button"
-              >Logout</span
-            >
+            <span class="hoverItem" @click="logout" role="button">Logout</span>
           </div>
         </div>
       </div>
     </nav>
   </header>
+  <!-- </Suspense> -->
 </template>
 <style scoped lang="scss">
 header {
