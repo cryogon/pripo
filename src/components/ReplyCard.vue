@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import type { Comment, Likes } from "@/types";
 import ReplyInputBox from "./ReplyInputBox.vue";
-import { useEmitter } from "@/composables/EventEmitter";
+
 import { ref } from "vue";
 import router from "@/router";
-const emitter = useEmitter();
+
 defineProps<{
-  reply: Comment;
+  reply: any;
 }>();
 
 function showFormatedDate(date: Date | string | number): string {
@@ -21,14 +20,13 @@ const isReplyInputInactive = ref(true);
 function replyToggle() {
   isReplyInputInactive.value = !isReplyInputInactive.value;
 }
-
 function redirctToProfilePage(id: number) {
   router.push(`/user/${id}`);
 }
 
-emitter.on("replyInactive", () => {
-  isReplyInputInactive.value = true;
-});
+// emitter.on("replyInactive", () => {
+//   isReplyInputInactive.value = true;
+// });
 
 /**
  * @method setLikes
@@ -36,7 +34,7 @@ emitter.on("replyInactive", () => {
  * @param id takes id of the comment to uniquely identify it
  */
 
-function setLikes(like: Likes) {
+function setLikes(like: any) {
   /*This Login is Broken And is needed to be fixed 
   since the flag always initilize with false and even if I take it outside it won't work properly for multiple comments */
   like.count++;
@@ -46,7 +44,7 @@ function setLikes(like: Likes) {
 <template>
   <div class="reply">
     <img
-      :src="reply.user.pfp"
+      :src="reply.user.profile_picture"
       alt="user"
       class="userIcon"
       @click="redirctToProfilePage(reply.user.id)"
@@ -54,9 +52,9 @@ function setLikes(like: Likes) {
     <div class="reply-container">
       <div class="reply-main">
         <span class="currentUser">
-          {{ reply.user.name }}
+          {{ reply.user.username }}
           <span class="time-commented">{{
-            showFormatedDate(reply.postedOn)
+            showFormatedDate(reply.posted_on)
           }}</span>
         </span>
 
@@ -74,7 +72,7 @@ function setLikes(like: Likes) {
           </span>
           <span class="likes reply-options-icon" @click="setLikes(reply.likes)">
             <fa-icon :icon="['regular', 'thumbs-up']" class="likeIcon" />
-            <span class="likeCount">{{ reply.likes?.count }}</span>
+            <span class="likeCount">{{ reply.likes }}</span>
           </span>
           <fa-icon icon="ellipsis-vertical" class="reply-options-icon" />
         </div>

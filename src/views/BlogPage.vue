@@ -4,10 +4,10 @@ import router from "@/router";
 import CommentSection from "@/components/CommentSection.vue";
 import { useQuery } from "@vue/apollo-composable";
 import { GET_BLOG } from "@/graphql";
-import { ref, watch } from "vue";
+import { ref, watch, provide } from "vue";
 const params = router.currentRoute.value.params;
 const blogId = parseInt(params?.id as string);
-
+provide("blog_id", blogId);
 const { result, loading, error, onError, stop } = useQuery(GET_BLOG, {
   id: blogId,
 });
@@ -51,7 +51,7 @@ onError(() => {
     <h1 class="title">{{ blog.title }}</h1>
     <div class="content">
       <p>
-        {{ blog.content }}
+        {{ JSON.parse(blog.content) }}
       </p>
       <div class="tags">
         <span v-for="tag in blog.tags" :key="tag" class="link">#{{ tag }}</span>
@@ -60,7 +60,7 @@ onError(() => {
         >posted on {{ showFormatedDate(blog.date_posted) }}</span
       >
     </div>
-    <CommentSection :comments="blog.comments" />
+    <CommentSection :blog-id="blogId" />
   </main>
 
   <main v-else-if="loading && !error">Loading...</main>

@@ -1,28 +1,20 @@
 <script setup lang="ts">
-import { usePripoStore } from "@/stores";
-import type { User } from "@/types";
-import { storeToRefs } from "pinia";
 import router from "@/router";
-import { ref } from "vue";
+import { ref, inject } from "vue";
+import { useAuth0 } from "@auth0/auth0-vue";
+import { useMutation } from "@vue/apollo-composable";
+import { POST_COMMENT } from "@/graphql";
 
 const commentInp = ref();
-const { user } = storeToRefs(usePripoStore());
-let commentId = 0;
-const emit = defineEmits(["postComment"]);
-function postComment(user: User, content: string): void {
-  if (content.trim().length > 0) {
-    const data = {
-      id: commentId++,
-      user,
-      content,
-      postedOn: new Date(),
-      likes: {
-        count: 0,
-        users: [],
-      },
-    };
-    emit("postComment", data);
-  }
+const { user } = useAuth0();
+const blogId: number = inject("blog_id") as number;
+function postComment(content: string, blogId: number): void {
+  const { mutate } = useMutation(POST_COMMENT);
+  mutate({
+    blogId: blogId,
+    content,
+    name: user.value.preferred_username || user.value.nickname,
+  });
   commentInp.value.value = "";
 }
 
@@ -36,11 +28,13 @@ function setRows(e: any): void {
 <template>
   <div class="commentInputSection">
     <img
-      src="/mypfp.jpg"
+      :src="user.picture"
       alt="user"
       class="userIcon"
       @click="redirctToProfilePage(user.id)"
+      v-if="user"
     />
+    <div class="anonymousUser" v-else></div>
     <textarea
       placeholder="Type you comment"
       class="comment_input"
@@ -53,7 +47,7 @@ function setRows(e: any): void {
     <button
       type="submit"
       class="postButton"
-      @click="postComment(user, commentInp.value)"
+      @click="postComment(commentInp.value, blogId)"
     >
       Post
     </button>

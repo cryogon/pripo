@@ -5,14 +5,22 @@ import { RouterLink } from "vue-router";
 import { ref, watch } from "vue";
 import { useDark, useWindowScroll, useToggle } from "@vueuse/core";
 import { useAuth0 } from "@auth0/auth0-vue";
-const { user, isAuthenticated, loginWithRedirect, logout } = useAuth0();
-
+import { setContext } from "@apollo/client/link/context";
 const isDropDownVisible = ref(false);
 const isDark = useDark();
 const toggleDark = useToggle(isDark);
 const navbar = ref();
 const compactNavbar = ref(false);
 const { y } = useWindowScroll();
+
+const {
+  user,
+  loginWithRedirect: login,
+  logout: signout,
+  isAuthenticated,
+  getAccessTokenSilently,
+} = useAuth0();
+
 watch(y, () => {
   if (Math.round(y.value) > 130) {
     compactNavbar.value = true;
@@ -38,14 +46,22 @@ function toggleDropDown() {
     );
   }, 10);
 }
-function login() {
-  loginWithRedirect({ redirect_uri: window.location.origin });
+function logout() {
+  signout({ returnTo: window.location.origin });
 }
-function signout() {
-  logout({ returnTo: window.location.origin });
+
+if (isAuthenticated) {
+  const token = getAccessTokenSilently();
+  const setAuthorizationLink = setContext((request, { headers }) => ({
+    headers: {
+      ...headers,
+      Authorization: `Bearer ${token}`,
+    },
+  }));
 }
 </script>
 <template>
+  <!-- <Suspense> -->
   <header>
     <nav ref="navbar" :class="{ compact: compactNavbar }">
       <div class="icon" @click="router.push('/')">
@@ -81,7 +97,7 @@ function signout() {
           <div :class="{ visible: isDropDownVisible }" class="dropDownMenu">
             <router-link
               class="hoverItem"
-              :to="`/user/${user.id}`"
+              :to="`/user/${user.uid}`"
               role="button"
               >Profile</router-link
             >
@@ -89,12 +105,13 @@ function signout() {
               isDark ? "Dark" : "Light"
             }}</span>
             <span class="hoverItem" role="button">Settings</span>
-            <span class="hoverItem" @click="signout" role="button">Logout</span>
+            <span class="hoverItem" @click="logout" role="button">Logout</span>
           </div>
         </div>
       </div>
     </nav>
   </header>
+  <!-- </Suspense> -->
 </template>
 <style scoped lang="scss">
 header {

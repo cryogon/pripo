@@ -78,7 +78,7 @@ function setLikes(like: any) {
             @click="setLikes(comment.likes)"
           >
             <fa-icon :icon="['regular', 'thumbs-up']" class="likeIcon" />
-            <span class="likeCount">{{ comment.likes?.count }}</span>
+            <span class="likeCount">{{ comment.likes }}</span>
           </span>
           <fa-icon icon="ellipsis-vertical" class="comment-options-icon" />
         </div>

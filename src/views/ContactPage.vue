@@ -1,34 +1,21 @@
 <script setup lang="tsx">
-import { Tree } from "@/composables/Tree";
-import { usePripoStore } from "@/stores";
-import { storeToRefs } from "pinia";
-const { user } = storeToRefs(usePripoStore());
-console.log(user);
-const comment = {
-  id: 1,
-  content: "Nice Blog",
-  username: "cryogon",
-  parentId: null,
-  likes: 0,
-  blogId: 1,
-  childrens: [
-    {
-      id: 2,
-      content: "I agree",
-      username: "kumuko",
-      parentId: 1,
-      likes: 0,
-      blogId: 1,
-      childrens: [],
-    },
-  ],
-};
-const comments = new Tree();
-comments.add(comment);
+import { CommentBuilder } from "@/composables/CommentBuilder";
+const testComments = [
+  { id: 2, parent_id: null, content: "My Favorite Game" },
+  { id: 22, parent_id: null, content: "Root Message: Second" },
+  { id: 23, parent_id: null, content: "Root Message: The Third" },
+  { id: 5, parent_id: 2, content: "Testing Reply Second Time" },
+  { id: 6, parent_id: 2, content: "Replying Again" },
+  {
+    id: 24,
+    parent_id: 23,
+    content: "Reply Of Root Message: The Third",
+  },
+];
 
-comments.traverse((comment: any) => {
-  console.log(comment);
-});
+const tree = new CommentBuilder();
+tree.addMultiple(testComments);
+console.log(tree.root);
 </script>
 
 <template>

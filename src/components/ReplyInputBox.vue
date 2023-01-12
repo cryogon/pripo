@@ -1,42 +1,29 @@
 <script setup lang="ts">
-// import type { Comment } from "@/types";
 import { useMutation } from "@vue/apollo-composable";
 import { ref } from "vue";
-import gql from "graphql-tag";
-
+import { POST_REPLY } from "@/graphql";
+import { useAuth0 } from "@auth0/auth0-vue";
 defineProps<{
   isReplyInputInactive: boolean;
   comment: any;
 }>();
-
+const { user } = useAuth0();
 const content = ref("");
 
 /**
  * @method submitReply
  * @param id uniquely identifies the current comment user clicked on
  */
-function submitReply(e: Event) {
-  // const { mutate } = useMutation(gql`
-  //   mutation submitComment(
-  //     $blogId: Int!
-  //     $content: String!
-  //     $parentId: Int!
-  //     $name: String!
-  //   ) {
-  //     insert_comments(
-  //       objects: {
-  //         blog_id: $blogId
-  //         content: $content
-  //         parent_id: $parentId
-  //         username: $name
-  //       }
-  //     ) {
-  //       affected_rows
-  //     }
-  //   }
-  // `);
-  console.log("Yoo");
-  console.log(e);
+async function submitReply(cmnt: any) {
+  //Need to use Tree Ds here
+  const { mutate } = useMutation(POST_REPLY);
+  mutate({
+    blogId: cmnt.blog_id,
+    content: content.value,
+    name: user.value.preferred_username || user.value.nickname,
+    parent_id: cmnt.id,
+  });
+  content.value = "";
 }
 
 function setRows(e: any): void {
@@ -55,7 +42,7 @@ function setRows(e: any): void {
       @input="setRows"
       v-model="content"
     ></textarea>
-    <button type="submit" class="submit-reply" @click="submitReply">
+    <button type="submit" class="submit-reply" @click="submitReply(comment)">
       Reply
     </button>
   </div>
