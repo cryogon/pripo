@@ -1,5 +1,8 @@
+<p align="center">
+<img width="500" src="public/icon.png" alt="logo">
+</p>
+
 # pripo-vue
-![App Logo](https://github.com/cryogon/pripo/blob/main/public/icon.png?raw=true)
 
 ## Changelog
 - Added Comment Options
