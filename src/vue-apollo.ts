@@ -5,10 +5,16 @@ import {
 } from "@apollo/client/core";
 import { provideApolloClient } from "@vue/apollo-composable";
 const token = localStorage.getItem("token");
-const headers = {
+
+const guestUser = {
   "content-type": "application/json",
-  Authorization: token ? `Bearer ${token}` : "",
 };
+const headers = token
+  ? {
+      "content-type": "application/json",
+      Authorization: `Bearer ${token}`,
+    }
+  : guestUser;
 const httpLink = createHttpLink({
   headers,
   uri: "https://pripo-db.hasura.app/v1/graphql",
