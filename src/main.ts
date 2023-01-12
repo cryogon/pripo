@@ -50,6 +50,7 @@ app
       client_id: "gjxDd294BjPO9MUqimrzNj2iKaMzVVAr",
       redirect_uri: window.location.origin,
       cacheLocation: "localstorage",
+      audience: "https://hasura.io/",
     })
   );
 app.mount("#app");

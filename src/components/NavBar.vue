@@ -52,7 +52,11 @@ function logout() {
 
 if (isAuthenticated) {
   const token = getAccessTokenSilently();
-  const setAuthorizationLink = setContext((request, { headers }) => ({
+  //FIXME: Temporary Solution: Have to find a way to use ApolloClient.setContext
+  token.then((d) => {
+    localStorage.setItem("token", d);
+  });
+  setContext((request, { headers }) => ({
     headers: {
       ...headers,
       Authorization: `Bearer ${token}`,
