@@ -1,4 +1,5 @@
 # pripo-vue
+![alt text](https://github.com/cryogon/pripo/blob/main/icon.png?raw=true)
 
 ## Changelog
 - Added Comment Options
