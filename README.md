@@ -1,5 +1,5 @@
 # pripo-vue
-![App Logo](https://github.com/cryogon/pripo/blob/main/icon.png?raw=true)
+![App Logo](https://github.com/cryogon/pripo/blob/main/public/icon.png?raw=true)
 
 ## Changelog
 - Added Comment Options
