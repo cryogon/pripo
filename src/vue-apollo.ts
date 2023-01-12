@@ -7,7 +7,7 @@ import { provideApolloClient } from "@vue/apollo-composable";
 const token = localStorage.getItem("token");
 const headers = {
   "content-type": "application/json",
-  Authorization: token ? `Bearer ${token}` : null,
+  Authorization: token ? `Bearer ${token}` : "",
 };
 const httpLink = createHttpLink({
   headers,
