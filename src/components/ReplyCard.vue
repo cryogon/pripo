@@ -21,7 +21,7 @@ function replyToggle() {
   isReplyInputInactive.value = !isReplyInputInactive.value;
 }
 function redirctToProfilePage(id: number) {
-  router.push(`/user/${id}`);
+  router.push(`/users/${id}`);
 }
 
 // emitter.on("replyInactive", () => {

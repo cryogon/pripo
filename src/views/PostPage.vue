@@ -13,7 +13,6 @@ const blogTags = ref();
 
 const { user } = useAuth0();
 
-console.log(user);
 function pushPostToDB() {
   const variables = {
     title: postTitle.value,

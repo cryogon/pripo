@@ -19,7 +19,7 @@ function postComment(content: string, blogId: number): void {
 }
 
 function redirctToProfilePage(id: number) {
-  router.push(`/user/${id}`);
+  router.push(`/users/${id}`);
 }
 function setRows(e: any): void {
   e.target.rows = (e.target.value.match(/\n/gm) || []).length + 2;
@@ -31,7 +31,7 @@ function setRows(e: any): void {
       :src="user.picture"
       alt="user"
       class="userIcon"
-      @click="redirctToProfilePage(user.id)"
+      @click="redirctToProfilePage(user.uid)"
       v-if="user"
     />
     <div class="anonymousUser" v-else></div>

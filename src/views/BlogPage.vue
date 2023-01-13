@@ -41,7 +41,7 @@ onError(() => {
         :src="blog.user.profile_picture"
         alt="author"
         class="authorPfp"
-        @click="router.push(`/user/${blog.user.id}`)"
+        @click="router.push(`/users/${blog.user.id}`)"
         v-else
       />
       <span class="author_name"

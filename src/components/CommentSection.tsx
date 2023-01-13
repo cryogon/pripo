@@ -8,11 +8,18 @@ function traverse(el: any, callback: any) {
   let els: JSX.Element[] = [];
   function walk(node: any) {
     callback(node);
+    console.log(node);
     node?.children && node.children.forEach(walk);
-    els = [...els, node];
+    els = [
+      ...els,
+      <div class="reply" style={`padding-inline-start: 2rem`}>
+        <div class="reply--main">
+          <CommentCard comment={node} />
+        </div>
+      </div>,
+    ];
   }
   walk(el);
-  console.log(els.length, el.children.length);
 
   return els;
 }
@@ -41,23 +48,16 @@ const CommentSection = defineComponent({
             <div class="comments">
               {currComments.value.map((c: any) => (
                 <div class="comment-reply-container">
-                  {/* <CommentCard comment={c} />
-                  {c.children.map((r: any) => {
-                    return (
-                      <div class="reply" style={`padding-inline-start: 2rem`}>
-                        <div class="reply--main">
-                          <CommentCard comment={r} />
-                        </div>
-                      </div>
-                    );
-                  })} */}
-                  {traverse(c, (r: any) => (
-                    <div class="reply" style={`padding-inline-start: 2rem`}>
-                      <div class="reply--main">
-                        <CommentCard comment={r} />
-                      </div>
-                    </div>
-                  ))}
+                  <CommentCard comment={c} />
+                  {traverse(
+                    c,
+                    (r: any) => r
+                    // <div class="reply" style={`padding-inline-start: 2rem`}>
+                    //   <div class="reply--main">
+                    //     <CommentCard comment={r} />
+                    //   </div>
+                    // </div>
+                  )}
                 </div>
               ))}
             </div>

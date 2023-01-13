@@ -36,17 +36,31 @@ watch(comments, () => {
               <ReplyCard :reply="reply" />
               <div
                 class="reply--child"
-                v-for="subreply in reply.children"
-                :key="(subreply.id as number)"
-                :reply="subreply"
+                v-for="reply2 in reply.children"
+                :key="(reply2.id as number)"
+                :reply="reply2"
               >
-                <ReplyCard :reply="subreply" />
+                <ReplyCard :reply="reply2" />
                 <div
                   class="reply--child"
-                  v-for="re in subreply.children"
-                  :key="(re.id as number)"
+                  v-for="reply3 in reply2.children"
+                  :key="(reply3.id as number)"
                 >
-                  <ReplyCard :reply="re" />
+                  <ReplyCard :reply="reply3" />
+                  <div
+                    class="reply--child"
+                    v-for="reply4 in reply3.children"
+                    :key="(reply4.id as number)"
+                  >
+                    <ReplyCard :reply="reply4" />
+                    <div
+                      class="reply--child"
+                      v-for="reply5 in reply4.children"
+                      :key="(reply5.id as number)"
+                    >
+                      <ReplyCard :reply="reply5" />
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -79,7 +93,7 @@ watch(comments, () => {
   }
 
   .reply--child {
-    margin-inline-start: 2em;
+    margin-inline-start: 2vw;
   }
 }
 </style>

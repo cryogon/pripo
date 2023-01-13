@@ -26,7 +26,7 @@ emitter.on("replyInactive", () => {
 });
 
 function redirctToProfilePage(id: number) {
-  router.push(`/user/${id}`);
+  router.push(`/users/${id}`);
 }
 
 /**

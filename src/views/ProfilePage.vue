@@ -9,10 +9,17 @@ import { GET_USER } from "@/graphql";
 const isCompact = ref(false);
 const { y } = useWindowScroll();
 const currentTab = ref<"posts" | "favorites">("posts");
-const uid = router.currentRoute.value.params?.id;
+const uid = router.currentRoute.value.params.id;
 const variables = ref({ id: uid });
-const { result: user } = useQuery(GET_USER, variables);
-
+const { result: user, onResult } = useQuery(GET_USER, variables);
+const userFound = ref(false);
+onResult((r) => {
+  if (r.data.users.length == 0) {
+    router.push("/404");
+  } else {
+    userFound.value = true;
+  }
+});
 watch(y, () => {
   if (y.value > 5) {
     isCompact.value = true;
@@ -30,7 +37,7 @@ function changeTab(tab: "posts" | "favorites") {
 </script>
 
 <template>
-  <main v-if="user">
+  <main v-if="user && userFound">
     <div class="user-display-container" :class="{ compact: isCompact }">
       <img :src="user.users[0].profile_picture" alt="user" class="userPfp" />
       <span class="fullname">{{ user.users[0].name }}</span>

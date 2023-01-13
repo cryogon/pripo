@@ -42,7 +42,7 @@ function navigateTo(url: string) {
         :src="user?.profile_picture"
         alt="userProfile"
         class="user-profile-picture"
-        @click="navigateTo(`/user/${user?.id}`)"
+        @click="navigateTo(`/users/${user?.id}`)"
         style="cursor: pointer"
         v-if="isPublic"
       />
