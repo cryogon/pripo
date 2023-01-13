@@ -66,10 +66,11 @@ function changeTab(tab: "posts" | "favorites") {
       <div class="postsContainer" v-if="currentTab === 'posts'">
         <div
           class="post"
-          v-for="blog in user.users[0].blogs"
+          v-for="(blog, index) in user.users[0].blogs"
           :key="blog.id"
           @click="navigateTo(`/blogs/${blog.id}`)"
         >
+          <span class="blogItemIndex"> {{ index + 1 }}. </span>
           <span class="blogTitle">
             {{ blog.title }}
           </span>
@@ -191,6 +192,10 @@ main {
           font-size: 20px;
           letter-spacing: 0.3px;
           cursor: pointer;
+        }
+        .blogItemIndex {
+          font-size: 22px;
+          padding-inline: 1rem;
         }
       }
     }
