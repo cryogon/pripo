@@ -93,6 +93,9 @@ main {
   .user-display-container {
     display: grid;
     position: relative;
+    align-self: flex-start;
+    margin-inline-start: 49%;
+    translate: -50% 0;
     gap: 10px;
     margin-bottom: 50rem;
 
@@ -115,6 +118,7 @@ main {
       margin-inline-start: 9vw;
       margin-block: 5rem 3rem;
       align-self: flex-start;
+      translate: 0;
       animation: moveleft 0.4s ease-out;
       @keyframes moveleft {
       }
@@ -173,13 +177,16 @@ main {
     margin-block-start: 2rem;
     width: 90%;
     min-height: 30rem;
-
     .postsContainer {
+      background-color: var(--card-background);
+      padding: 0.5rem;
       .post {
         padding: 0.4rem;
         min-height: 3rem;
-        background-color: var(--card-background);
         margin-block-end: 1rem;
+        &:hover {
+          background-color: var(--color-background);
+        }
         .blogTitle {
           font-size: 20px;
           letter-spacing: 0.3px;
