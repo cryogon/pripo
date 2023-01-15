@@ -101,9 +101,15 @@ function navigateTo(url: string) {
 .tag {
   cursor: pointer;
   color: var(--link-color);
+  position: relative;
+}
+.tag:hover {
+  background-color: var(--link-hover-background);
 }
 .tag:not(:last-child):after {
-  content: ",";
+  content: ", ";
+  position: absolute;
+  right: 0;
 }
 .post-date {
   font-weight: normal;

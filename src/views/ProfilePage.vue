@@ -79,7 +79,19 @@ function changeTab(tab: "posts" | "favorites") {
       <div
         class="favoritePostsContainer"
         v-else-if="currentTab === 'favorites'"
-      ></div>
+      >
+        <div
+          class="post"
+          v-for="(blog, index) in user.users[0].liked_blogs.blog"
+          :key="blog.id"
+          @click="navigateTo(`/blogs/${blog.id}`)"
+        >
+          <span class="blogItemIndex"> {{ index + 1 }}. </span>
+          <span class="blogTitle">
+            {{ blog.title }}
+          </span>
+        </div>
+      </div>
     </div>
   </main>
 </template>
@@ -178,7 +190,8 @@ main {
     margin-block-start: 2rem;
     width: 90%;
     min-height: 30rem;
-    .postsContainer {
+    .postsContainer,
+    .favoritePostsContainer {
       background-color: var(--card-background);
       padding: 0.5rem;
       .post {

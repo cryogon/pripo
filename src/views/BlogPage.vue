@@ -2,7 +2,7 @@
 import router from "@/router";
 import CommentSection from "@/components/CommentSection.vue";
 import { useMutation, useQuery } from "@vue/apollo-composable";
-import { GET_BLOG, SET_LIKE } from "@/graphql";
+import { GET_BLOG, SET_LIKE, REMOVE_LIKE } from "@/graphql";
 import { ref, watch, provide } from "vue";
 import StarIcon from "../components/Icons/StarIcon.vue";
 import { useAuth0 } from "@auth0/auth0-vue";
@@ -14,7 +14,6 @@ const { result, loading, error, onError, stop } = useQuery(GET_BLOG, {
   id: blogId,
 });
 const isFav = ref(false);
-
 provide("blog_id", blogId);
 
 function showFormatedDate(date: Date | string | number) {
@@ -27,7 +26,10 @@ function showFormatedDate(date: Date | string | number) {
 let blog = ref<any>();
 watch(result, () => {
   blog.value = result.value.blogs[0];
-  if (blog.value.liked_users.includes(user.value.uid)) {
+  if (
+    blog.value.favourites.filter((u: any) => u.user_id === user.value.uid)
+      .length != 0
+  ) {
     isFav.value = true;
   }
   localStorage.setItem(
@@ -46,10 +48,19 @@ function setLike() {
       mutate({
         blogId,
         userId: user.value.uid,
-        blog: blogId,
-        user: user.value.uid,
       });
       isFav.value = true;
+    } catch (err) {
+      console.error(err);
+    }
+  } else {
+    const { mutate } = useMutation(REMOVE_LIKE);
+    try {
+      mutate({
+        blogId,
+        userId: user.value.uid,
+      });
+      isFav.value = false;
     } catch (err) {
       console.error(err);
     }
