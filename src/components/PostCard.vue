@@ -102,6 +102,9 @@ function navigateTo(url: string) {
   cursor: pointer;
   color: var(--link-color);
 }
+.tag:not(:last-child):after {
+  content: ",";
+}
 .post-date {
   font-weight: normal;
   margin-inline-end: 0.8rem;

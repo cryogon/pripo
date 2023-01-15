@@ -72,6 +72,7 @@ export const GET_BLOG = gql`
       is_public
       likes
       tags
+      liked_users
       user {
         id
         profile_picture
@@ -160,6 +161,29 @@ export const GET_USER = gql`
         content
       }
       created_at
+    }
+  }
+`;
+
+export const SET_LIKE = gql`
+  mutation setLike(
+    $blogId: Int!
+    $userId: bigint!
+    $blog: jsonb!
+    $user: jsonb
+  ) {
+    update_users(
+      _append: { favorite_blogs: $blog }
+      where: { id: { _eq: $userId } }
+    ) {
+      affected_rows
+    }
+    update_blogs(
+      _inc: { likes: 1 }
+      _append: { liked_users: $user }
+      where: { id: { _eq: $blogId } }
+    ) {
+      affected_rows
     }
   }
 `;

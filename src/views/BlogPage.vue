@@ -1,16 +1,21 @@
 <script setup lang="ts">
 import router from "@/router";
-
 import CommentSection from "@/components/CommentSection.vue";
-import { useQuery } from "@vue/apollo-composable";
-import { GET_BLOG } from "@/graphql";
+import { useMutation, useQuery } from "@vue/apollo-composable";
+import { GET_BLOG, SET_LIKE } from "@/graphql";
 import { ref, watch, provide } from "vue";
+import StarIcon from "../components/Icons/StarIcon.vue";
+import { useAuth0 } from "@auth0/auth0-vue";
+
+const { user } = useAuth0();
 const params = router.currentRoute.value.params;
 const blogId = parseInt(params?.id as string);
-provide("blog_id", blogId);
 const { result, loading, error, onError, stop } = useQuery(GET_BLOG, {
   id: blogId,
 });
+const isFav = ref(false);
+
+provide("blog_id", blogId);
 
 function showFormatedDate(date: Date | string | number) {
   return Intl.DateTimeFormat("en", {
@@ -22,15 +27,34 @@ function showFormatedDate(date: Date | string | number) {
 let blog = ref<any>();
 watch(result, () => {
   blog.value = result.value.blogs[0];
-  // console.log(result.value.blogs[0]);
+  if (blog.value.liked_users.includes(user.value.uid)) {
+    isFav.value = true;
+  }
   localStorage.setItem(
     "currentTitle",
     result.value.blogs[0].title + " - Pripo"
   );
 });
+
 onError(() => {
   stop();
 });
+function setLike() {
+  if (!isFav.value) {
+    const { mutate } = useMutation(SET_LIKE);
+    try {
+      mutate({
+        blogId,
+        userId: user.value.uid,
+        blog: blogId,
+        user: user.value.uid,
+      });
+      isFav.value = true;
+    } catch (err) {
+      console.error(err);
+    }
+  }
+}
 </script>
 
 <template>
@@ -47,6 +71,7 @@ onError(() => {
       <span class="author_name"
         >Posted by {{ blog.is_public ? blog.user.username : "Anonymous" }}</span
       >
+      <StarIcon class="star" :class="{ staractive: isFav }" @click="setLike" />
     </div>
     <h1 class="title">{{ blog.title }}</h1>
     <div class="content">
@@ -94,6 +119,14 @@ onError(() => {
     align-items: center;
     gap: 10px;
     margin-bottom: 0.6rem;
+    .star {
+      margin-inline-start: auto;
+      width: 1.5rem;
+      align-items: center;
+    }
+    .staractive {
+      fill: var(--color-text);
+    }
   }
   .authorPfp {
     cursor: pointer;

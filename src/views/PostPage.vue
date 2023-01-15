@@ -79,7 +79,7 @@ function pushPostToDB() {
       />
     </div>
     <div class="isPostPublic">
-      <label for="isPostPublic">Is Public: </label>
+      <label for="isPostPublic">Public: </label>
       <input
         type="checkbox"
         id="isPostPublic"
@@ -171,8 +171,11 @@ function pushPostToDB() {
   .isPostPublic {
     display: flex;
     gap: 10px;
-    padding-top: 0.5rem;
+    // padding-top: 0.5rem;
     height: 2rem;
+    font-family: monospace;
+    font-size: 16px;
+    align-items: center;
   }
 }
 </style>
