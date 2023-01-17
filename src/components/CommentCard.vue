@@ -1,13 +1,20 @@
 <script setup lang="ts">
 // import type { Comment, Likes } from "@/types";
+import ThumbsUp from "@/components/Icons/ThumbsUp.vue";
 import ReplyInputBox from "./ReplyInputBox.vue";
 import { useEmitter } from "@/composables/EventEmitter";
 import { ref } from "vue";
 import router from "@/router";
-const emitter = useEmitter();
+import { useMutation } from "@vue/apollo-composable";
+import { SET_COMMENT_LIKE, REMOVE_COMMENT_LIKE } from "@/graphql";
+import { useAuth0 } from "@auth0/auth0-vue";
 defineProps<{
   comment: any;
 }>();
+
+const { user } = useAuth0();
+const emitter = useEmitter();
+const isReplyInputInactive = ref(true);
 
 function showFormatedDate(date: Date | string | number): string {
   return Intl.DateTimeFormat("en", {
@@ -16,7 +23,6 @@ function showFormatedDate(date: Date | string | number): string {
     year: "numeric",
   }).format(new Date(date));
 }
-const isReplyInputInactive = ref(true);
 function replyToggle() {
   isReplyInputInactive.value = !isReplyInputInactive.value;
 }
@@ -26,18 +32,48 @@ emitter.on("replyInactive", () => {
 });
 
 function redirctToProfilePage(id: number) {
-  router.push(`/user/${id}`);
+  router.push(`/users/${id}`);
 }
 
 /**
  * @method setLikes
  * Set Likes on the comment
- * @param id takes id of the comment to uniquely identify it
+ * @param cmnt takes id of the comment to uniquely identify it
  */
 
-function setLikes(like: any) {
-  /*This Login is Broken And is needed to be fixed 
-  since the flag always initilize with false and even if I take it outside it won't work properly for multiple comments */
+function setLikes(cmnt: any) {
+  const variable = {
+    commentId: cmnt.id,
+    userId: user.value.uid,
+  };
+  const { mutate: setLikes } = useMutation(SET_COMMENT_LIKE);
+  const { mutate: removeLikes } = useMutation(REMOVE_COMMENT_LIKE);
+  for (let cUser of cmnt.liked_users || []) {
+    if (cUser.user_id == user.value.uid) {
+      setLikes(variable);
+      // console.log("Set Like");
+      return;
+    } else {
+      removeLikes(variable);
+      return;
+    }
+  }
+  if (!cmnt.liked_users.length) {
+    setLikes(variable);
+  }
+}
+
+function hasUserLiked(cmnt: any) {
+  if (!cmnt.liked_users.length) {
+    return false;
+  }
+  for (let cUser of cmnt.liked_users || []) {
+    if (cUser.user_id == user.value.uid) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 }
 </script>
 <template>
@@ -73,11 +109,12 @@ function setLikes(like: any) {
             <fa-icon icon="reply" />
             <span class="replyCount"></span>
           </span>
-          <span
-            class="likes comment-options-icon"
-            @click="setLikes(comment.likes)"
-          >
-            <fa-icon :icon="['regular', 'thumbs-up']" class="likeIcon" />
+          <span class="likes comment-options-icon" @click="setLikes(comment)">
+            <!-- <fa-icon :icon="['regular', 'thumbs-up']" class="likeIcon" /> -->
+            <ThumbsUp
+              class="likeIcon"
+              :class="{ active: hasUserLiked(comment) }"
+            />
             <span class="likeCount">{{ comment.likes }}</span>
           </span>
           <fa-icon icon="ellipsis-vertical" class="comment-options-icon" />
@@ -123,7 +160,13 @@ function setLikes(like: any) {
         align-items: center;
         gap: 5px;
       }
-
+      .likeIcon {
+        width: 1.3rem;
+        height: 1rem;
+      }
+      .active {
+        fill: var(--color-text);
+      }
       .comment-options-icon {
         padding: 0.3rem;
         &:hover {

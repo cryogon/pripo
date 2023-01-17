@@ -9,10 +9,17 @@ import { GET_USER } from "@/graphql";
 const isCompact = ref(false);
 const { y } = useWindowScroll();
 const currentTab = ref<"posts" | "favorites">("posts");
-const uid = router.currentRoute.value.params?.id;
+const uid = router.currentRoute.value.params.id;
 const variables = ref({ id: uid });
-const { result: user } = useQuery(GET_USER, variables);
-
+const { result: user, onResult } = useQuery(GET_USER, variables);
+const userFound = ref(false);
+onResult((r) => {
+  if (r.data.users.length == 0) {
+    router.push("/404");
+  } else {
+    userFound.value = true;
+  }
+});
 watch(y, () => {
   if (y.value > 5) {
     isCompact.value = true;
@@ -30,7 +37,7 @@ function changeTab(tab: "posts" | "favorites") {
 </script>
 
 <template>
-  <main v-if="user">
+  <main v-if="user && userFound">
     <div class="user-display-container" :class="{ compact: isCompact }">
       <img :src="user.users[0].profile_picture" alt="user" class="userPfp" />
       <span class="fullname">{{ user.users[0].name }}</span>
@@ -59,10 +66,11 @@ function changeTab(tab: "posts" | "favorites") {
       <div class="postsContainer" v-if="currentTab === 'posts'">
         <div
           class="post"
-          v-for="blog in user.users[0].blogs"
+          v-for="(blog, index) in user.users[0].blogs"
           :key="blog.id"
           @click="navigateTo(`/blogs/${blog.id}`)"
         >
+          <span class="blogItemIndex"> {{ index + 1 }}. </span>
           <span class="blogTitle">
             {{ blog.title }}
           </span>
@@ -71,7 +79,19 @@ function changeTab(tab: "posts" | "favorites") {
       <div
         class="favoritePostsContainer"
         v-else-if="currentTab === 'favorites'"
-      ></div>
+      >
+        <div
+          class="post"
+          v-for="(blog, index) in user.users[0].liked_blogs"
+          :key="blog.id"
+          @click="navigateTo(`/blogs/${blog.blog.id}`)"
+        >
+          <span class="blogItemIndex"> {{ index + 1 }}. </span>
+          <span class="blogTitle">
+            {{ blog.blog[0].title }}
+          </span>
+        </div>
+      </div>
     </div>
   </main>
 </template>
@@ -86,10 +106,14 @@ main {
   .user-display-container {
     display: grid;
     position: relative;
+    align-self: flex-start;
+    margin-inline-start: 49%;
+    translate: -50% 0;
     gap: 10px;
     margin-bottom: 50rem;
 
     transition: margin 0.5s;
+
     .userPfp {
       width: 20rem;
       aspect-ratio: 1 / 1;
@@ -108,6 +132,7 @@ main {
       margin-inline-start: 9vw;
       margin-block: 5rem 3rem;
       align-self: flex-start;
+      translate: 0;
       animation: moveleft 0.4s ease-out;
       @keyframes moveleft {
       }
@@ -166,17 +191,25 @@ main {
     margin-block-start: 2rem;
     width: 90%;
     min-height: 30rem;
-
-    .postsContainer {
+    .postsContainer,
+    .favoritePostsContainer {
+      background-color: var(--card-background);
+      padding: 0.5rem;
       .post {
         padding: 0.4rem;
         min-height: 3rem;
-        background-color: var(--card-background);
         margin-block-end: 1rem;
+        &:hover {
+          background-color: var(--color-background);
+        }
         .blogTitle {
           font-size: 20px;
           letter-spacing: 0.3px;
           cursor: pointer;
+        }
+        .blogItemIndex {
+          font-size: 22px;
+          padding-inline: 1rem;
         }
       }
     }

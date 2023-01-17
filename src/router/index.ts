@@ -7,13 +7,6 @@ const router = createRouter({
       path: "/",
       name: "home",
       component: HomeView,
-      children: [
-        {
-          path: "*",
-          name: "default",
-          component: () => import("@/views/NotFound.vue"),
-        },
-      ],
     },
     {
       path: "/contact",
@@ -31,9 +24,14 @@ const router = createRouter({
       component: () => import("@/views/PostPage.vue"),
     },
     {
-      path: "/user/:id",
-      name: "user",
+      path: "/users/:id",
+      name: "users",
       component: () => import("@/views/ProfilePage.vue"),
+    },
+    {
+      path: "/404",
+      name: "notfound",
+      component: () => import("@/views/NotFound.vue"),
     },
   ],
 });

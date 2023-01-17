@@ -13,7 +13,6 @@ const blogTags = ref();
 
 const { user } = useAuth0();
 
-console.log(user);
 function pushPostToDB() {
   const variables = {
     title: postTitle.value,
@@ -34,6 +33,7 @@ function pushPostToDB() {
   }
 }
 </script>
+<!-- Need A Redesign -->
 <template>
   <div class="post">
     <input
@@ -80,7 +80,7 @@ function pushPostToDB() {
       />
     </div>
     <div class="isPostPublic">
-      <label for="isPostPublic">Is Public: </label>
+      <label for="isPostPublic">Public: </label>
       <input
         type="checkbox"
         id="isPostPublic"
@@ -135,16 +135,15 @@ function pushPostToDB() {
     }
   }
   .contentOptions {
-    width: 3rem;
-    height: 85%;
+    width: 3.3rem;
+    height: 87%;
     display: flex;
     position: absolute;
     flex-direction: column;
     align-items: center;
     right: -1rem;
     border-inline-start: 1px solid var(--link-hover-background);
-    .icon,
-    .postButton {
+    .icon {
       cursor: pointer;
       padding: 0.7rem 1rem;
       margin-right: 0.6rem;
@@ -157,7 +156,7 @@ function pushPostToDB() {
       padding: 0.6rem;
       color: black;
       background-color: aquamarine;
-      border-radius: 3rem;
+      border-radius: 50%;
       margin-top: auto;
       .postIcon {
         scale: 1.4;
@@ -172,8 +171,14 @@ function pushPostToDB() {
   .isPostPublic {
     display: flex;
     gap: 10px;
-    padding-top: 0.5rem;
+    // padding-top: 0.5rem;
     height: 2rem;
+    font-family: monospace;
+    font-size: 16px;
+    align-items: center;
+    input {
+      accent-color: aquamarine;
+    }
   }
 }
 </style>

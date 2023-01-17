@@ -18,7 +18,16 @@ export class CommentBuilder {
     walk(this.root);
   }
 
-  add({ id, content, posted_on, blog_id, likes, parent_id, user }: Comment) {
+  add({
+    id,
+    content,
+    posted_on,
+    blog_id,
+    likes,
+    parent_id,
+    liked_users,
+    user,
+  }: Comment) {
     const newNode = {
       id,
       content,
@@ -27,6 +36,7 @@ export class CommentBuilder {
       likes,
       user,
       blog_id,
+      liked_users,
       children: [],
     };
 
@@ -57,5 +67,8 @@ interface Comment {
     profile_picture: string;
     username: string;
   };
+  liked_users: {
+    user_id: number;
+  }[];
   children?: Comment[];
 }

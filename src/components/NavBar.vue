@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import AppIcon from "./AppIcon.vue";
+import AppIcon from "./Icons/AppIcon.vue";
 import router from "@/router";
 import { RouterLink } from "vue-router";
 import { ref, watch } from "vue";
@@ -48,6 +48,7 @@ function toggleDropDown() {
 }
 function logout() {
   signout({ returnTo: window.location.origin });
+  localStorage.removeItem("token");
 }
 
 if (isAuthenticated) {
@@ -101,7 +102,7 @@ if (isAuthenticated) {
           <div :class="{ visible: isDropDownVisible }" class="dropDownMenu">
             <router-link
               class="hoverItem"
-              :to="`/user/${user.uid}`"
+              :to="`/users/${user.uid}`"
               role="button"
               >Profile</router-link
             >

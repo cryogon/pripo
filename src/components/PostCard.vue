@@ -42,7 +42,7 @@ function navigateTo(url: string) {
         :src="user?.profile_picture"
         alt="userProfile"
         class="user-profile-picture"
-        @click="navigateTo(`/user/${user?.id}`)"
+        @click="navigateTo(`/users/${user?.id}`)"
         style="cursor: pointer"
         v-if="isPublic"
       />
@@ -101,6 +101,15 @@ function navigateTo(url: string) {
 .tag {
   cursor: pointer;
   color: var(--link-color);
+  position: relative;
+}
+.tag:hover {
+  background-color: var(--link-hover-background);
+}
+.tag:not(:last-child):after {
+  content: ", ";
+  position: absolute;
+  right: 0;
 }
 .post-date {
   font-weight: normal;

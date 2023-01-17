@@ -9,7 +9,6 @@ export const INSERT_BLOG = gql`
     $username: String!
     $likes: Int!
     $shares: Int
-    $likedUser: json!
   ) {
     insert_blogs(
       objects: [
@@ -21,7 +20,6 @@ export const INSERT_BLOG = gql`
           username: $username
           likes: $likes
           shares: $shares
-          liked_users: $likedUser
         }
       ]
     ) {
@@ -72,6 +70,9 @@ export const GET_BLOG = gql`
       is_public
       likes
       tags
+      favourites {
+        user_id
+      }
       user {
         id
         profile_picture
@@ -143,6 +144,9 @@ export const GET_COMMENTS = gql`
         profile_picture
         username
       }
+      liked_users {
+        user_id
+      }
     }
   }
 `;
@@ -154,12 +158,69 @@ export const GET_USER = gql`
       name
       username
       profile_picture
+      liked_blogs {
+        blog {
+          title
+        }
+      }
       blogs {
         id
         title
         content
       }
       created_at
+    }
+  }
+`;
+
+export const SET_LIKE = gql`
+  mutation setLike($blogId: Int!, $userId: Int!) {
+    insert_blog_likes(objects: { blog_id: $blogId, user_id: $userId }) {
+      affected_rows
+    }
+    update_blogs(_inc: { likes: 1 }, where: { id: { _eq: $blogId } }) {
+      affected_rows
+    }
+  }
+`;
+
+export const REMOVE_LIKE = gql`
+  mutation removeLike($blogId: Int!, $userId: Int!) {
+    delete_blog_likes(
+      where: { _and: { blog_id: { _eq: $blogId }, user_id: { _eq: $userId } } }
+    ) {
+      affected_rows
+    }
+    update_blogs(_inc: { likes: -1 }, where: { id: { _eq: $blogId } }) {
+      affected_rows
+    }
+  }
+`;
+
+export const SET_COMMENT_LIKE = gql`
+  mutation commentLikes($commentId: bigint!, $userId: Int!) {
+    insert_comment_likes(
+      objects: { comment_id: $commentId, user_id: $userId }
+    ) {
+      affected_rows
+    }
+    update_comments(_inc: { likes: 1 }, where: { id: { _eq: $commentId } }) {
+      affected_rows
+    }
+  }
+`;
+
+export const REMOVE_COMMENT_LIKE = gql`
+  mutation commentLikes($commentId: bigint!, $userId: Int!) {
+    delete_comment_likes(
+      where: {
+        _and: { comment_id: { _eq: $commentId }, user_id: { _eq: $userId } }
+      }
+    ) {
+      affected_rows
+    }
+    update_comments(_inc: { likes: -1 }, where: { id: { _eq: $commentId } }) {
+      affected_rows
     }
   }
 `;
