@@ -82,13 +82,13 @@ function changeTab(tab: "posts" | "favorites") {
       >
         <div
           class="post"
-          v-for="(blog, index) in user.users[0].liked_blogs.blog"
+          v-for="(blog, index) in user.users[0].liked_blogs"
           :key="blog.id"
-          @click="navigateTo(`/blogs/${blog.id}`)"
+          @click="navigateTo(`/blogs/${blog.blog.id}`)"
         >
           <span class="blogItemIndex"> {{ index + 1 }}. </span>
           <span class="blogTitle">
-            {{ blog.title }}
+            {{ blog.blog[0].title }}
           </span>
         </div>
       </div>
@@ -113,6 +113,7 @@ main {
     margin-bottom: 50rem;
 
     transition: margin 0.5s;
+
     .userPfp {
       width: 20rem;
       aspect-ratio: 1 / 1;

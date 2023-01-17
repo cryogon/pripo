@@ -1,3 +1,5 @@
+//Future Comment Section Which supports dynamic comment traversing
+
 import CommentInputBox from "./CommentInputBox.vue";
 import CommentCard from "./CommentCard.vue";
 import { CommentBuilder } from "@/composables/CommentBuilder";

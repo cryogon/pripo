@@ -26,7 +26,7 @@ function setRows(e: any): void {
 }
 </script>
 <template>
-  <div class="commentInputSection" v-if="user">
+  <div class="commentInputSection" v-if="user?.nickname">
     <img
       :src="user.picture"
       alt="user"

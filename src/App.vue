@@ -7,3 +7,9 @@ import NavBar from "./components/NavBar.vue";
   <NavBar />
   <RouterView />
 </template>
+
+<style>
+::selection {
+  background-color: rgba(91, 198, 77, 0.579);
+}
+</style>

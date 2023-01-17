@@ -1,13 +1,16 @@
 <script setup lang="ts">
 import ReplyInputBox from "./ReplyInputBox.vue";
-
+import ThumbsUp from "./Icons/ThumbsUp.vue";
 import { ref } from "vue";
 import router from "@/router";
-
+import { useAuth0 } from "@auth0/auth0-vue";
+import { useMutation } from "@vue/apollo-composable";
+import { SET_COMMENT_LIKE, REMOVE_COMMENT_LIKE } from "@/graphql";
 defineProps<{
   reply: any;
 }>();
 
+const { user } = useAuth0();
 function showFormatedDate(date: Date | string | number): string {
   return Intl.DateTimeFormat("en", {
     day: "2-digit",
@@ -31,13 +34,38 @@ function redirctToProfilePage(id: number) {
 /**
  * @method setLikes
  * Set Likes on the comment
- * @param id takes id of the comment to uniquely identify it
+ * @param cmnt takes id of the comment to uniquely identify it
  */
 
-function setLikes(like: any) {
-  /*This Login is Broken And is needed to be fixed 
-  since the flag always initilize with false and even if I take it outside it won't work properly for multiple comments */
-  like.count++;
+function setLikes(cmnt: any) {
+  const variable = {
+    commentId: cmnt.id,
+    userId: user.value.uid,
+  };
+  const { mutate: setLikes } = useMutation(SET_COMMENT_LIKE);
+  const { mutate: removeLikes } = useMutation(REMOVE_COMMENT_LIKE);
+  for (let cUser of cmnt.liked_users || []) {
+    if (cUser.user_id == user.value.uid) {
+      setLikes(variable);
+    } else {
+      removeLikes(variable);
+    }
+  }
+  if (!cmnt.liked_users.length) {
+    removeLikes(variable);
+  }
+}
+function hasUserLiked(cmnt: any) {
+  if (!cmnt.liked_users.length) {
+    return false;
+  }
+  for (let cUser of cmnt.liked_users || []) {
+    if (cUser.user_id == user.value.uid) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 }
 </script>
 
@@ -71,7 +99,10 @@ function setLikes(like: any) {
             <span class="replyCount"></span>
           </span>
           <span class="likes reply-options-icon" @click="setLikes(reply.likes)">
-            <fa-icon :icon="['regular', 'thumbs-up']" class="likeIcon" />
+            <ThumbsUp
+              class="likeIcon"
+              :class="{ active: hasUserLiked(reply) }"
+            />
             <span class="likeCount">{{ reply.likes }}</span>
           </span>
           <fa-icon icon="ellipsis-vertical" class="reply-options-icon" />
@@ -117,7 +148,13 @@ function setLikes(like: any) {
         align-items: center;
         gap: 5px;
       }
-
+      .likeIcon {
+        width: 1.3rem;
+        height: 1rem;
+      }
+      .active {
+        fill: var(--color-text);
+      }
       .reply-options-icon {
         padding: 0.3rem;
         &:hover {
