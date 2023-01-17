@@ -10,6 +10,6 @@ import NavBar from "./components/NavBar.vue";
 
 <style>
 ::selection {
-  background-color: rgba(91, 198, 77, 0.579);
+  background-color: rgba(91, 198, 77, 0.399);
 }
 </style>

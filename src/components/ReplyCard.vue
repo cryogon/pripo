@@ -52,7 +52,7 @@ function setLikes(cmnt: any) {
     }
   }
   if (!cmnt.liked_users.length) {
-    removeLikes(variable);
+    setLikes(variable);
   }
 }
 function hasUserLiked(cmnt: any) {

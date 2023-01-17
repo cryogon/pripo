@@ -8,7 +8,7 @@ import router from "@/router";
 import { useMutation } from "@vue/apollo-composable";
 import { SET_COMMENT_LIKE, REMOVE_COMMENT_LIKE } from "@/graphql";
 import { useAuth0 } from "@auth0/auth0-vue";
-const props = defineProps<{
+defineProps<{
   comment: any;
 }>();
 
@@ -35,7 +35,6 @@ function redirctToProfilePage(id: number) {
   router.push(`/users/${id}`);
 }
 
-console.log(props.comment);
 /**
  * @method setLikes
  * Set Likes on the comment
@@ -52,6 +51,7 @@ function setLikes(cmnt: any) {
   for (let cUser of cmnt.liked_users || []) {
     if (cUser.user_id == user.value.uid) {
       setLikes(variable);
+      // console.log("Set Like");
       return;
     } else {
       removeLikes(variable);
@@ -59,7 +59,7 @@ function setLikes(cmnt: any) {
     }
   }
   if (!cmnt.liked_users.length) {
-    removeLikes(variable);
+    setLikes(variable);
   }
 }
 
