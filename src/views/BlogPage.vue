@@ -27,7 +27,7 @@ let blog = ref<any>();
 watch(result, () => {
   blog.value = result.value.blogs[0];
   if (
-    blog.value.favourites.filter((u: any) => u.user_id === user.value.uid)
+    blog.value.favourites.filter((u: any) => u.user_id === user.value?.uid)
       .length != 0
   ) {
     isFav.value = true;
