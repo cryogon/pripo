@@ -98,7 +98,7 @@ function hasUserLiked(cmnt: any) {
             showFormatedDate(comment.posted_on)
           }}</span>
         </span>
-
+        <a class="anchor" :id="`c${comment.id}`"></a>
         <span class="content">
           {{ comment.content }}
         </span>
@@ -190,6 +190,12 @@ function hasUserLiked(cmnt: any) {
     height: 53px;
     border-radius: 50%;
     background-color: grey;
+  }
+  a.anchor {
+    display: block;
+    position: relative;
+    top: -150px;
+    visibility: hidden;
   }
 }
 </style>

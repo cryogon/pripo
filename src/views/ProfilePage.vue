@@ -52,7 +52,7 @@ function changeTab(tab: "posts" | "favorites") {
         :class="{ active: currentTab === 'posts' }"
         @click="changeTab('posts')"
       >
-        Blogs
+        Posts
       </li>
       <li
         class="option"
@@ -68,7 +68,7 @@ function changeTab(tab: "posts" | "favorites") {
           class="post"
           v-for="(blog, index) in user.users[0].blogs"
           :key="blog.id"
-          @click="navigateTo(`/blogs/${blog.id}`)"
+          @click="navigateTo(`/posts/${blog.id}`)"
         >
           <span class="blogItemIndex"> {{ index + 1 }}. </span>
           <span class="blogTitle">
@@ -84,7 +84,7 @@ function changeTab(tab: "posts" | "favorites") {
           class="post"
           v-for="(blog, index) in user.users[0].liked_blogs"
           :key="blog.id"
-          @click="navigateTo(`/blogs/${blog.blog[0].id}`)"
+          @click="navigateTo(`/posts/${blog.blog[0].id}`)"
         >
           <span class="blogItemIndex"> {{ index + 1 }}. </span>
           <span class="blogTitle">

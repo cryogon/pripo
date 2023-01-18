@@ -89,7 +89,7 @@ if (isAuthenticated) {
           <button
             class="postButton"
             type="submit"
-            @click="router.push('/post')"
+            @click="router.push('/publish')"
           >
             Post
           </button>

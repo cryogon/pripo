@@ -14,13 +14,13 @@ const router = createRouter({
       component: () => import("../views/ContactPage.vue"),
     },
     {
-      path: "/blogs/:id",
-      name: "blogs",
+      path: "/posts/:id",
+      name: "posts",
       component: () => import("@/views/BlogPage.vue"),
     },
     {
-      path: "/post",
-      name: "post",
+      path: "/publish",
+      name: "publish",
       component: () => import("@/views/PostPage.vue"),
     },
     {
