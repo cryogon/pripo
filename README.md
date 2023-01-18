@@ -13,8 +13,8 @@ A platform where you can post anything you want anonymously
 - User can now login
 - Profile Page is working
 - Navbar is now working properly
-- Comment/Reply can now published privately
-- Removed Extra Component who was doing same thing as other component
+- Comment/Reply can now be published privately
+- Removed Extra Component which was doing the same thing as another component.
 - Like is now working properly
 - Bug Fixes
 
