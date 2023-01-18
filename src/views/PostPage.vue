@@ -40,7 +40,7 @@ function pushPostToDB() {
       type="text"
       name="blogTitle"
       class="blogTitle"
-      placeholder="Blog Title"
+      placeholder="Post Title"
       autocomplete="off"
       v-model="postTitle"
     />

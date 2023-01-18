@@ -60,7 +60,7 @@ function navigateTo(url: string) {
       </span>
     </h4>
     <div v-if="title && content">
-      <p class="content" @click="navigateTo(`/blogs/${id}`)">
+      <p class="content" @click="navigateTo(`/posts/${id}`)">
         <span class="title">{{ title }}</span>
         {{ content }}
       </p>
