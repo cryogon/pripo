@@ -9,13 +9,14 @@ import { watch, ref } from "vue";
 const props = defineProps<{
   blogId: number;
 }>();
-const { result: comments } = useQuery(GET_COMMENTS, { blogId: props.blogId });
+const { result: comments } = useQuery(GET_COMMENTS, {
+  blogId: props.blogId,
+});
 const builder = new CommentBuilder();
 let currComments = ref();
 watch(comments, () => {
-  // console.log(comments.value.comments);
   builder.addMultiple(comments.value.comments);
-  currComments.value = builder.root?.children;
+  currComments.value ||= builder.root?.children;
 });
 </script>
 
