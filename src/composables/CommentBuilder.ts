@@ -26,6 +26,7 @@ export class CommentBuilder {
     likes,
     parent_id,
     liked_users,
+    is_public,
     user,
   }: Comment) {
     const newNode = {
@@ -37,6 +38,7 @@ export class CommentBuilder {
       user,
       blog_id,
       liked_users,
+      is_public,
       children: [],
     };
 
@@ -62,6 +64,7 @@ interface Comment {
   posted_on: string;
   blog_id: number;
   likes: number;
+  is_public: boolean;
   user: {
     id: number;
     profile_picture: string;

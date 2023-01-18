@@ -7,34 +7,34 @@
   --color-background-light: rgb(237, 237, 237);
   --nav-background-dark: #080808;
   --nav-background-light: #fff;
-  --button-hover-color-light:#0002;
-  --button-hover-color-dark:#fff1;
-  --link-hover-background-light:#0001;
-  --link-hover-background-dark:rgba(211, 211, 211, 0.155);
-  --card-background:#d4d4d4;
-  --dropdown-background-light:#f1f1f1;
-  --dropdown-background-dark:#202020;
+  --button-hover-color-light: #0002;
+  --button-hover-color-dark: #fff1;
+  --link-hover-background-light: #0001;
+  --link-hover-background-dark: rgba(211, 211, 211, 0.155);
+  --card-background: #d4d4d4;
+  --dropdown-background-light: #f1f1f1;
+  --dropdown-background-dark: #202020;
 }
 
-:root{
+:root {
   --color-text: var(--color-light);
   --color-background: var(--color-background-light);
   --nav-background: var(--nav-background-light);
   --button-hover-color: var(--button-hover-color-light);
-  --link-hover-background:var(--link-hover-background-light);
-  --link-color:cadetblue;
+  --link-hover-background: var(--link-hover-background-light);
+  --link-color: #5f9ea0;
   --dropdown-background: var(--dropdown-background-light);
+  --accent-color: var(--link-color);
 }
 
-html.dark{
+html.dark {
   --color-text: var(--color-dark);
   --color-background: var(--color-background-dark);
   --nav-background: var(--nav-background-dark);
-  --button-hover-color: var(--button-hover-color-dark); 
-  --link-hover-background:var(--link-hover-background-dark);
-  --card-background:#121212;
+  --button-hover-color: var(--button-hover-color-dark);
+  --link-hover-background: var(--link-hover-background-dark);
+  --card-background: #121212;
   --dropdown-background: var(--dropdown-background-dark);
- 
 }
 
 /* @media screen and (prefers-color-scheme: dark) {
@@ -60,7 +60,6 @@ body {
   color: var(--color-text);
   background-color: var(--color-background);
   transition: background 200ms;
-  
 }
 
 a {
@@ -73,18 +72,20 @@ a:hover {
   background: var(--link-hover-background);
 }
 
-button{
-  cursor:pointer;
+button {
+  cursor: pointer;
 }
-
-.link{
-  color:var(--link-color);
+input{
+  accent-color: var(--accent-color);
+}
+.link {
+  color: var(--link-color);
   cursor: pointer;
   margin-inline-end: 1rem;
 }
-.link:hover{
+.link:hover {
   background-color: var(--link-hover-background);
 }
-.userIcon{
+.userIcon {
   box-shadow: 0 0 8px grey;
 }

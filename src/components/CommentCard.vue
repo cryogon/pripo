@@ -83,13 +83,15 @@ function hasUserLiked(cmnt: any) {
       alt="user"
       class="userIcon"
       @click="redirctToProfilePage(comment.user.id)"
+      v-if="comment.is_public"
     />
+    <div class="anonymousUser" v-else></div>
     <div class="comment-container">
       <div class="comment-main">
         <span class="comment-header">
           <span class="currentUser">
             <span class="user-name">
-              {{ comment.user.username }}
+              {{ comment.is_public ? comment.user.username : "Anonymous" }}
             </span>
           </span>
           <span class="time-commented">{{
@@ -181,6 +183,13 @@ function hasUserLiked(cmnt: any) {
       opacity: 0.6;
       margin-block-end: 0.4rem;
     }
+  }
+  .anonymousUser {
+    aspect-ratio: 1/1;
+    width: 53px;
+    height: 53px;
+    border-radius: 50%;
+    background-color: grey;
   }
 }
 </style>
