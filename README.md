@@ -2,8 +2,8 @@
 <img width="500" src="public/icon.png" alt="logo">
 </p>
 
-# pripo-vue
-
+# pripo
+A platform where you can post anything you want anonymously
 ## Changelog
 - Added Comment Options
 - Like System are somewhat working

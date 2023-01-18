@@ -100,9 +100,19 @@ export const GET_ALL_USER = gql`
 `;
 
 export const POST_COMMENT = gql`
-  mutation submitComment($blogId: Int, $content: String, $name: String) {
+  mutation submitComment(
+    $blogId: Int
+    $content: String
+    $name: String
+    $isPublic: Boolean!
+  ) {
     insert_comments(
-      objects: { blog_id: $blogId, content: $content, username: $name }
+      objects: {
+        blog_id: $blogId
+        content: $content
+        username: $name
+        is_public: $isPublic
+      }
     ) {
       affected_rows
     }
@@ -115,6 +125,7 @@ export const POST_REPLY = gql`
     $content: String!
     $name: String!
     $parent_id: Int!
+    $isPublic: Boolean!
   ) {
     insert_comments(
       objects: {
@@ -122,6 +133,7 @@ export const POST_REPLY = gql`
         content: $content
         username: $name
         parent_id: $parent_id
+        is_public: $isPublic
       }
     ) {
       affected_rows
@@ -147,6 +159,7 @@ export const GET_COMMENTS = gql`
       liked_users {
         user_id
       }
+      is_public
     }
   }
 `;
@@ -160,6 +173,7 @@ export const GET_USER = gql`
       profile_picture
       liked_blogs {
         blog {
+          id
           title
         }
       }

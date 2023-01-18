@@ -9,8 +9,8 @@ const commentInp = ref();
 const { user } = useAuth0();
 const blogId: number = inject("blog_id") as number;
 function postComment(content: string, blogId: number): void {
-  const { mutate } = useMutation(POST_COMMENT);
-  mutate({
+  const { mutate: postComment } = useMutation(POST_COMMENT);
+  postComment({
     blogId: blogId,
     content,
     name: user.value.preferred_username || user.value.nickname,
