@@ -7,15 +7,19 @@ import { POST_COMMENT } from "@/graphql";
 
 const commentInp = ref();
 const { user } = useAuth0();
+const buttonActive = ref(false);
 const blogId: number = inject("blog_id") as number;
+const isPublic = ref(false);
 function postComment(content: string, blogId: number): void {
   const { mutate: postComment } = useMutation(POST_COMMENT);
   postComment({
     blogId: blogId,
     content,
     name: user.value.preferred_username || user.value.nickname,
+    isPublic: isPublic.value,
   });
   commentInp.value.value = "";
+  buttonActive.value = false;
 }
 
 function redirctToProfilePage(id: number) {
@@ -35,22 +39,36 @@ function setRows(e: any): void {
       v-if="user"
     />
     <div class="anonymousUser" v-else></div>
-    <textarea
-      placeholder="Type you comment"
-      class="comment_input"
-      ref="commentInp"
-      @input="setRows"
-      :rows="2"
-      cols="100"
-      required
-    ></textarea>
-    <button
-      type="submit"
-      class="postButton"
-      @click="postComment(commentInp.value, blogId)"
-    >
-      Post
-    </button>
+    <div class="inputContainer">
+      <textarea
+        placeholder="Type you comment"
+        class="comment_input"
+        ref="commentInp"
+        @input="setRows"
+        :rows="2"
+        cols="100"
+        @focusin="buttonActive = true"
+        required
+      ></textarea>
+      <div class="btnTgle">
+        <button
+          type="submit"
+          class="postButton"
+          @click="postComment(commentInp.value, blogId)"
+        >
+          Post
+        </button>
+        <span class="anonymousToggle">
+          <input
+            type="checkbox"
+            name="anonymous"
+            id="anonymous"
+            v-model="isPublic"
+          />
+          <label for="anonymous">Post Publicly</label>
+        </span>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -61,13 +79,50 @@ function setRows(e: any): void {
   gap: 10px;
   margin-block: 1rem 2rem;
 }
-.comment_input {
+.inputContainer {
+  position: relative;
   background-color: var(--card-background);
-  outline: none;
-  border: none;
-  color: var(--text-color);
-  padding: 0.6rem 1rem;
-  resize: none;
+  display: flex;
+  flex-direction: column;
+  .comment_input {
+    background-color: var(--card-background);
+    outline: none;
+    border: none;
+    color: var(--text-color);
+    padding: 0.6rem 1rem;
+    min-height: 3rem;
+    resize: vertical;
+    &:focus ~ .btnTgle {
+      display: flex;
+    }
+  }
+  .btnTgle {
+    display: none;
+    gap: 3rem;
+    accent-color: var(--accent-color);
+    &:hover {
+      display: flex;
+    }
+    .anonymousToggle {
+      display: flex;
+      gap: 7px;
+      margin-inline-end: 0.3rem;
+      align-items: center;
+      label {
+        opacity: 0.8;
+      }
+    }
+    .postButton {
+      margin-inline-start: 1rem;
+      border-radius: 1rem;
+      padding: 0.4rem 1rem;
+      align-self: flex-start;
+      background: var(--accent-color);
+      color: var(--text-color);
+      font-size: 18px;
+      transition: 150ms;
+    }
+  }
 }
 .userIcon {
   align-self: flex-start;
@@ -77,16 +132,7 @@ function setRows(e: any): void {
   border-radius: 50%;
   cursor: pointer;
 }
-.postButton {
-  margin-inline-start: 1rem;
-  border-radius: 1rem;
-  padding: 0.6rem 1.6rem;
-  align-self: flex-start;
-  background: transparent;
-  color: var(--text-color);
-  font-size: 20px;
-  transition: 150ms;
-}
+
 .postButton:hover {
   border-color: var(--text-color);
   background: var(--button-hover-color);

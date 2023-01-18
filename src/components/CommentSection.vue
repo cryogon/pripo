@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import CommentInputBox from "./CommentInputBox.vue";
 import CommentCard from "./CommentCard.vue";
-import ReplyCard from "./ReplyCard.vue";
 import { CommentBuilder } from "@/composables/CommentBuilder";
 import { useQuery } from "@vue/apollo-composable";
 import { GET_COMMENTS } from "@/graphql";
@@ -34,32 +33,32 @@ watch(comments, () => {
         <div class="reply">
           <div class="reply--main">
             <div v-for="reply in comment.children" :key="(reply.id as number)">
-              <ReplyCard :reply="reply" />
+              <CommentCard :comment="reply" class="r" />
               <div
                 class="reply--child"
                 v-for="reply2 in reply.children"
                 :key="(reply2.id as number)"
                 :reply="reply2"
               >
-                <ReplyCard :reply="reply2" />
+                <CommentCard :comment="reply2" class="r" />
                 <div
                   class="reply--child"
                   v-for="reply3 in reply2.children"
                   :key="(reply3.id as number)"
                 >
-                  <ReplyCard :reply="reply3" />
+                  <CommentCard :comment="reply3" class="r" />
                   <div
                     class="reply--child"
                     v-for="reply4 in reply3.children"
                     :key="(reply4.id as number)"
                   >
-                    <ReplyCard :reply="reply4" />
+                    <CommentCard :comment="reply4" class="r" />
                     <div
                       class="reply--child"
                       v-for="reply5 in reply4.children"
                       :key="(reply5.id as number)"
                     >
-                      <ReplyCard :reply="reply5" />
+                      <CommentCard :comment="reply5" class="r" />
                     </div>
                   </div>
                 </div>
@@ -92,7 +91,10 @@ watch(comments, () => {
     margin-block: 1rem;
     gap: 10px;
   }
-
+  .r {
+    margin-inline-start: 2em;
+    margin-block: 0.5rem;
+  }
   .reply--child {
     margin-inline-start: 2vw;
   }

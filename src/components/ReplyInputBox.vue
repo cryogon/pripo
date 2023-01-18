@@ -9,6 +9,7 @@ defineProps<{
 }>();
 const { user } = useAuth0();
 const content = ref("");
+const shouldPostPublicaly = ref(false);
 
 /**
  * @method submitReply
@@ -22,6 +23,7 @@ async function submitReply(cmnt: any) {
     content: content.value,
     name: user.value.preferred_username || user.value.nickname,
     parent_id: cmnt.id,
+    isPublic: shouldPostPublicaly.value,
   });
   content.value = "";
 }
@@ -45,6 +47,10 @@ function setRows(e: any): void {
     <button type="submit" class="submit-reply" @click="submitReply(comment)">
       Reply
     </button>
+    <span class="is_public">
+      <input type="checkbox" id="is_public" v-model="shouldPostPublicaly" />
+      <label for="is_public">Post Publicly</label>
+    </span>
   </div>
 </template>
 <style scoped lang="scss">
@@ -72,6 +78,15 @@ function setRows(e: any): void {
     background: #69c3ed;
     &:hover {
       background: #4d98bb;
+    }
+  }
+  .is_public {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-inline-start: 1rem;
+    label {
+      opacity: 0.7;
     }
   }
 }
