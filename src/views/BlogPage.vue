@@ -70,32 +70,41 @@ function setLike() {
 
 <template>
   <main class="container" v-if="blog">
-    <div class="author">
-      <div class="authorPfp anonymous" v-if="!blog.is_public"></div>
-      <img
-        :src="blog.user.profile_picture"
-        alt="author"
-        class="authorPfp"
-        @click="router.push(`/users/${blog.user.id}`)"
-        v-else
-      />
-      <span class="author_name"
-        >Posted by {{ blog.is_public ? blog.user.username : "Anonymous" }}</span
-      >
-      <StarIcon class="star" :class="{ staractive: isFav }" @click="setLike" />
-    </div>
-    <h1 class="title">{{ blog.title }}</h1>
-    <div class="content">
-      <p>
-        {{ JSON.parse(blog.content) }}
-      </p>
-      <div class="tags">
-        <span v-for="tag in blog.tags" :key="tag" class="link">#{{ tag }}</span>
+    <section class="blogSection">
+      <div class="author">
+        <div class="authorPfp anonymous" v-if="!blog.is_public"></div>
+        <img
+          :src="blog.user.profile_picture"
+          alt="author"
+          class="authorPfp"
+          @click="router.push(`/users/${blog.user.id}`)"
+          v-else
+        />
+        <span class="author_name"
+          >Posted by
+          {{ blog.is_public ? blog.user.username : "Anonymous" }}</span
+        >
+        <StarIcon
+          class="star"
+          :class="{ staractive: isFav }"
+          @click="setLike"
+        />
       </div>
-      <span class="date-posted"
-        >posted on {{ showFormatedDate(blog.date_posted) }}</span
-      >
-    </div>
+      <h1 class="title">{{ blog.title }}</h1>
+      <div class="content">
+        <p>
+          {{ JSON.parse(blog.content) }}
+        </p>
+        <div class="tags">
+          <span v-for="tag in blog.tags" :key="tag" class="link"
+            >#{{ tag }}</span
+          >
+        </div>
+        <span class="date-posted"
+          >posted on {{ showFormatedDate(blog.date_posted) }}</span
+        >
+      </div>
+    </section>
     <CommentSection :blog-id="blogId" />
   </main>
 

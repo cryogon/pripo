@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// import type { Comment, Likes } from "@/types";
+import type { Comment } from "@/types";
 import ThumbsUp from "@/components/Icons/ThumbsUp.vue";
 import ReplyInputBox from "./ReplyInputBox.vue";
 import { useEmitter } from "@/composables/EventEmitter";
@@ -15,6 +15,8 @@ defineProps<{
 const { user } = useAuth0();
 const emitter = useEmitter();
 const isReplyInputInactive = ref(true);
+const commentOptionToggle = ref(false);
+const commentReplyMode = ref<"reply" | "edit">("reply");
 
 function showFormatedDate(date: Date | string | number): string {
   return Intl.DateTimeFormat("en", {
@@ -24,6 +26,7 @@ function showFormatedDate(date: Date | string | number): string {
   }).format(new Date(date));
 }
 function replyToggle() {
+  commentReplyMode.value = "reply";
   isReplyInputInactive.value = !isReplyInputInactive.value;
 }
 
@@ -41,7 +44,7 @@ function redirctToProfilePage(id: number) {
  * @param cmnt takes id of the comment to uniquely identify it
  */
 
-function setLikes(cmnt: any) {
+function setLikes(cmnt: Comment) {
   const variable = {
     commentId: cmnt.id,
     userId: user.value.uid,
@@ -63,7 +66,7 @@ function setLikes(cmnt: any) {
   }
 }
 
-function hasUserLiked(cmnt: any) {
+function hasUserLiked(cmnt: Comment) {
   if (!cmnt.liked_users.length) {
     return false;
   }
@@ -74,6 +77,24 @@ function hasUserLiked(cmnt: any) {
       return false;
     }
   }
+}
+
+function toggleCommentOptions() {
+  commentOptionToggle.value = !commentOptionToggle.value;
+  setTimeout(() => {
+    document.addEventListener(
+      "click",
+      () => {
+        commentOptionToggle.value = false;
+      },
+      { once: true }
+    );
+  }, 10);
+}
+
+function editComment() {
+  commentReplyMode.value = "edit";
+  isReplyInputInactive.value = !isReplyInputInactive.value;
 }
 </script>
 <template>
@@ -119,11 +140,29 @@ function hasUserLiked(cmnt: any) {
             />
             <span class="likeCount">{{ comment.likes }}</span>
           </span>
-          <fa-icon icon="ellipsis-vertical" class="comment-options-icon" />
+          <fa-icon
+            icon="ellipsis-vertical"
+            class="comment-options-icon"
+            @click="toggleCommentOptions"
+          />
+          <ul
+            class="commentOptionsTray"
+            :class="{ active: commentOptionToggle }"
+          >
+            <li @click="editComment">Edit</li>
+          </ul>
         </div>
         <ReplyInputBox
           :comment="comment"
           :is-reply-input-inactive="isReplyInputInactive"
+          :mode="commentReplyMode"
+          v-if="commentReplyMode == 'reply'"
+        />
+        <ReplyInputBox
+          :comment="comment"
+          :is-reply-input-inactive="isReplyInputInactive"
+          :mode="commentReplyMode"
+          v-if="commentReplyMode == 'edit'"
         />
       </div>
     </div>
@@ -154,6 +193,7 @@ function hasUserLiked(cmnt: any) {
     .commentOptions {
       display: flex;
       justify-content: flex-end;
+      position: relative;
       gap: 15px;
       cursor: pointer;
       .likes,
@@ -173,6 +213,27 @@ function hasUserLiked(cmnt: any) {
         padding: 0.3rem;
         &:hover {
           background: var(--button-hover-color);
+        }
+      }
+      .commentOptionsTray {
+        position: absolute;
+        right: -6rem;
+        display: none;
+        align-items: center;
+        flex-direction: column;
+        background-color: var(--color-background);
+        box-shadow: 2px 0 4px grey;
+        min-width: 5rem;
+        min-height: auto;
+        list-style: none;
+        li {
+          padding: 0.3rem 0.7rem;
+          &:hover {
+            background-color: var(--card-background);
+          }
+        }
+        &.active {
+          display: flex;
         }
       }
     }

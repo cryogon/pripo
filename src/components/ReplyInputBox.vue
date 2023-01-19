@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { useMutation } from "@vue/apollo-composable";
-import { ref } from "vue";
-import { POST_REPLY } from "@/graphql";
+import { ref, onMounted } from "vue";
+import { POST_REPLY, EDIT_COMMENT } from "@/graphql";
 import { useAuth0 } from "@auth0/auth0-vue";
-defineProps<{
+import type { Comment } from "@/types";
+const props = defineProps<{
   isReplyInputInactive: boolean;
   comment: any;
+  mode: "reply" | "edit";
 }>();
 const { user } = useAuth0();
 const content = ref("");
@@ -15,8 +17,7 @@ const shouldPostPublicaly = ref(false);
  * @method submitReply
  * @param id uniquely identifies the current comment user clicked on
  */
-async function submitReply(cmnt: any) {
-  //Need to use Tree Ds here
+async function submitReply(cmnt: Comment) {
   const { mutate } = useMutation(POST_REPLY);
   mutate({
     blogId: cmnt.blog_id,
@@ -28,9 +29,24 @@ async function submitReply(cmnt: any) {
   content.value = "";
 }
 
+function editComment(cmnt: Comment) {
+  const { mutate } = useMutation(EDIT_COMMENT);
+  mutate({
+    commentId: cmnt.id,
+    content: content.value,
+    isPublic: shouldPostPublicaly.value,
+  });
+  content.value = "";
+}
 function setRows(e: any): void {
   e.target.rows = (e.target.value.match(/\n/gm) || []).length + 2;
 }
+onMounted(() => {
+  if (props.mode == "edit") {
+    content.value = props.comment.content;
+    shouldPostPublicaly.value = props.comment.is_public;
+  }
+});
 </script>
 
 <template>
@@ -44,8 +60,12 @@ function setRows(e: any): void {
       @input="setRows"
       v-model="content"
     ></textarea>
-    <button type="submit" class="submit-reply" @click="submitReply(comment)">
-      Reply
+    <button
+      type="submit"
+      class="submit-reply"
+      @click="mode == 'reply' ? submitReply(comment) : editComment(comment)"
+    >
+      {{ mode == "reply" ? "Reply" : "Edit" }}
     </button>
     <span class="is_public">
       <input type="checkbox" id="is_public" v-model="shouldPostPublicaly" />

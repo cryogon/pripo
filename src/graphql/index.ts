@@ -82,23 +82,6 @@ export const GET_BLOG = gql`
   }
 `;
 
-export const GET_ALL_USER = gql`
-  query getUser {
-    users {
-      id
-      name
-      username
-      profile_picture
-      blogs {
-        id
-        title
-        content
-      }
-      created_at
-    }
-  }
-`;
-
 export const POST_COMMENT = gql`
   mutation submitComment(
     $blogId: Int
@@ -234,6 +217,21 @@ export const REMOVE_COMMENT_LIKE = gql`
       affected_rows
     }
     update_comments(_inc: { likes: -1 }, where: { id: { _eq: $commentId } }) {
+      affected_rows
+    }
+  }
+`;
+
+export const EDIT_COMMENT = gql`
+  mutation editComment(
+    $commentId: bigint!
+    $content: String!
+    $isPublic: Boolean!
+  ) {
+    update_comments(
+      _set: { content: $content, is_public: $isPublic }
+      where: { id: { _eq: $commentId } }
+    ) {
       affected_rows
     }
   }

@@ -7,9 +7,9 @@ import { POST_COMMENT } from "@/graphql";
 
 const commentInp = ref();
 const { user } = useAuth0();
-const buttonActive = ref(false);
 const blogId: number = inject("blog_id") as number;
 const isPublic = ref(false);
+const focusedOnCommentBox = ref(false);
 function postComment(content: string, blogId: number): void {
   const { mutate: postComment } = useMutation(POST_COMMENT);
   postComment({
@@ -18,16 +18,31 @@ function postComment(content: string, blogId: number): void {
     name: user.value.preferred_username || user.value.nickname,
     isPublic: isPublic.value,
   });
-  commentInp.value.value = "";
-  buttonActive.value = false;
+  commentInp.value = "";
+  focusedOnCommentBox.value = false;
 }
 
 function redirctToProfilePage(id: number) {
   router.push(`/users/${id}`);
 }
 function setRows(e: any): void {
-  e.target.rows = (e.target.value.match(/\n/gm) || []).length + 2;
+  if ((e.target.value.match(/\n/gm) || []).length == 0) {
+    e.target.rows = 2;
+    return;
+  }
+  e.target.rows = (e.target.value.match(/\n/gm) || []).length + 4;
 }
+
+//Comment Input Toggle
+document.addEventListener("click", (e: any) => {
+  if (e.target) {
+    if (e.target.className.includes("inputActiveArea")) {
+      focusedOnCommentBox.value = true;
+    } else {
+      focusedOnCommentBox.value = false;
+    }
+  }
+});
 </script>
 <template>
   <div class="commentInputSection" v-if="user?.nickname">
@@ -42,19 +57,22 @@ function setRows(e: any): void {
     <div class="inputContainer">
       <textarea
         placeholder="Type you comment"
-        class="comment_input"
-        ref="commentInp"
+        class="comment_input inputActiveArea"
+        :class="{ active: focusedOnCommentBox }"
+        v-model="commentInp"
         @input="setRows"
         :rows="2"
         cols="100"
-        @focusin="buttonActive = true"
         required
       ></textarea>
-      <div class="btnTgle">
+      <div
+        class="btnTgle inputActiveArea"
+        :class="{ active: focusedOnCommentBox }"
+      >
         <button
           type="submit"
-          class="postButton"
-          @click="postComment(commentInp.value, blogId)"
+          class="postButton inputActiveArea"
+          @click="postComment(commentInp, blogId)"
         >
           Post
         </button>
@@ -63,9 +81,12 @@ function setRows(e: any): void {
             type="checkbox"
             name="anonymous"
             id="anonymous"
+            class="privateToggle inputActiveArea"
             v-model="isPublic"
           />
-          <label for="anonymous">Post Publicly</label>
+          <label for="anonymous" class="privateToggleText inputActiveArea"
+            >Post Publicly</label
+          >
         </span>
       </div>
     </div>
@@ -91,16 +112,22 @@ function setRows(e: any): void {
     color: var(--text-color);
     padding: 0.6rem 1rem;
     min-height: 3rem;
-    resize: vertical;
-    &:focus ~ .btnTgle {
-      display: flex;
+    resize: none;
+
+    &.active {
+      // resize: vertical;
+      min-height: 5rem;
     }
   }
   .btnTgle {
     display: none;
     gap: 3rem;
     accent-color: var(--accent-color);
+    margin-block-end: 0.6rem;
     &:hover {
+      display: flex;
+    }
+    &.active {
       display: flex;
     }
     .anonymousToggle {
@@ -115,7 +142,7 @@ function setRows(e: any): void {
     .postButton {
       margin-inline-start: 1rem;
       border-radius: 1rem;
-      padding: 0.4rem 1rem;
+      padding: 0.35rem 1.2rem;
       align-self: flex-start;
       background: var(--accent-color);
       color: var(--text-color);
