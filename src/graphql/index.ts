@@ -82,23 +82,6 @@ export const GET_BLOG = gql`
   }
 `;
 
-export const GET_ALL_USER = gql`
-  query getUser {
-    users {
-      id
-      name
-      username
-      profile_picture
-      blogs {
-        id
-        title
-        content
-      }
-      created_at
-    }
-  }
-`;
-
 export const POST_COMMENT = gql`
   mutation submitComment(
     $blogId: Int
