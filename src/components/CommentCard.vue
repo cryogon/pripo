@@ -75,6 +75,19 @@ function hasUserLiked(cmnt: any) {
     }
   }
 }
+const commentOptionToggle = ref(false);
+function toggleCommentOptions() {
+  commentOptionToggle.value = !commentOptionToggle.value;
+  setTimeout(() => {
+    document.addEventListener(
+      "click",
+      () => {
+        commentOptionToggle.value = false;
+      },
+      { once: true }
+    );
+  }, 10);
+}
 </script>
 <template>
   <div class="comment">
@@ -119,7 +132,17 @@ function hasUserLiked(cmnt: any) {
             />
             <span class="likeCount">{{ comment.likes }}</span>
           </span>
-          <fa-icon icon="ellipsis-vertical" class="comment-options-icon" />
+          <fa-icon
+            icon="ellipsis-vertical"
+            class="comment-options-icon"
+            @click="toggleCommentOptions"
+          />
+          <ul
+            class="commentOptionsTray"
+            :class="{ active: commentOptionToggle }"
+          >
+            <li>Edit</li>
+          </ul>
         </div>
         <ReplyInputBox
           :comment="comment"
@@ -154,6 +177,7 @@ function hasUserLiked(cmnt: any) {
     .commentOptions {
       display: flex;
       justify-content: flex-end;
+      position: relative;
       gap: 15px;
       cursor: pointer;
       .likes,
@@ -173,6 +197,27 @@ function hasUserLiked(cmnt: any) {
         padding: 0.3rem;
         &:hover {
           background: var(--button-hover-color);
+        }
+      }
+      .commentOptionsTray {
+        position: absolute;
+        right: -6rem;
+        display: none;
+        align-items: center;
+        flex-direction: column;
+        background-color: var(--color-background);
+        box-shadow: 2px 0 4px grey;
+        min-width: 5rem;
+        min-height: auto;
+        list-style: none;
+        li {
+          padding: 0.3rem 0.7rem;
+          &:hover {
+            background-color: var(--card-background);
+          }
+        }
+        &.active {
+          display: flex;
         }
       }
     }
