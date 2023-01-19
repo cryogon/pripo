@@ -4,10 +4,10 @@ import { useAuth0 } from "@auth0/auth0-vue";
 const { loginWithRedirect } = useAuth0();
 
 const handleLogin = async () => {
-  loginWithRedirect();
+  loginWithRedirect({ redirect_uri: window.location.origin });
 };
 </script>
 
 <template>
-  <button id="loginButton" type="submit" @click="handleLogin">Login</button>
+  <button class="login" type="submit" @click="handleLogin">Login</button>
 </template>

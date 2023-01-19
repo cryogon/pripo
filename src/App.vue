@@ -7,11 +7,11 @@ const { isAuthenticated } = useAuth0();
 
 onMounted(() => {
   setTimeout(() => {
-    if (!isAuthenticated) {
+    if (!isAuthenticated.value && localStorage.getItem("token")) {
       localStorage.removeItem("token");
       window.location.reload();
     }
-  }, 500);
+  }, 3000);
 });
 </script>
 

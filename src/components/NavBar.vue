@@ -6,6 +6,7 @@ import { ref, watch } from "vue";
 import { useDark, useWindowScroll, useToggle } from "@vueuse/core";
 import { useAuth0 } from "@auth0/auth0-vue";
 import { setContext } from "@apollo/client/link/context";
+import LoginButton from "./LoginButton.vue";
 const isDropDownVisible = ref(false);
 const isDark = useDark();
 const toggleDark = useToggle(isDark);
@@ -15,7 +16,6 @@ const { y } = useWindowScroll();
 
 const {
   user,
-  loginWithRedirect: login,
   logout: signout,
   isAuthenticated,
   getAccessTokenSilently,
@@ -77,14 +77,7 @@ if (isAuthenticated) {
         <li><router-link to="/contact">Contact</router-link></li>
       </ul>
       <div class="buttons">
-        <button
-          class="login"
-          v-if="!isAuthenticated"
-          type="submit"
-          @click="login"
-        >
-          Login
-        </button>
+        <LoginButton v-if="!isAuthenticated" />
         <div class="userBar" v-else-if="user && isAuthenticated">
           <button
             class="postButton"

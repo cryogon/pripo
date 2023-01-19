@@ -26,7 +26,11 @@ function redirctToProfilePage(id: number) {
   router.push(`/users/${id}`);
 }
 function setRows(e: any): void {
-  e.target.rows = (e.target.value.match(/\n/gm) || []).length + 2;
+  if ((e.target.value.match(/\n/gm) || []).length == 0) {
+    e.target.rows = 2;
+    return;
+  }
+  e.target.rows = (e.target.value.match(/\n/gm) || []).length + 4;
 }
 </script>
 <template>
@@ -91,15 +95,21 @@ function setRows(e: any): void {
     color: var(--text-color);
     padding: 0.6rem 1rem;
     min-height: 3rem;
-    resize: vertical;
-    &:focus ~ .btnTgle {
-      display: flex;
+    resize: none;
+
+    &:focus {
+      // resize: vertical;
+      min-height: 5rem;
+      & ~ .btnTgle {
+        display: flex;
+      }
     }
   }
   .btnTgle {
     display: none;
     gap: 3rem;
     accent-color: var(--accent-color);
+    margin-block-end: 0.6rem;
     &:hover {
       display: flex;
     }
@@ -115,7 +125,7 @@ function setRows(e: any): void {
     .postButton {
       margin-inline-start: 1rem;
       border-radius: 1rem;
-      padding: 0.4rem 1rem;
+      padding: 0.35rem 1.2rem;
       align-self: flex-start;
       background: var(--accent-color);
       color: var(--text-color);

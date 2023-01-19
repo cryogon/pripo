@@ -20,7 +20,7 @@ watch(comments, () => {
 </script>
 
 <template>
-  <div class="comment-section">
+  <section class="comment-section">
     <CommentInputBox />
 
     <div
@@ -59,6 +59,13 @@ watch(comments, () => {
                       :key="(reply5.id as number)"
                     >
                       <CommentCard :comment="reply5" class="r" />
+                      <div
+                        class="reply--child"
+                        v-for="reply6 in reply5.children"
+                        :key="(reply6.id as number)"
+                      >
+                        <CommentCard :comment="reply6" class="r" />
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -68,7 +75,7 @@ watch(comments, () => {
         </div>
       </div>
     </div>
-  </div>
+  </section>
 </template>
 <style scoped lang="scss">
 .comment-section {
