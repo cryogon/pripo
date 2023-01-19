@@ -238,3 +238,18 @@ export const REMOVE_COMMENT_LIKE = gql`
     }
   }
 `;
+
+export const EDIT_COMMENT = gql`
+  mutation editComment(
+    $commentId: bigint!
+    $content: String!
+    $isPublic: Boolean!
+  ) {
+    update_comments(
+      _set: { content: $content, is_public: $isPublic }
+      where: { id: { _eq: $commentId } }
+    ) {
+      affected_rows
+    }
+  }
+`;

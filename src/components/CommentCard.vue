@@ -15,6 +15,8 @@ defineProps<{
 const { user } = useAuth0();
 const emitter = useEmitter();
 const isReplyInputInactive = ref(true);
+const commentOptionToggle = ref(false);
+const commentReplyMode = ref<"reply" | "edit">("reply");
 
 function showFormatedDate(date: Date | string | number): string {
   return Intl.DateTimeFormat("en", {
@@ -24,6 +26,7 @@ function showFormatedDate(date: Date | string | number): string {
   }).format(new Date(date));
 }
 function replyToggle() {
+  commentReplyMode.value = "reply";
   isReplyInputInactive.value = !isReplyInputInactive.value;
 }
 
@@ -75,7 +78,7 @@ function hasUserLiked(cmnt: any) {
     }
   }
 }
-const commentOptionToggle = ref(false);
+
 function toggleCommentOptions() {
   commentOptionToggle.value = !commentOptionToggle.value;
   setTimeout(() => {
@@ -87,6 +90,11 @@ function toggleCommentOptions() {
       { once: true }
     );
   }, 10);
+}
+
+function editComment() {
+  commentReplyMode.value = "edit";
+  isReplyInputInactive.value = !isReplyInputInactive.value;
 }
 </script>
 <template>
@@ -141,12 +149,20 @@ function toggleCommentOptions() {
             class="commentOptionsTray"
             :class="{ active: commentOptionToggle }"
           >
-            <li>Edit</li>
+            <li @click="editComment">Edit</li>
           </ul>
         </div>
         <ReplyInputBox
           :comment="comment"
           :is-reply-input-inactive="isReplyInputInactive"
+          :mode="commentReplyMode"
+          v-if="commentReplyMode == 'reply'"
+        />
+        <ReplyInputBox
+          :comment="comment"
+          :is-reply-input-inactive="isReplyInputInactive"
+          :mode="commentReplyMode"
+          v-if="commentReplyMode == 'edit'"
         />
       </div>
     </div>
