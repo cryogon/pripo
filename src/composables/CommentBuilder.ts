@@ -1,3 +1,5 @@
+import type { Comment } from "@/types";
+
 export class CommentBuilder {
   root: any;
   constructor() {
@@ -55,23 +57,4 @@ export class CommentBuilder {
       this.add(c);
     });
   }
-}
-
-interface Comment {
-  id: number | null;
-  content: string | null;
-  parent_id: number | null;
-  posted_on: string;
-  blog_id: number;
-  likes: number;
-  is_public: boolean;
-  user: {
-    id: number;
-    profile_picture: string;
-    username: string;
-  };
-  liked_users: {
-    user_id: number;
-  }[];
-  children?: Comment[];
 }

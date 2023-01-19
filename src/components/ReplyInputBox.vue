@@ -3,6 +3,7 @@ import { useMutation } from "@vue/apollo-composable";
 import { ref, onMounted } from "vue";
 import { POST_REPLY, EDIT_COMMENT } from "@/graphql";
 import { useAuth0 } from "@auth0/auth0-vue";
+import type { Comment } from "@/types";
 const props = defineProps<{
   isReplyInputInactive: boolean;
   comment: any;
@@ -16,7 +17,7 @@ const shouldPostPublicaly = ref(false);
  * @method submitReply
  * @param id uniquely identifies the current comment user clicked on
  */
-async function submitReply(cmnt: any) {
+async function submitReply(cmnt: Comment) {
   const { mutate } = useMutation(POST_REPLY);
   mutate({
     blogId: cmnt.blog_id,
@@ -28,7 +29,7 @@ async function submitReply(cmnt: any) {
   content.value = "";
 }
 
-function editComment(cmnt: any) {
+function editComment(cmnt: Comment) {
   const { mutate } = useMutation(EDIT_COMMENT);
   mutate({
     commentId: cmnt.id,

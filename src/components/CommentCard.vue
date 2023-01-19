@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// import type { Comment, Likes } from "@/types";
+import type { Comment } from "@/types";
 import ThumbsUp from "@/components/Icons/ThumbsUp.vue";
 import ReplyInputBox from "./ReplyInputBox.vue";
 import { useEmitter } from "@/composables/EventEmitter";
@@ -44,7 +44,7 @@ function redirctToProfilePage(id: number) {
  * @param cmnt takes id of the comment to uniquely identify it
  */
 
-function setLikes(cmnt: any) {
+function setLikes(cmnt: Comment) {
   const variable = {
     commentId: cmnt.id,
     userId: user.value.uid,
@@ -66,7 +66,7 @@ function setLikes(cmnt: any) {
   }
 }
 
-function hasUserLiked(cmnt: any) {
+function hasUserLiked(cmnt: Comment) {
   if (!cmnt.liked_users.length) {
     return false;
   }

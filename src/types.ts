@@ -1,10 +1,14 @@
 export interface Blog {
   id: number;
-  user: User | any;
+  user: {
+    id: number;
+    profile_picture: string;
+    username: string;
+  };
   tags: string[];
   title: string;
   content: string;
-  isPublic: boolean;
+  is_public: boolean;
   date_posted: Date | string;
   likes: number;
   shares: number;
@@ -14,20 +18,29 @@ export interface Blog {
 export interface User {
   id: number;
   name: string;
-  unique_name: string;
-  pfp: string;
-  joined_at: Date | string;
+  username: string;
+  profile_picture: string;
+  email: string;
+  liked_blogs: Blog[];
+  liked_comments: Comment[];
+  created_at: Date | string;
 }
 
 export interface Comment {
-  id: number;
-  user: User;
-  content: string;
-  postedOn: Date;
-  likes: Likes;
-  reply?: Comment[];
-}
-export interface Likes {
-  count: number;
-  users: User[];
+  id: number | null;
+  content: string | null;
+  parent_id: number | null;
+  posted_on: string;
+  blog_id: number;
+  likes: number;
+  is_public: boolean;
+  user: {
+    id: number;
+    profile_picture: string;
+    username: string;
+  };
+  liked_users: {
+    user_id: number;
+  }[];
+  children?: Comment[];
 }

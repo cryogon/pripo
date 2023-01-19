@@ -3,7 +3,6 @@ import PostCard from "@/components/PostCard.vue";
 import { usePripoStore } from "@/stores";
 import { storeToRefs } from "pinia";
 const { blogs } = storeToRefs(usePripoStore());
-
 localStorage.setItem("currentTitle", "Pripo");
 </script>
 <template>
