@@ -16,7 +16,7 @@
 <style scoped>
 path {
   /* fill: var(--color-text); */
-  stroke: white;
+  stroke: var(--color-text);
   stroke-width: 4px;
 }
 </style>

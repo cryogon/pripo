@@ -18,6 +18,7 @@ const { result, loading, error, onError, stop } = useQuery(GET_BLOG, {
 });
 const isFav = ref(false);
 const { share, isSupported } = useShare();
+const blogEditable = ref(false);
 let blog = ref<any>();
 
 provide("blog_id", blogId);
@@ -106,7 +107,11 @@ function shareButton() {
           {{ blog.is_public ? blog.user.username : "Anonymous" }}</span
         >
         <div class="blog-options">
-          <EditIcon class="icon edit" v-if="blog.user.id == user.uid" />
+          <EditIcon
+            class="icon edit"
+            v-if="blog.user.id == user.uid"
+            @click="blogEditable = !blogEditable"
+          />
           <ShareIcon class="star icon" @click="shareButton" />
           <StarIcon
             class="star icon"
