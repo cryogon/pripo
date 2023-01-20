@@ -6,6 +6,8 @@ import { GET_BLOG, SET_LIKE, REMOVE_LIKE } from "@/graphql";
 import { ref, watch, provide } from "vue";
 import StarIcon from "../components/Icons/StarIcon.vue";
 import { useAuth0 } from "@auth0/auth0-vue";
+import ShareIcon from "../components/Icons/ShareIcon.vue";
+import EditIcon from "../components/Icons/EditIcon.vue";
 
 const { user } = useAuth0();
 const params = router.currentRoute.value.params;
@@ -70,13 +72,13 @@ function setLike() {
 
 <template>
   <main class="container" v-if="blog">
-    <section class="blogSection">
+    <section class="blog-section">
       <div class="author">
-        <div class="authorPfp anonymous" v-if="!blog.is_public"></div>
+        <div class="author-pfp anonymous" v-if="!blog.is_public"></div>
         <img
           :src="blog.user.profile_picture"
           alt="author"
-          class="authorPfp"
+          class="author-pfp"
           @click="router.push(`/users/${blog.user.id}`)"
           v-else
         />
@@ -84,11 +86,15 @@ function setLike() {
           >Posted by
           {{ blog.is_public ? blog.user.username : "Anonymous" }}</span
         >
-        <StarIcon
-          class="star"
-          :class="{ staractive: isFav }"
-          @click="setLike"
-        />
+        <div class="blog-options">
+          <EditIcon class="icon edit" />
+          <ShareIcon class="star icon" />
+          <StarIcon
+            class="star icon"
+            :class="{ staractive: isFav }"
+            @click="setLike"
+          />
+        </div>
       </div>
       <h1 class="title">{{ blog.title }}</h1>
       <div class="content">
@@ -138,17 +144,30 @@ function setLike() {
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-bottom: 0.6rem;
-    .star {
-      margin-inline-start: auto;
-      width: 1.5rem;
+    margin-bottom: 1.5rem;
+    .blog-options {
+      display: flex;
       align-items: center;
+      justify-content: flex-end;
+      gap: 30px;
+      width: 70%;
+      .icon {
+        // margin-inline-start: auto;
+        width: 2.1rem;
+        height: 2.1rem;
+        align-items: center;
+        padding: 0.3rem;
+        // border-radius: 1rem;
+        &:hover {
+          background-color: var(--button-hover-color);
+        }
+      }
     }
     .staractive {
       fill: var(--color-text);
     }
   }
-  .authorPfp {
+  .author-pfp {
     cursor: pointer;
     width: 45px;
     height: 45px;
