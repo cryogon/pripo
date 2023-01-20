@@ -229,7 +229,7 @@ export const EDIT_COMMENT = gql`
     $isPublic: Boolean!
   ) {
     update_comments(
-      _set: { content: $content, is_public: $isPublic }
+      _set: { content: $content, is_public: $isPublic, is_edited: true }
       where: { id: { _eq: $commentId } }
     ) {
       affected_rows

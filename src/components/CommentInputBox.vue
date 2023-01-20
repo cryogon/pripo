@@ -36,7 +36,7 @@ function setRows(e: any): void {
 //Comment Input Toggle
 document.addEventListener("click", (e: any) => {
   if (e.target) {
-    if (e.target.className.includes("inputActiveArea")) {
+    if (e.target.className.includes("input-active-area")) {
       focusedOnCommentBox.value = true;
     } else {
       focusedOnCommentBox.value = false;
@@ -45,19 +45,19 @@ document.addEventListener("click", (e: any) => {
 });
 </script>
 <template>
-  <div class="commentInputSection" v-if="user?.nickname">
+  <div class="comment-input-section" v-if="user?.nickname">
     <img
       :src="user.picture"
       alt="user"
-      class="userIcon"
+      class="user-icon"
       @click="redirctToProfilePage(user.uid)"
       v-if="user"
     />
     <div class="anonymousUser" v-else></div>
-    <div class="inputContainer">
+    <div class="input-container">
       <textarea
         placeholder="Type you comment"
-        class="comment_input inputActiveArea"
+        class="comment_input input-active-area"
         :class="{ active: focusedOnCommentBox }"
         v-model="commentInp"
         @input="setRows"
@@ -66,25 +66,25 @@ document.addEventListener("click", (e: any) => {
         required
       ></textarea>
       <div
-        class="btnTgle inputActiveArea"
+        class="btn-tgle input-active-area"
         :class="{ active: focusedOnCommentBox }"
       >
         <button
           type="submit"
-          class="postButton inputActiveArea"
+          class="post-button input-active-area"
           @click="postComment(commentInp, blogId)"
         >
           Post
         </button>
-        <span class="anonymousToggle">
+        <span class="anonymous-toggle">
           <input
             type="checkbox"
             name="anonymous"
             id="anonymous"
-            class="privateToggle inputActiveArea"
+            class="private-toggle input-active-area"
             v-model="isPublic"
           />
-          <label for="anonymous" class="privateToggleText inputActiveArea"
+          <label for="anonymous" class="private-toggle-text input-active-area"
             >Post Publicly</label
           >
         </span>
@@ -94,13 +94,13 @@ document.addEventListener("click", (e: any) => {
 </template>
 
 <style scoped lang="scss">
-.commentInputSection {
+.comment-input-section {
   display: flex;
   align-items: center;
   gap: 10px;
   margin-block: 1rem 2rem;
 }
-.inputContainer {
+.input-container {
   position: relative;
   background-color: var(--card-background);
   display: flex;
@@ -119,7 +119,7 @@ document.addEventListener("click", (e: any) => {
       min-height: 5rem;
     }
   }
-  .btnTgle {
+  .btn-tgle {
     display: none;
     gap: 3rem;
     accent-color: var(--accent-color);
@@ -130,7 +130,7 @@ document.addEventListener("click", (e: any) => {
     &.active {
       display: flex;
     }
-    .anonymousToggle {
+    .anonymous-toggle {
       display: flex;
       gap: 7px;
       margin-inline-end: 0.3rem;
@@ -139,7 +139,7 @@ document.addEventListener("click", (e: any) => {
         opacity: 0.8;
       }
     }
-    .postButton {
+    .post-button {
       margin-inline-start: 1rem;
       border-radius: 1rem;
       padding: 0.35rem 1.2rem;
@@ -151,7 +151,7 @@ document.addEventListener("click", (e: any) => {
     }
   }
 }
-.userIcon {
+.user-icon {
   align-self: flex-start;
   grid-row: 1 / span 2;
   width: 45px;
@@ -160,7 +160,7 @@ document.addEventListener("click", (e: any) => {
   cursor: pointer;
 }
 
-.postButton:hover {
+.post-button:hover {
   border-color: var(--text-color);
   background: var(--button-hover-color);
 }

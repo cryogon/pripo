@@ -191,6 +191,7 @@ main {
     margin-block-start: 2rem;
     width: 90%;
     min-height: 30rem;
+    position: relative;
     .postsContainer,
     .favoritePostsContainer {
       background-color: var(--card-background);
