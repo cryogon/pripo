@@ -8,6 +8,7 @@ import StarIcon from "../components/Icons/StarIcon.vue";
 import { useAuth0 } from "@auth0/auth0-vue";
 import ShareIcon from "../components/Icons/ShareIcon.vue";
 import EditIcon from "../components/Icons/EditIcon.vue";
+import { useShare } from "@vueuse/core";
 
 const { user } = useAuth0();
 const params = router.currentRoute.value.params;
@@ -16,6 +17,9 @@ const { result, loading, error, onError, stop } = useQuery(GET_BLOG, {
   id: blogId,
 });
 const isFav = ref(false);
+const { share, isSupported } = useShare();
+let blog = ref<any>();
+
 provide("blog_id", blogId);
 
 function showFormatedDate(date: Date | string | number) {
@@ -25,8 +29,15 @@ function showFormatedDate(date: Date | string | number) {
     year: "numeric",
   }).format(new Date(date));
 }
-let blog = ref<any>();
+
 watch(result, () => {
+  //This is not working since router is appling value of currentTitle first and it is updating later since blog is updating late
+  localStorage.setItem(
+    "currentTitle",
+    result.value.blogs[0].title + " - Pripo"
+  );
+  //This is workaround for title updating
+  document.title = result.value.blogs[0].title + " - Pripo";
   blog.value = result.value.blogs[0];
   if (
     blog.value.favourites.filter((u: any) => u.user_id === user.value?.uid)
@@ -34,10 +45,6 @@ watch(result, () => {
   ) {
     isFav.value = true;
   }
-  localStorage.setItem(
-    "currentTitle",
-    result.value.blogs[0].title + " - Pripo"
-  );
 });
 
 onError(() => {
@@ -68,6 +75,18 @@ function setLike() {
     }
   }
 }
+
+function shareButton() {
+  if (isSupported.value) {
+    share({
+      title: blog.value.title,
+      text: blog.value.content.substring(0, 50),
+      url: location.href,
+    });
+  } else {
+    alert("It seems this feature is not supported by your browser");
+  }
+}
 </script>
 
 <template>
@@ -82,13 +101,13 @@ function setLike() {
           @click="router.push(`/users/${blog.user.id}`)"
           v-else
         />
-        <span class="author_name"
+        <span class="author-name"
           >Posted by
           {{ blog.is_public ? blog.user.username : "Anonymous" }}</span
         >
         <div class="blog-options">
-          <EditIcon class="icon edit" />
-          <ShareIcon class="star icon" />
+          <EditIcon class="icon edit" v-if="blog.user.id == user.uid" />
+          <ShareIcon class="star icon" @click="shareButton" />
           <StarIcon
             class="star icon"
             :class="{ staractive: isFav }"
@@ -145,12 +164,15 @@ function setLike() {
     align-items: center;
     gap: 10px;
     margin-bottom: 1.5rem;
+    .author-name {
+      width: 100%;
+    }
     .blog-options {
       display: flex;
       align-items: center;
       justify-content: flex-end;
       gap: 30px;
-      width: 70%;
+      width: 75%;
       .icon {
         // margin-inline-start: auto;
         width: 2.1rem;
