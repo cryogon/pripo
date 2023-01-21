@@ -34,15 +34,16 @@ function setRows(e: any): void {
 }
 
 //Comment Input Toggle
-document.addEventListener("click", (e: any) => {
-  if (e.target) {
-    if (e.target.className.includes("input-active-area")) {
-      focusedOnCommentBox.value = true;
-    } else {
-      focusedOnCommentBox.value = false;
+focusedOnCommentBox.value &&
+  document.addEventListener("click", (e: any) => {
+    if (e.target) {
+      if (e.target.className.includes("input-active-area")) {
+        focusedOnCommentBox.value = true;
+      } else {
+        focusedOnCommentBox.value = false;
+      }
     }
-  }
-});
+  });
 </script>
 <template>
   <div class="comment-input-section" v-if="user?.nickname">
@@ -63,6 +64,7 @@ document.addEventListener("click", (e: any) => {
         @input="setRows"
         :rows="2"
         cols="100"
+        @click="focusedOnCommentBox = true"
         required
       ></textarea>
       <div

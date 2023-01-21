@@ -171,7 +171,6 @@ function pushPostToDB() {
   .isPostPublic {
     display: flex;
     gap: 10px;
-    // padding-top: 0.5rem;
     height: 2rem;
     font-family: monospace;
     font-size: 16px;

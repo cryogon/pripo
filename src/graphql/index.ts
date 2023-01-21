@@ -236,3 +236,25 @@ export const EDIT_COMMENT = gql`
     }
   }
 `;
+
+export const EDIT_BLOG = gql`
+  mutation editBlog(
+    $blogId: Int!
+    $title: String!
+    $content: String!
+    $isPublic: Boolean!
+    $tags: json!
+  ) {
+    update_blogs(
+      _set: {
+        title: $title
+        content: $content
+        is_public: $isPublic
+        tags: $tags
+      }
+      where: { id: { _eq: $blogId } }
+    ) {
+      affected_rows
+    }
+  }
+`;

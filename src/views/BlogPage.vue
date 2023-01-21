@@ -2,7 +2,7 @@
 import router from "@/router";
 import CommentSection from "@/components/CommentSection.vue";
 import { useMutation, useQuery } from "@vue/apollo-composable";
-import { GET_BLOG, SET_LIKE, REMOVE_LIKE } from "@/graphql";
+import { GET_BLOG, SET_LIKE, REMOVE_LIKE, EDIT_BLOG } from "@/graphql";
 import { ref, watch, provide } from "vue";
 import StarIcon from "../components/Icons/StarIcon.vue";
 import { useAuth0 } from "@auth0/auth0-vue";
@@ -13,14 +13,25 @@ import { useShare } from "@vueuse/core";
 const { user } = useAuth0();
 const params = router.currentRoute.value.params;
 const blogId = parseInt(params?.id as string);
-const { result, loading, error, onError, stop } = useQuery(GET_BLOG, {
+const {
+  result,
+  loading,
+  error,
+  onError,
+  stop,
+  refetch: refetchBlog,
+} = useQuery(GET_BLOG, {
   id: blogId,
 });
 const isFav = ref(false);
 const { share, isSupported } = useShare();
+const blog = ref<any>();
+//Variables For Editing Blogs
 const blogEditable = ref(false);
-let blog = ref<any>();
-
+const isPostPublic = ref(false);
+const blogContent = ref<HTMLParagraphElement>();
+const blogTitle = ref<HTMLHeadingElement>();
+const blogTags = ref();
 provide("blog_id", blogId);
 
 function showFormatedDate(date: Date | string | number) {
@@ -40,6 +51,9 @@ watch(result, () => {
   //This is workaround for title updating
   document.title = result.value.blogs[0].title + " - Pripo";
   blog.value = result.value.blogs[0];
+
+  isPostPublic.value = blog.value.is_public;
+  blogTags.value = blog.value.tags.join(" ");
   if (
     blog.value.favourites.filter((u: any) => u.user_id === user.value?.uid)
       .length != 0
@@ -88,6 +102,30 @@ function shareButton() {
     alert("It seems this feature is not supported by your browser");
   }
 }
+function editBlog() {
+  const { mutate } = useMutation(EDIT_BLOG);
+  if (blogTitle.value?.innerHTML && blogTitle.value.innerHTML.length < 4) {
+    alert("title is too short");
+    return;
+  }
+  if (blogContent.value?.innerHTML && blogContent.value.innerHTML.length < 15) {
+    alert("Post Content is too short");
+    return;
+  }
+  if (!blogTags.value.length) {
+    alert("Tags should not be empty");
+    return;
+  }
+  mutate({
+    blogId: blog.value.id,
+    title: blogTitle.value?.innerText,
+    content: JSON.stringify(blogContent.value?.innerText),
+    isPublic: isPostPublic.value,
+    tags: blogTags.value.split(" "),
+  });
+  blogEditable.value = false;
+  refetchBlog();
+}
 </script>
 
 <template>
@@ -120,15 +158,34 @@ function shareButton() {
           />
         </div>
       </div>
-      <h1 class="title">{{ blog.title }}</h1>
+      <h1 class="title" :contenteditable="blogEditable" ref="blogTitle">
+        {{ blog.title }}
+      </h1>
       <div class="content">
-        <p>
+        <p :contenteditable="blogEditable" ref="blogContent">
           {{ JSON.parse(blog.content) }}
         </p>
-        <div class="tags">
+        <div class="tags" v-if="!blogEditable">
           <span v-for="tag in blog.tags" :key="tag" class="link"
             >#{{ tag }}</span
           >
+        </div>
+        <input type="text" v-if="blogEditable" v-model="blogTags" />
+        <div class="is-post-public" v-if="blogEditable">
+          <label for="isPostPublic">Post Publicly: </label>
+          <input
+            type="checkbox"
+            id="isPostPublic"
+            :checked="isPostPublic"
+            @change="isPostPublic = !isPostPublic"
+          />
+          <button
+            type="submit"
+            class="post-button input-active-area"
+            @click="editBlog"
+          >
+            Edit
+          </button>
         </div>
         <span class="date-posted"
           >posted on {{ showFormatedDate(blog.date_posted) }}</span
@@ -152,6 +209,30 @@ function shareButton() {
       margin-block-end: 0.8rem;
       line-height: 1.4rem;
       white-space: pre-wrap;
+    }
+    .is-post-public {
+      display: flex;
+      gap: 10px;
+      height: 2rem;
+      font-family: monospace;
+      font-size: 16px;
+      align-items: center;
+      margin-block-end: 2rem;
+      input {
+        accent-color: aquamarine;
+      }
+      .post-button {
+        margin-inline-start: auto;
+        border-radius: 1rem;
+        padding: 0.35rem 1.2rem;
+        align-self: flex-start;
+        background: var(--accent-color);
+        color: var(--text-color);
+        font-size: 14px;
+        transition: 150ms;
+        height: 2rem;
+        width: 4rem;
+      }
     }
   }
 
