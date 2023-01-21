@@ -119,7 +119,7 @@ function editComment() {
             showFormatedDate(comment.posted_on)
           }}</span>
         </span>
-        <a class="anchor" :id="`c${comment.id}`"></a>
+        <span class="anchor" :id="`c${comment.id}`"></span>
         <span class="content">
           {{ comment.content }}
         </span>
