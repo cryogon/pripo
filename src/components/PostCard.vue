@@ -62,7 +62,7 @@ function navigateTo(url: string) {
     <div v-if="title && content">
       <p class="content" @click="navigateTo(`/posts/${id}`)">
         <span class="title">{{ title }}</span>
-        {{ content }}
+        {{ JSON.parse(content) }}
       </p>
     </div>
 

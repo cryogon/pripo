@@ -2,18 +2,36 @@
 import router from "@/router";
 import CommentSection from "@/components/CommentSection.vue";
 import { useMutation, useQuery } from "@vue/apollo-composable";
-import { GET_BLOG, SET_LIKE, REMOVE_LIKE } from "@/graphql";
+import { GET_BLOG, SET_LIKE, REMOVE_LIKE, EDIT_BLOG } from "@/graphql";
 import { ref, watch, provide } from "vue";
 import StarIcon from "../components/Icons/StarIcon.vue";
 import { useAuth0 } from "@auth0/auth0-vue";
+import ShareIcon from "../components/Icons/ShareIcon.vue";
+import EditIcon from "../components/Icons/EditIcon.vue";
+import { useShare } from "@vueuse/core";
 
 const { user } = useAuth0();
 const params = router.currentRoute.value.params;
 const blogId = parseInt(params?.id as string);
-const { result, loading, error, onError, stop } = useQuery(GET_BLOG, {
+const {
+  result,
+  loading,
+  error,
+  onError,
+  stop,
+  refetch: refetchBlog,
+} = useQuery(GET_BLOG, {
   id: blogId,
 });
 const isFav = ref(false);
+const { share, isSupported } = useShare();
+const blog = ref<any>();
+//Variables For Editing Blogs
+const blogEditable = ref(false);
+const isPostPublic = ref(false);
+const blogContent = ref<HTMLParagraphElement>();
+const blogTitle = ref<HTMLHeadingElement>();
+const blogTags = ref();
 provide("blog_id", blogId);
 
 function showFormatedDate(date: Date | string | number) {
@@ -23,19 +41,25 @@ function showFormatedDate(date: Date | string | number) {
     year: "numeric",
   }).format(new Date(date));
 }
-let blog = ref<any>();
+
 watch(result, () => {
+  //This is not working since router is appling value of currentTitle first and it is updating later since blog is updating late
+  localStorage.setItem(
+    "currentTitle",
+    result.value.blogs[0].title + " - Pripo"
+  );
+  //This is workaround for title updating
+  document.title = result.value.blogs[0].title + " - Pripo";
   blog.value = result.value.blogs[0];
+
+  isPostPublic.value = blog.value.is_public;
+  blogTags.value = blog.value.tags.join(" ");
   if (
     blog.value.favourites.filter((u: any) => u.user_id === user.value?.uid)
       .length != 0
   ) {
     isFav.value = true;
   }
-  localStorage.setItem(
-    "currentTitle",
-    result.value.blogs[0].title + " - Pripo"
-  );
 });
 
 onError(() => {
@@ -66,39 +90,102 @@ function setLike() {
     }
   }
 }
+
+function shareButton() {
+  if (isSupported.value) {
+    share({
+      title: blog.value.title,
+      text: blog.value.content.substring(0, 50),
+      url: location.href,
+    });
+  } else {
+    alert("It seems this feature is not supported by your browser");
+  }
+}
+function editBlog() {
+  const { mutate } = useMutation(EDIT_BLOG);
+  if (blogTitle.value?.innerHTML && blogTitle.value.innerHTML.length < 4) {
+    alert("title is too short");
+    return;
+  }
+  if (blogContent.value?.innerHTML && blogContent.value.innerHTML.length < 15) {
+    alert("Post Content is too short");
+    return;
+  }
+  if (!blogTags.value.length) {
+    alert("Tags should not be empty");
+    return;
+  }
+  mutate({
+    blogId: blog.value.id,
+    title: blogTitle.value?.innerText,
+    content: JSON.stringify(blogContent.value?.innerText),
+    isPublic: isPostPublic.value,
+    tags: blogTags.value.split(" "),
+  });
+  blogEditable.value = false;
+  refetchBlog();
+}
 </script>
 
 <template>
   <main class="container" v-if="blog">
-    <section class="blogSection">
+    <section class="blog-section">
       <div class="author">
-        <div class="authorPfp anonymous" v-if="!blog.is_public"></div>
+        <div class="author-pfp anonymous" v-if="!blog.is_public"></div>
         <img
           :src="blog.user.profile_picture"
           alt="author"
-          class="authorPfp"
+          class="author-pfp"
           @click="router.push(`/users/${blog.user.id}`)"
           v-else
         />
-        <span class="author_name"
+        <span class="author-name"
           >Posted by
           {{ blog.is_public ? blog.user.username : "Anonymous" }}</span
         >
-        <StarIcon
-          class="star"
-          :class="{ staractive: isFav }"
-          @click="setLike"
-        />
+        <div class="blog-options">
+          <EditIcon
+            class="icon edit"
+            v-if="blog.user.id == user.uid"
+            @click="blogEditable = !blogEditable"
+          />
+          <ShareIcon class="star icon" @click="shareButton" />
+          <StarIcon
+            class="star icon"
+            :class="{ staractive: isFav }"
+            @click="setLike"
+          />
+        </div>
       </div>
-      <h1 class="title">{{ blog.title }}</h1>
+      <h1 class="title" :contenteditable="blogEditable" ref="blogTitle">
+        {{ blog.title }}
+      </h1>
       <div class="content">
-        <p>
+        <p :contenteditable="blogEditable" ref="blogContent">
           {{ JSON.parse(blog.content) }}
         </p>
-        <div class="tags">
+        <div class="tags" v-if="!blogEditable">
           <span v-for="tag in blog.tags" :key="tag" class="link"
             >#{{ tag }}</span
           >
+        </div>
+        <input type="text" v-if="blogEditable" v-model="blogTags" />
+        <div class="is-post-public" v-if="blogEditable">
+          <label for="isPostPublic">Post Publicly: </label>
+          <input
+            type="checkbox"
+            id="isPostPublic"
+            :checked="isPostPublic"
+            @change="isPostPublic = !isPostPublic"
+          />
+          <button
+            type="submit"
+            class="post-button input-active-area"
+            @click="editBlog"
+          >
+            Edit
+          </button>
         </div>
         <span class="date-posted"
           >posted on {{ showFormatedDate(blog.date_posted) }}</span
@@ -123,6 +210,30 @@ function setLike() {
       line-height: 1.4rem;
       white-space: pre-wrap;
     }
+    .is-post-public {
+      display: flex;
+      gap: 10px;
+      height: 2rem;
+      font-family: monospace;
+      font-size: 16px;
+      align-items: center;
+      margin-block-end: 2rem;
+      input {
+        accent-color: aquamarine;
+      }
+      .post-button {
+        margin-inline-start: auto;
+        border-radius: 1rem;
+        padding: 0.35rem 1.2rem;
+        align-self: flex-start;
+        background: var(--accent-color);
+        color: var(--text-color);
+        font-size: 14px;
+        transition: 150ms;
+        height: 2rem;
+        width: 4rem;
+      }
+    }
   }
 
   .title {
@@ -138,17 +249,33 @@ function setLike() {
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-bottom: 0.6rem;
-    .star {
-      margin-inline-start: auto;
-      width: 1.5rem;
+    margin-bottom: 1.5rem;
+    .author-name {
+      width: 100%;
+    }
+    .blog-options {
+      display: flex;
       align-items: center;
+      justify-content: flex-end;
+      gap: 30px;
+      width: 75%;
+      .icon {
+        // margin-inline-start: auto;
+        width: 2.1rem;
+        height: 2.1rem;
+        align-items: center;
+        padding: 0.3rem;
+        // border-radius: 1rem;
+        &:hover {
+          background-color: var(--button-hover-color);
+        }
+      }
     }
     .staractive {
       fill: var(--color-text);
     }
   }
-  .authorPfp {
+  .author-pfp {
     cursor: pointer;
     width: 45px;
     height: 45px;

@@ -1,14 +1,15 @@
 <script lang="ts" setup>
 import PostCard from "@/components/PostCard.vue";
-import { usePripoStore } from "@/stores";
-import { storeToRefs } from "pinia";
-const { blogs } = storeToRefs(usePripoStore());
+import { useQuery } from "@vue/apollo-composable";
+import { GET_ALL_BLOGS } from "@/graphql";
+
+const blogs = useQuery(GET_ALL_BLOGS).result;
 localStorage.setItem("currentTitle", "Pripo");
 </script>
 <template>
-  <main v-if="blogs.result?.blogs">
+  <main v-if="blogs?.blogs">
     <PostCard
-      v-for="blog in blogs.result.blogs"
+      v-for="blog in blogs.blogs"
       :key="blog.id"
       :id="blog.id"
       :title="blog.title"
