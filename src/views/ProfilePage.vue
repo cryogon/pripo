@@ -1,18 +1,25 @@
 <script lang="ts" setup>
-import { useWindowScroll } from "@vueuse/core";
+import { useScroll } from "@vueuse/core";
 import { ref, watch } from "vue";
 import router from "@/router";
 import type { RouteLocationRaw } from "vue-router";
 import { useQuery } from "@vue/apollo-composable";
-import { GET_USER } from "@/graphql";
+import { GET_USER_BY_ID, GET_USER_BY_USERNAME } from "@/graphql";
 
 const isCompact = ref(false);
-const { y } = useWindowScroll();
+const { y } = useScroll(window);
 const currentTab = ref<"posts" | "favorites">("posts");
-const uid = router.currentRoute.value.params.id;
-const variables = ref({ id: uid });
-const { result: user, onResult } = useQuery(GET_USER, variables);
+const userParam = router.currentRoute.value.params.user;
+const {
+  result: user,
+  onResult,
+  onError,
+} = !isNaN(+userParam)
+  ? useQuery(GET_USER_BY_ID, { id: userParam })
+  : useQuery(GET_USER_BY_USERNAME, { username: userParam });
+
 const userFound = ref(false);
+
 onResult((r) => {
   if (r.data.users.length == 0) {
     router.push("/404");
@@ -20,13 +27,20 @@ onResult((r) => {
     userFound.value = true;
   }
 });
+
+onError(() => {
+  // router.push("/404");
+  console.log("Error");
+});
+
 watch(y, () => {
-  if (y.value > 5) {
+  if (y.value > 20) {
     isCompact.value = true;
   } else {
     isCompact.value = false;
   }
 });
+
 function navigateTo(url: RouteLocationRaw) {
   router.push(url);
 }

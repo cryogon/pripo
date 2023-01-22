@@ -119,8 +119,7 @@ function editComment() {
             showFormatedDate(comment.posted_on)
           }}</span>
         </span>
-        <span class="anchor" :id="`c${comment.id}`"></span>
-        <span class="content">
+        <span class="content" :id="`c${comment.id}`">
           {{ comment.content }}
         </span>
         <div class="commentOptions">
@@ -133,7 +132,6 @@ function editComment() {
             <span class="replyCount"></span>
           </span>
           <span class="likes comment-options-icon" @click="setLikes(comment)">
-            <!-- <fa-icon :icon="['regular', 'thumbs-up']" class="likeIcon" /> -->
             <ThumbsUp
               class="likeIcon"
               :class="{ active: hasUserLiked(comment) }"
@@ -185,7 +183,7 @@ function editComment() {
   .comment-container {
     background: var(--card-background);
     min-height: 6rem;
-    width: 49rem;
+    width: min(60vw, 49rem);
     padding: 0.5rem 1rem;
     white-space: pre-wrap;
     word-wrap: break-word;
@@ -251,12 +249,6 @@ function editComment() {
     height: 53px;
     border-radius: 50%;
     background-color: grey;
-  }
-  a.anchor {
-    display: block;
-    position: relative;
-    top: -150px;
-    visibility: hidden;
   }
 }
 </style>

@@ -99,11 +99,11 @@ watch(comments, () => {
     gap: 10px;
   }
   .r {
-    margin-inline-start: 2em;
+    margin-inline-start: 1em;
     margin-block: 0.5rem;
   }
   .reply--child {
-    margin-inline-start: 2vw;
+    margin-inline-start: 1.5vw;
   }
 }
 </style>

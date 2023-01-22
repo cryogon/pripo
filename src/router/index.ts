@@ -6,6 +6,7 @@ const router = createRouter({
     {
       path: "/",
       name: "home",
+      alias: "/home",
       component: HomeView,
     },
     {
@@ -24,7 +25,7 @@ const router = createRouter({
       component: () => import("@/views/PostPage.vue"),
     },
     {
-      path: "/users/:id",
+      path: "/users/:user",
       name: "users",
       component: () => import("@/views/ProfilePage.vue"),
     },

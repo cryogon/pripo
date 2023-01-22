@@ -111,6 +111,7 @@ focusedOnCommentBox.value &&
     background-color: var(--card-background);
     outline: none;
     border: none;
+    width: min(60vw, 49rem);
     color: var(--text-color);
     padding: 0.6rem 1rem;
     min-height: 3rem;
