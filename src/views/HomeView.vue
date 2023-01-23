@@ -20,15 +20,6 @@ localStorage.setItem("currentTitle", "Pripo");
       :is-public="blog.is_public"
       :comment="blog.comments || null"
     />
-    <PostCard
-      :id="100"
-      :title="`title`"
-      :content="JSON.stringify('Jatin')"
-      :user="{ id: 10, username: 'unknown', profile_picture: 'n' }"
-      :tags="[`blog.tags`]"
-      :date_posted="new Date()"
-      :is-public="false"
-    />
   </main>
 </template>
 <style scoped>
