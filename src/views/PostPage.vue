@@ -54,17 +54,18 @@ function pushPostToDB() {
       v-model="postContent"
     ></textarea>
 
-    <div class="contentOptions">
-      <span class="boldIcon icon" @click="content.value += '<b></b>'">
+    <!--Will work on this soon not working now-->
+    <div class="contentOptions" style="display: none">
+      <span class="boldIcon icon" @click="content.value += '[b][/b]'">
         <fa-icon icon="bold"
       /></span>
-      <span class="italicIcon icon" @click="content.value += '<i></i>'">
+      <span class="italicIcon icon" @click="content.value += '[i][i]>'">
         <fa-icon icon="italic" />
       </span>
-      <span class="headingIcon icon" @click="content.value += '<h1></h1>'">
+      <span class="headingIcon icon" @click="content.value += '[h][/h]'">
         <fa-icon icon="heading" />
       </span>
-      <span class="paragraphIcon icon" @click="content.value += '<p></p>'">
+      <span class="paragraphIcon icon" @click="content.value += '[p][/p]'">
         <fa-icon icon="paragraph" />
       </span>
       <span class="postButton" @click="pushPostToDB">
@@ -87,6 +88,9 @@ function pushPostToDB() {
         :value="isPostPublic"
         @change="isPostPublic = !isPostPublic"
       />
+      <span class="postButton" @click="pushPostToDB">
+        <fa-icon :icon="['regular', 'paper-plane']" class="postIcon" />Post
+      </span>
     </div>
   </div>
 </template>
@@ -152,17 +156,6 @@ function pushPostToDB() {
         background: var(--link-hover-background);
       }
     }
-    .postButton {
-      padding: 0.6rem;
-      color: black;
-      background-color: aquamarine;
-      border-radius: 50%;
-      margin-top: auto;
-      .postIcon {
-        scale: 1.4;
-        margin: auto;
-      }
-    }
   }
   .tags {
     height: 2rem;
@@ -171,12 +164,28 @@ function pushPostToDB() {
   .isPostPublic {
     display: flex;
     gap: 10px;
-    height: 2rem;
+    // height: 2rem;
     font-family: monospace;
     font-size: 16px;
     align-items: center;
     input {
       accent-color: aquamarine;
+    }
+    .postButton {
+      margin-inline-start: auto;
+      padding: 0.6rem;
+      color: black;
+      background-color: aquamarine;
+      border-radius: 2rem;
+      margin-top: auto;
+      cursor: pointer;
+      &:active {
+        background-color: rgb(58, 230, 173);
+      }
+      .postIcon {
+        // scale: 1.4;
+        margin: auto;
+      }
     }
   }
 }
