@@ -20,16 +20,24 @@ localStorage.setItem("currentTitle", "Pripo");
       :is-public="blog.is_public"
       :comment="blog.comments || null"
     />
+    <PostCard
+      :id="100"
+      :title="`title`"
+      :content="JSON.stringify('Jatin')"
+      :user="{ id: 10, username: 'unknown', profile_picture: 'n' }"
+      :tags="[`blog.tags`]"
+      :date_posted="new Date()"
+      :is-public="false"
+    />
   </main>
 </template>
 <style scoped>
 main {
   transition: 400ms;
   display: flex;
-  padding: 2rem;
+  padding: 2rem 10vw;
   gap: 2rem;
   flex-direction: column;
-  align-items: center;
 }
 @media (max-width: 600px) {
   main {
