@@ -170,8 +170,13 @@ function editBlog() {
             >#{{ tag }}</span
           >
         </div>
-        <input type="text" v-if="blogEditable" v-model="blogTags" />
-        <div class="is-post-public" v-if="blogEditable">
+        <div class="extra-editing-options" v-if="blogEditable">
+          <input
+            type="text"
+            v-if="blogEditable"
+            v-model="blogTags"
+            class="edit-tags"
+          />
           <label for="isPostPublic">Post Publicly: </label>
           <input
             type="checkbox"
@@ -210,14 +215,21 @@ function editBlog() {
       line-height: 1.4rem;
       white-space: pre-wrap;
     }
-    .is-post-public {
+    .extra-editing-options {
       display: flex;
       gap: 10px;
       height: 2rem;
       font-family: monospace;
       font-size: 16px;
       align-items: center;
-      margin-block-end: 2rem;
+      margin-block: 2rem;
+      .edit-tags {
+        padding: 0.5rem;
+        background-color: var(--color-background);
+        color: var(--color-text);
+        outline: none;
+        border: 1px solid var(--color-text);
+      }
       input {
         accent-color: aquamarine;
       }
@@ -230,8 +242,8 @@ function editBlog() {
         color: var(--text-color);
         font-size: 14px;
         transition: 150ms;
-        height: 2rem;
-        width: 4rem;
+        height: 3rem;
+        width: 5rem;
       }
     }
   }

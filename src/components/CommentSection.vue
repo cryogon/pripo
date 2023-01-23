@@ -4,15 +4,18 @@ import CommentCard from "./CommentCard.vue";
 import { CommentBuilder } from "@/composables/CommentBuilder";
 import { useQuery } from "@vue/apollo-composable";
 import { GET_COMMENTS } from "@/graphql";
-import { watch, ref } from "vue";
+import { watch, ref, provide } from "vue";
 const props = defineProps<{
   blogId: number;
 }>();
-const { result: comments } = useQuery(GET_COMMENTS, {
+const { result: comments, refetch: refetchComments } = useQuery(GET_COMMENTS, {
   blogId: props.blogId,
 });
 const builder = new CommentBuilder();
-let currComments = ref();
+const currComments = ref();
+
+provide("refetchComments", refetchComments);
+
 watch(comments, () => {
   builder.addMultiple(comments.value.comments);
   currComments.value ||= builder.root?.children;
