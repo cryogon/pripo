@@ -55,7 +55,7 @@ function navigateTo(url: string) {
         <span class="tag" v-for="tag in tags" :key="tag"> {{ tag + " " }}</span>
       </span>
       <span class="post-date">
-        posted
+        posted on
         <span class="date"> {{ showFormatedDate(date_posted) }}</span>
       </span>
     </h4>
