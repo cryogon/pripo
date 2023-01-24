@@ -68,6 +68,10 @@ onError(() => {
   stop();
 });
 function setLike() {
+  if (!user.value?.email) {
+    emitter.emit("alert", "You must login first in order to like");
+    return;
+  }
   if (!isFav.value) {
     const { mutate } = useMutation(SET_LIKE);
     try {
