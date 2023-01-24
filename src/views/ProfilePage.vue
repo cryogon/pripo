@@ -29,7 +29,7 @@ onResult((r) => {
     userFound.value = true;
   }
 });
-console.log(u.value);
+
 onError(() => {
   // router.push("/404");
   console.log("Error");
@@ -62,7 +62,12 @@ const getFilteredBlogs = computed(() => {
 <template>
   <main v-if="user && userFound">
     <div class="user-display-container" :class="{ compact: isCompact }">
-      <img :src="user.users[0].profile_picture" alt="user" class="userPfp" />
+      <img
+        :src="user.users[0].profile_picture"
+        alt="user"
+        class="userPfp"
+        referrerpolicy="no-referrer"
+      />
       <span class="fullname">{{ user.users[0].name }}</span>
       <span class="username">@{{ user.users[0].username }}</span>
     </div>

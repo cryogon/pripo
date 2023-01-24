@@ -44,6 +44,7 @@ function navigateTo(url: string) {
         class="user-profile-picture"
         @click="navigateTo(`/users/${user?.id}`)"
         style="cursor: pointer"
+        referrerpolicy="no-referrer"
         v-if="isPublic"
       />
       <div class="user-profile-picture" v-else></div>

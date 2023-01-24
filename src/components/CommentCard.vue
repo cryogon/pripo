@@ -103,6 +103,7 @@ function editComment() {
       alt="user"
       class="userIcon"
       @click="redirctToProfilePage(comment.user.id)"
+      referrerpolicy="no-referrer"
       v-if="comment.is_public"
     />
     <div class="anonymousUser" v-else></div>

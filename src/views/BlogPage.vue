@@ -143,6 +143,7 @@ function editBlog() {
           alt="author"
           class="author-pfp"
           @click="router.push(`/users/${blog.user.id}`)"
+          referrerpolicy="no-referrer"
           v-else
         />
         <span class="author-name"

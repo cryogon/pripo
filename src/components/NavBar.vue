@@ -95,7 +95,7 @@ if (isAuthenticated) {
           <div :class="{ visible: isDropDownVisible }" class="drop-down-menu">
             <router-link
               class="hover-item"
-              :to="`/users/${user.uid}`"
+              :to="`/users/${user.nickname}`"
               role="button"
               >Profile</router-link
             >
