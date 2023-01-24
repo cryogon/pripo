@@ -29,7 +29,7 @@ onResult((r) => {
     userFound.value = true;
   }
 });
-
+console.log(u.value);
 onError(() => {
   // router.push("/404");
   console.log("Error");

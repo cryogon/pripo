@@ -3,7 +3,7 @@ import AppIcon from "./Icons/AppIcon.vue";
 import router from "@/router";
 import { RouterLink } from "vue-router";
 import { ref, watch } from "vue";
-import { useDark, useWindowScroll, useToggle } from "@vueuse/core";
+import { useDark, useScroll, useToggle } from "@vueuse/core";
 import { useAuth0 } from "@auth0/auth0-vue";
 import { setContext } from "@apollo/client/link/context";
 import LoginButton from "./LoginButton.vue";
@@ -12,7 +12,7 @@ const isDark = useDark();
 const toggleDark = useToggle(isDark);
 const navbar = ref();
 const compactNavbar = ref(false);
-const { y } = useWindowScroll();
+const { y } = useScroll(window);
 
 const {
   user,
@@ -70,7 +70,7 @@ if (isAuthenticated) {
   <header>
     <nav ref="navbar" :class="{ compact: compactNavbar }">
       <div class="icon" @click="router.push('/')">
-        <AppIcon class="iconImage" />
+        <AppIcon class="icon-image" />
         <h2>pripo</h2>
       </div>
       <ul class="options">
@@ -78,9 +78,9 @@ if (isAuthenticated) {
       </ul>
       <div class="buttons">
         <LoginButton v-if="!isAuthenticated" />
-        <div class="userBar" v-else-if="user && isAuthenticated">
+        <div class="user-bar" v-else-if="user && isAuthenticated">
           <button
-            class="postButton"
+            class="post-button"
             type="submit"
             @click="router.push('/publish')"
           >
@@ -92,18 +92,18 @@ if (isAuthenticated) {
             class="userpfp"
             @click="toggleDropDown"
           />
-          <div :class="{ visible: isDropDownVisible }" class="dropDownMenu">
+          <div :class="{ visible: isDropDownVisible }" class="drop-down-menu">
             <router-link
-              class="hoverItem"
+              class="hover-item"
               :to="`/users/${user.uid}`"
               role="button"
               >Profile</router-link
             >
-            <span class="hoverItem" @click="toggleDark()" role="button">{{
+            <span class="hover-item" @click="toggleDark()" role="button">{{
               isDark ? "Dark" : "Light"
             }}</span>
-            <span class="hoverItem" role="button">Settings</span>
-            <span class="hoverItem" @click="logout" role="button">Logout</span>
+            <span class="hover-item" role="button">Settings</span>
+            <span class="hover-item" @click="logout" role="button">Logout</span>
           </div>
         </div>
       </div>
@@ -148,11 +148,11 @@ nav {
     cursor: pointer;
     align-items: center;
     gap: 0.8rem;
-    &:hover .iconImage {
+    &:hover .icon-image {
       rotate: -30deg;
     }
   }
-  .iconImage {
+  .icon-image {
     transition: 300ms;
     scale: 1.3;
   }
@@ -169,12 +169,12 @@ nav {
       box-shadow: inset 5rem 0 var(--button-hover-color);
     }
   }
-  .userBar {
+  .user-bar {
     display: flex;
     align-items: center;
     gap: 3rem;
     position: relative;
-    .postButton {
+    .post-button {
       scale: 1.2;
     }
     .userpfp {
@@ -187,20 +187,19 @@ nav {
     }
   }
 }
-.dropDownMenu {
+.drop-down-menu {
   background-color: var(--dropdown-background);
   box-shadow: 0.6rem 0.6rem 2rem #303030;
   position: absolute;
   display: none;
   flex-direction: column;
-  align-items: center;
   padding: 0.3rem;
   top: 4rem;
   right: -1rem;
   min-width: 6rem;
   min-height: 7rem;
   z-index: 99999;
-  .hoverItem {
+  .hover-item {
     color: var(--color-text);
     cursor: pointer;
     padding: 0.3rem 1rem;
