@@ -51,7 +51,6 @@ function logout() {
   localStorage.removeItem("token");
 }
 if (isAuthenticated) {
-  console.log(user.value);
   const token = getAccessTokenSilently();
   //FIXME: Temporary Solution: Have to find a way to use ApolloClient.setContext
   token.then((d) => {
