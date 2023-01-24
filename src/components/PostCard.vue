@@ -152,7 +152,13 @@ function navigateTo(url: string) {
   }
   .comment {
     background-color: var(--card-background);
-    padding: 0.5em 1rem;
+    padding: 0.3rem 1rem;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    position: relative;
+    line-height: 1.8rem;
   }
 }
 </style>
