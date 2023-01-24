@@ -50,7 +50,6 @@ function logout() {
   signout({ returnTo: window.location.origin });
   localStorage.removeItem("token");
 }
-
 if (isAuthenticated) {
   const token = getAccessTokenSilently();
   //FIXME: Temporary Solution: Have to find a way to use ApolloClient.setContext
@@ -95,7 +94,7 @@ if (isAuthenticated) {
           <div :class="{ visible: isDropDownVisible }" class="drop-down-menu">
             <router-link
               class="hover-item"
-              :to="`/users/${user.nickname}`"
+              :to="`/users/${user.username || user.nickname}`"
               role="button"
               >Profile</router-link
             >
