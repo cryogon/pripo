@@ -11,17 +11,21 @@ const props = defineProps<{
 const { result: comments } = useQuery(GET_COMMENTS, {
   blogId: props.blogId,
 });
-const builder = new CommentBuilder();
-let currComments = ref();
+const builder = ref(new CommentBuilder());
+const currComments = ref();
+
 watch(comments, () => {
-  builder.addMultiple(comments.value.comments);
-  currComments.value ||= builder.root?.children;
+  builder.value.addMultiple(comments.value.comments);
+  currComments.value = builder.value.root?.children;
 });
+function refetchComment() {
+  console.log("Refetched");
+}
 </script>
 
 <template>
   <section class="comment-section">
-    <CommentInputBox />
+    <CommentInputBox @push="refetchComment" />
 
     <div
       class="comments"
@@ -99,11 +103,11 @@ watch(comments, () => {
     gap: 10px;
   }
   .r {
-    margin-inline-start: 2em;
+    margin-inline-start: 1em;
     margin-block: 0.5rem;
   }
   .reply--child {
-    margin-inline-start: 2vw;
+    margin-inline-start: 1.5vw;
   }
 }
 </style>

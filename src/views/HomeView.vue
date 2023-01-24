@@ -26,10 +26,9 @@ localStorage.setItem("currentTitle", "Pripo");
 main {
   transition: 400ms;
   display: flex;
-  padding: 2rem;
+  padding: 2rem 10vw;
   gap: 2rem;
   flex-direction: column;
-  align-items: center;
 }
 @media (max-width: 600px) {
   main {

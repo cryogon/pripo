@@ -4,19 +4,36 @@ import { ref } from "vue";
 import { useAuth0 } from "@auth0/auth0-vue";
 import { useMutation } from "@vue/apollo-composable";
 import { INSERT_BLOG } from "@/graphql";
+import { useEmitter } from "@/composables/EventEmitter";
 localStorage.setItem("currentTitle", "Post");
+const emitter = useEmitter();
 const postTitle = ref("");
 const postContent = ref("");
 const content = ref();
 const isPostPublic = ref(false);
-const blogTags = ref();
+const blogTags = ref("");
 
 const { user } = useAuth0();
 
 function pushPostToDB() {
+  if (postTitle.value == "") {
+    emitter.emit("alert", "Title should not be empty");
+    return;
+  }
+  if (postContent.value.length < 15) {
+    emitter.emit("alert", "Your content is quite long isn't it.hehe");
+    return;
+  }
+  if (blogTags.value.length === 0) {
+    emitter.emit(
+      "alert",
+      "Atleast apply on tag so it is easier to search later on"
+    );
+    return;
+  }
   const variables = {
     title: postTitle.value,
-    content: postContent.value,
+    content: JSON.stringify(postContent.value),
     isPublic: isPostPublic.value,
     tags: blogTags.value?.split(" "),
     username: user.value.nickname,
@@ -28,8 +45,8 @@ function pushPostToDB() {
     const { mutate: postBlog } = useMutation(INSERT_BLOG, { variables });
     postBlog();
     router.push("/");
-  } catch {
-    alert("Fill All Boxes");
+  } catch (err) {
+    console.error(err);
   }
 }
 </script>
@@ -38,15 +55,15 @@ function pushPostToDB() {
   <div class="post">
     <input
       type="text"
-      name="blogTitle"
-      class="blogTitle"
+      name="blog-title"
+      class="blog-title"
       placeholder="Post Title"
       autocomplete="off"
       v-model="postTitle"
     />
     <textarea
-      name="blogContent"
-      class="blogContent"
+      name="blog-content"
+      class="blog-content"
       rows="10"
       placeholder="Write your content here"
       spellcheck="false"
@@ -54,24 +71,25 @@ function pushPostToDB() {
       v-model="postContent"
     ></textarea>
 
-    <div class="contentOptions">
-      <span class="boldIcon icon" @click="content.value += '<b></b>'">
+    <!--Will work on this soon not working now-->
+    <div class="content-options" style="display: none">
+      <span class="boldIcon icon" @click="content.value += '[b][/b]'">
         <fa-icon icon="bold"
       /></span>
-      <span class="italicIcon icon" @click="content.value += '<i></i>'">
+      <span class="italicIcon icon" @click="content.value += '[i][i]>'">
         <fa-icon icon="italic" />
       </span>
-      <span class="headingIcon icon" @click="content.value += '<h1></h1>'">
+      <span class="headingIcon icon" @click="content.value += '[h][/h]'">
         <fa-icon icon="heading" />
       </span>
-      <span class="paragraphIcon icon" @click="content.value += '<p></p>'">
+      <span class="paragraphIcon icon" @click="content.value += '[p][/p]'">
         <fa-icon icon="paragraph" />
       </span>
-      <span class="postButton" @click="pushPostToDB">
-        <fa-icon :icon="['regular', 'paper-plane']" class="postIcon" />
+      <span class="post-button" @click="pushPostToDB">
+        <fa-icon :icon="['regular', 'paper-plane']" class="post-icon" />
       </span>
     </div>
-    <div class="postTags">
+    <div class="post-tags">
       <input
         type="text"
         placeholder="Tags (Seprated By Space)"
@@ -79,14 +97,17 @@ function pushPostToDB() {
         v-model="blogTags"
       />
     </div>
-    <div class="isPostPublic">
-      <label for="isPostPublic">Public: </label>
+    <div class="is-post-public">
+      <label for="is-post-public" class="is-post-public-label">Public: </label>
       <input
         type="checkbox"
-        id="isPostPublic"
+        id="is-post-public"
         :value="isPostPublic"
         @change="isPostPublic = !isPostPublic"
       />
+      <span class="post-button" @click="pushPostToDB">
+        <fa-icon :icon="['regular', 'paper-plane']" class="post-icon" />Post
+      </span>
     </div>
   </div>
 </template>
@@ -98,24 +119,27 @@ function pushPostToDB() {
   padding: 2rem;
   position: relative;
   margin-inline-end: 3rem;
-  .blogContent,
-  .blogTitle,
-  .contentOptions,
+  .blog-content,
+  .blog-title,
+  .content-options,
   .tags,
-  .isPostPublic {
+  .is-post-public {
     background-color: var(--card-background);
     color: var(--text-color);
     padding-inline-start: 1rem;
     border: none;
     outline: none;
   }
-  .blogTitle {
+  .is-post-public-label {
+    opacity: 0.6;
+  }
+  .blog-title {
     min-height: 3rem;
     font-weight: bolder;
     border-bottom: none;
     font-size: 26px;
   }
-  .blogContent {
+  .blog-content {
     resize: vertical;
     min-height: 20rem;
     font-size: 18px;
@@ -134,7 +158,7 @@ function pushPostToDB() {
       background-color: var(--link-hover-background);
     }
   }
-  .contentOptions {
+  .content-options {
     width: 3.3rem;
     height: 87%;
     display: flex;
@@ -148,19 +172,8 @@ function pushPostToDB() {
       padding: 0.7rem 1rem;
       margin-right: 0.6rem;
       overflow-x: hidden;
-      &:not(.postButton):hover {
+      &:not(.post-button):hover {
         background: var(--link-hover-background);
-      }
-    }
-    .postButton {
-      padding: 0.6rem;
-      color: black;
-      background-color: aquamarine;
-      border-radius: 50%;
-      margin-top: auto;
-      .postIcon {
-        scale: 1.4;
-        margin: auto;
       }
     }
   }
@@ -168,15 +181,32 @@ function pushPostToDB() {
     height: 2rem;
     width: 100%;
   }
-  .isPostPublic {
+  .is-post-public {
     display: flex;
     gap: 10px;
-    height: 2rem;
+    // height: 2rem;
     font-family: monospace;
     font-size: 16px;
     align-items: center;
     input {
       accent-color: aquamarine;
+    }
+    .post-button {
+      margin-inline-start: auto;
+      padding: 0.6rem;
+      color: black;
+      background-color: aquamarine;
+      border-radius: 2rem;
+      margin-inline: auto 0.3rem;
+      margin-block: 0.3rem;
+      cursor: pointer;
+      &:active {
+        background-color: rgb(58, 230, 173);
+      }
+      .post-icon {
+        // scale: 1.4;
+        margin: auto;
+      }
     }
   }
 }

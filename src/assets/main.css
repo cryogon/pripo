@@ -54,7 +54,10 @@ html.dark {
   padding: 0;
   box-sizing: border-box;
 }
-
+html{
+  scroll-behavior: smooth;
+  scroll-padding-block-start: 10rem;
+}
 body {
   font-family: "Inter", sans-serif;
   color: var(--color-text);

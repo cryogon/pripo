@@ -1,18 +1,27 @@
 <script lang="ts" setup>
-import { useWindowScroll } from "@vueuse/core";
-import { ref, watch } from "vue";
+import { useScroll } from "@vueuse/core";
+import { ref, watch, computed } from "vue";
 import router from "@/router";
 import type { RouteLocationRaw } from "vue-router";
 import { useQuery } from "@vue/apollo-composable";
-import { GET_USER } from "@/graphql";
-
+import type { Blog } from "@/types";
+import { GET_USER_BY_ID, GET_USER_BY_USERNAME } from "@/graphql";
+import { useAuth0 } from "@auth0/auth0-vue";
 const isCompact = ref(false);
-const { y } = useWindowScroll();
+const { y } = useScroll(window);
 const currentTab = ref<"posts" | "favorites">("posts");
-const uid = router.currentRoute.value.params.id;
-const variables = ref({ id: uid });
-const { result: user, onResult } = useQuery(GET_USER, variables);
+const userParam = router.currentRoute.value.params.user;
+const { user: u } = useAuth0();
+const {
+  result: user,
+  onResult,
+  onError,
+} = !isNaN(+userParam)
+  ? useQuery(GET_USER_BY_ID, { id: userParam })
+  : useQuery(GET_USER_BY_USERNAME, { username: userParam });
+
 const userFound = ref(false);
+
 onResult((r) => {
   if (r.data.users.length == 0) {
     router.push("/404");
@@ -20,13 +29,20 @@ onResult((r) => {
     userFound.value = true;
   }
 });
+
+onError(() => {
+  // router.push("/404");
+  console.log("Error");
+});
+
 watch(y, () => {
-  if (y.value > 5) {
+  if (y.value > 20) {
     isCompact.value = true;
   } else {
     isCompact.value = false;
   }
 });
+
 function navigateTo(url: RouteLocationRaw) {
   router.push(url);
 }
@@ -34,12 +50,24 @@ function navigateTo(url: RouteLocationRaw) {
 function changeTab(tab: "posts" | "favorites") {
   currentTab.value = tab;
 }
+
+const getFilteredBlogs = computed(() => {
+  if (user.value.users[0].username === u.value?.nickname) {
+    return user.value.users[0].blogs;
+  }
+  return user.value.users[0].blogs.filter((blog: Blog) => blog.is_public);
+});
 </script>
 
 <template>
   <main v-if="user && userFound">
     <div class="user-display-container" :class="{ compact: isCompact }">
-      <img :src="user.users[0].profile_picture" alt="user" class="userPfp" />
+      <img
+        :src="user.users[0].profile_picture"
+        alt="user"
+        class="userPfp"
+        referrerpolicy="no-referrer"
+      />
       <span class="fullname">{{ user.users[0].name }}</span>
       <span class="username">@{{ user.users[0].username }}</span>
     </div>
@@ -66,7 +94,7 @@ function changeTab(tab: "posts" | "favorites") {
       <div class="postsContainer" v-if="currentTab === 'posts'">
         <div
           class="post"
-          v-for="(blog, index) in user.users[0].blogs"
+          v-for="(blog, index) in getFilteredBlogs"
           :key="blog.id"
           @click="navigateTo(`/posts/${blog.id}`)"
         >

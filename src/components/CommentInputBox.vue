@@ -5,6 +5,7 @@ import { useAuth0 } from "@auth0/auth0-vue";
 import { useMutation } from "@vue/apollo-composable";
 import { POST_COMMENT } from "@/graphql";
 
+const emit = defineEmits(["push"]);
 const commentInp = ref();
 const { user } = useAuth0();
 const blogId: number = inject("blog_id") as number;
@@ -18,6 +19,7 @@ function postComment(content: string, blogId: number): void {
     name: user.value.preferred_username || user.value.nickname,
     isPublic: isPublic.value,
   });
+  emit("push");
   commentInp.value = "";
   focusedOnCommentBox.value = false;
 }
@@ -111,6 +113,7 @@ focusedOnCommentBox.value &&
     background-color: var(--card-background);
     outline: none;
     border: none;
+    width: min(60vw, 49rem);
     color: var(--text-color);
     padding: 0.6rem 1rem;
     min-height: 3rem;

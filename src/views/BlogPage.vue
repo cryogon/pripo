@@ -9,7 +9,9 @@ import { useAuth0 } from "@auth0/auth0-vue";
 import ShareIcon from "../components/Icons/ShareIcon.vue";
 import EditIcon from "../components/Icons/EditIcon.vue";
 import { useShare } from "@vueuse/core";
+import { useEmitter } from "@/composables/EventEmitter";
 
+const emitter = useEmitter();
 const { user } = useAuth0();
 const params = router.currentRoute.value.params;
 const blogId = parseInt(params?.id as string);
@@ -71,7 +73,7 @@ function setLike() {
     try {
       mutate({
         blogId,
-        userId: user.value.uid,
+        userId: user.value?.uid,
       });
       isFav.value = true;
     } catch (err) {
@@ -82,7 +84,7 @@ function setLike() {
     try {
       mutate({
         blogId,
-        userId: user.value.uid,
+        userId: user.value?.uid,
       });
       isFav.value = false;
     } catch (err) {
@@ -99,21 +101,24 @@ function shareButton() {
       url: location.href,
     });
   } else {
-    alert("It seems this feature is not supported by your browser");
+    emitter.emit(
+      "alert",
+      "It seems this feature is not supported by your browser"
+    );
   }
 }
 function editBlog() {
   const { mutate } = useMutation(EDIT_BLOG);
   if (blogTitle.value?.innerHTML && blogTitle.value.innerHTML.length < 4) {
-    alert("title is too short");
+    emitter.emit("alert", "title is too short");
     return;
   }
   if (blogContent.value?.innerHTML && blogContent.value.innerHTML.length < 15) {
-    alert("Post Content is too short");
+    emitter.emit("alert", "Post Content is too short");
     return;
   }
   if (!blogTags.value.length) {
-    alert("Tags should not be empty");
+    emitter.emit("alert", "Tags should not be empty");
     return;
   }
   mutate({
@@ -138,6 +143,7 @@ function editBlog() {
           alt="author"
           class="author-pfp"
           @click="router.push(`/users/${blog.user.id}`)"
+          referrerpolicy="no-referrer"
           v-else
         />
         <span class="author-name"
@@ -147,7 +153,7 @@ function editBlog() {
         <div class="blog-options">
           <EditIcon
             class="icon edit"
-            v-if="blog.user.id == user.uid"
+            v-if="blog.user.id == user?.uid"
             @click="blogEditable = !blogEditable"
           />
           <ShareIcon class="star icon" @click="shareButton" />
@@ -170,8 +176,13 @@ function editBlog() {
             >#{{ tag }}</span
           >
         </div>
-        <input type="text" v-if="blogEditable" v-model="blogTags" />
-        <div class="is-post-public" v-if="blogEditable">
+        <div class="extra-editing-options" v-if="blogEditable">
+          <input
+            type="text"
+            v-if="blogEditable"
+            v-model="blogTags"
+            class="edit-tags"
+          />
           <label for="isPostPublic">Post Publicly: </label>
           <input
             type="checkbox"
@@ -210,14 +221,21 @@ function editBlog() {
       line-height: 1.4rem;
       white-space: pre-wrap;
     }
-    .is-post-public {
+    .extra-editing-options {
       display: flex;
       gap: 10px;
       height: 2rem;
       font-family: monospace;
       font-size: 16px;
       align-items: center;
-      margin-block-end: 2rem;
+      margin-block: 2rem;
+      .edit-tags {
+        padding: 0.5rem;
+        background-color: var(--color-background);
+        color: var(--color-text);
+        outline: none;
+        border: 1px solid var(--color-text);
+      }
       input {
         accent-color: aquamarine;
       }
@@ -230,8 +248,8 @@ function editBlog() {
         color: var(--text-color);
         font-size: 14px;
         transition: 150ms;
-        height: 2rem;
-        width: 4rem;
+        height: 3rem;
+        width: 5rem;
       }
     }
   }
@@ -279,6 +297,7 @@ function editBlog() {
     cursor: pointer;
     width: 45px;
     height: 45px;
+    aspect-ratio: 1/1;
     border-radius: 50%;
   }
   .anonymous {

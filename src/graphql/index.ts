@@ -147,7 +147,7 @@ export const GET_COMMENTS = gql`
   }
 `;
 
-export const GET_USER = gql`
+export const GET_USER_BY_ID = gql`
   query getUser($id: bigint!) {
     users(where: { id: { _eq: $id } }) {
       id
@@ -164,6 +164,30 @@ export const GET_USER = gql`
         id
         title
         content
+        is_public
+      }
+      created_at
+    }
+  }
+`;
+export const GET_USER_BY_USERNAME = gql`
+  query getUser($username: String!) {
+    users(where: { username: { _eq: $username } }) {
+      id
+      name
+      username
+      profile_picture
+      liked_blogs {
+        blog {
+          id
+          title
+        }
+      }
+      blogs {
+        id
+        title
+        content
+        is_public
       }
       created_at
     }
