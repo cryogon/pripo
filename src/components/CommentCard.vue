@@ -11,7 +11,6 @@ import { useAuth0 } from "@auth0/auth0-vue";
 defineProps<{
   comment: any;
 }>();
-
 const { user } = useAuth0();
 const emitter = useEmitter();
 const isReplyInputInactive = ref(true);

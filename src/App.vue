@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { useAuth0 } from "@auth0/auth0-vue";
-import { onMounted } from "vue";
+import { onMounted, ref } from "vue";
 import { RouterView } from "vue-router";
 import NavBar from "./components/NavBar.vue";
+import AlertBox from "./components/AlertBox.vue";
+import { useEmitter } from "./composables/EventEmitter";
+const emitter = useEmitter();
 const { isAuthenticated } = useAuth0();
-
+const alertDescription = ref("");
 onMounted(() => {
   setTimeout(() => {
     if (!isAuthenticated.value && localStorage.getItem("token")) {
@@ -12,10 +15,17 @@ onMounted(() => {
       window.location.reload();
     }
   }, 3000);
+  emitter.on("alert", (d) => {
+    alertDescription.value = d as string;
+    setTimeout(() => {
+      alertDescription.value = "";
+    }, 3000);
+  });
 });
 </script>
 
 <template>
+  <AlertBox :description="alertDescription" v-show="alertDescription" />
   <NavBar />
   <RouterView />
 </template>

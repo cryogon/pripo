@@ -1,15 +1,17 @@
 <script lang="ts" setup>
 import { useScroll } from "@vueuse/core";
-import { ref, watch } from "vue";
+import { ref, watch, computed } from "vue";
 import router from "@/router";
 import type { RouteLocationRaw } from "vue-router";
 import { useQuery } from "@vue/apollo-composable";
+import type { Blog } from "@/types";
 import { GET_USER_BY_ID, GET_USER_BY_USERNAME } from "@/graphql";
-
+import { useAuth0 } from "@auth0/auth0-vue";
 const isCompact = ref(false);
 const { y } = useScroll(window);
 const currentTab = ref<"posts" | "favorites">("posts");
 const userParam = router.currentRoute.value.params.user;
+const { user: u } = useAuth0();
 const {
   result: user,
   onResult,
@@ -48,6 +50,13 @@ function navigateTo(url: RouteLocationRaw) {
 function changeTab(tab: "posts" | "favorites") {
   currentTab.value = tab;
 }
+
+const getFilteredBlogs = computed(() => {
+  if (user.value.users[0].username === u.value?.nickname) {
+    return user.value.users[0].blogs;
+  }
+  return user.value.users[0].blogs.filter((blog: Blog) => blog.is_public);
+});
 </script>
 
 <template>
@@ -80,7 +89,7 @@ function changeTab(tab: "posts" | "favorites") {
       <div class="postsContainer" v-if="currentTab === 'posts'">
         <div
           class="post"
-          v-for="(blog, index) in user.users[0].blogs"
+          v-for="(blog, index) in getFilteredBlogs"
           :key="blog.id"
           @click="navigateTo(`/posts/${blog.id}`)"
         >

@@ -9,7 +9,9 @@ import { useAuth0 } from "@auth0/auth0-vue";
 import ShareIcon from "../components/Icons/ShareIcon.vue";
 import EditIcon from "../components/Icons/EditIcon.vue";
 import { useShare } from "@vueuse/core";
+import { useEmitter } from "@/composables/EventEmitter";
 
+const emitter = useEmitter();
 const { user } = useAuth0();
 const params = router.currentRoute.value.params;
 const blogId = parseInt(params?.id as string);
@@ -71,7 +73,7 @@ function setLike() {
     try {
       mutate({
         blogId,
-        userId: user.value.uid,
+        userId: user.value?.uid,
       });
       isFav.value = true;
     } catch (err) {
@@ -82,7 +84,7 @@ function setLike() {
     try {
       mutate({
         blogId,
-        userId: user.value.uid,
+        userId: user.value?.uid,
       });
       isFav.value = false;
     } catch (err) {
@@ -99,21 +101,24 @@ function shareButton() {
       url: location.href,
     });
   } else {
-    alert("It seems this feature is not supported by your browser");
+    emitter.emit(
+      "alert",
+      "It seems this feature is not supported by your browser"
+    );
   }
 }
 function editBlog() {
   const { mutate } = useMutation(EDIT_BLOG);
   if (blogTitle.value?.innerHTML && blogTitle.value.innerHTML.length < 4) {
-    alert("title is too short");
+    emitter.emit("alert", "title is too short");
     return;
   }
   if (blogContent.value?.innerHTML && blogContent.value.innerHTML.length < 15) {
-    alert("Post Content is too short");
+    emitter.emit("alert", "Post Content is too short");
     return;
   }
   if (!blogTags.value.length) {
-    alert("Tags should not be empty");
+    emitter.emit("alert", "Tags should not be empty");
     return;
   }
   mutate({
@@ -147,7 +152,7 @@ function editBlog() {
         <div class="blog-options">
           <EditIcon
             class="icon edit"
-            v-if="blog.user.id == user.uid"
+            v-if="blog.user.id == user?.uid"
             @click="blogEditable = !blogEditable"
           />
           <ShareIcon class="star icon" @click="shareButton" />
@@ -291,6 +296,7 @@ function editBlog() {
     cursor: pointer;
     width: 45px;
     height: 45px;
+    aspect-ratio: 1/1;
     border-radius: 50%;
   }
   .anonymous {

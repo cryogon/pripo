@@ -164,6 +164,7 @@ export const GET_USER_BY_ID = gql`
         id
         title
         content
+        is_public
       }
       created_at
     }
@@ -186,6 +187,7 @@ export const GET_USER_BY_USERNAME = gql`
         id
         title
         content
+        is_public
       }
       created_at
     }

@@ -4,27 +4,28 @@ import CommentCard from "./CommentCard.vue";
 import { CommentBuilder } from "@/composables/CommentBuilder";
 import { useQuery } from "@vue/apollo-composable";
 import { GET_COMMENTS } from "@/graphql";
-import { watch, ref, provide } from "vue";
+import { watch, ref } from "vue";
 const props = defineProps<{
   blogId: number;
 }>();
-const { result: comments, refetch: refetchComments } = useQuery(GET_COMMENTS, {
+const { result: comments } = useQuery(GET_COMMENTS, {
   blogId: props.blogId,
 });
-const builder = new CommentBuilder();
+const builder = ref(new CommentBuilder());
 const currComments = ref();
 
-provide("refetchComments", refetchComments);
-
 watch(comments, () => {
-  builder.addMultiple(comments.value.comments);
-  currComments.value ||= builder.root?.children;
+  builder.value.addMultiple(comments.value.comments);
+  currComments.value = builder.value.root?.children;
 });
+function refetchComment() {
+  console.log("Refetched");
+}
 </script>
 
 <template>
   <section class="comment-section">
-    <CommentInputBox />
+    <CommentInputBox @push="refetchComment" />
 
     <div
       class="comments"
