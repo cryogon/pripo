@@ -8,6 +8,8 @@ import router from "@/router";
 import { useMutation } from "@vue/apollo-composable";
 import { SET_COMMENT_LIKE, REMOVE_COMMENT_LIKE } from "@/graphql";
 import { useAuth0 } from "@auth0/auth0-vue";
+import ReplyIcon from "./Icons/ReplyIcon.vue";
+import OptionsIcon from "./Icons/OptionsIcon.vue";
 defineProps<{
   comment: any;
 }>();
@@ -25,8 +27,21 @@ function showFormatedDate(date: Date | string | number): string {
   }).format(new Date(date));
 }
 function replyToggle() {
+  if (!user.value?.email) {
+    emitter.emit("alert", "You need to login in order to reply");
+    return;
+  }
   commentReplyMode.value = "reply";
   isReplyInputInactive.value = !isReplyInputInactive.value;
+  setTimeout(() => {
+    document.addEventListener(
+      "click",
+      () => {
+        isReplyInputInactive.value = true;
+      },
+      { once: true }
+    );
+  }, 10);
 }
 
 emitter.on("replyInactive", () => {
@@ -104,16 +119,16 @@ function editComment() {
     <img
       :src="comment.user.profile_picture"
       alt="user"
-      class="userIcon"
+      class="user-icon"
       @click="redirctToProfilePage(comment.user.id)"
       referrerpolicy="no-referrer"
       v-if="comment.is_public"
     />
-    <div class="anonymousUser" v-else></div>
+    <div class="anonymous-user" v-else></div>
     <div class="comment-container">
       <div class="comment-main">
         <span class="comment-header">
-          <span class="currentUser">
+          <span class="current-user">
             <span class="user-name">
               {{ comment.is_public ? comment.user.username : "Anonymous" }}
             </span>
@@ -125,32 +140,39 @@ function editComment() {
         <span class="content" :id="`c${comment.id}`">
           {{ comment.content }}
         </span>
-        <div class="commentOptions">
+        <div class="comment-options">
           <span
-            class="replyToggle comment-options-icon"
+            class="reply-toggle comment-options-icon"
             title="reply"
             @click="replyToggle"
           >
-            <fa-icon icon="reply" />
-            <span class="replyCount"></span>
+            <!-- <fa-icon icon="reply" /> -->
+            <ReplyIcon class="reply-icon" />
+            <span class="reply-count"></span>
           </span>
           <span class="likes comment-options-icon" @click="setLikes(comment)">
             <ThumbsUp
-              class="likeIcon"
+              class="like-icon"
               :class="{ active: hasUserLiked(comment) }"
             />
             <span class="likeCount">{{ comment.likes }}</span>
           </span>
-          <fa-icon
+          <!-- <fa-icon
             icon="ellipsis-vertical"
+            class="comment-options-icon"
+            @click="toggleCommentOptions"
+          /> -->
+          <OptionsIcon
             class="comment-options-icon"
             @click="toggleCommentOptions"
           />
           <ul
-            class="commentOptionsTray"
+            class="comment-options-tray"
             :class="{ active: commentOptionToggle }"
           >
-            <li @click="editComment">Edit</li>
+            <li @click="editComment" v-if="user.uid === comment.user.id">
+              Edit
+            </li>
           </ul>
         </div>
         <ReplyInputBox
@@ -174,7 +196,7 @@ function editComment() {
 .comment {
   display: flex;
   gap: 10px;
-  .userIcon {
+  .user-icon {
     align-self: flex-start;
     grid-row: 1 / span 2;
     width: 45px;
@@ -191,34 +213,42 @@ function editComment() {
     white-space: pre-wrap;
     word-wrap: break-word;
 
-    .commentOptions {
+    .comment-options {
       display: flex;
       justify-content: flex-end;
       position: relative;
       gap: 15px;
       cursor: pointer;
       .likes,
-      .replyToggle {
+      .reply-toggle {
         display: flex;
         align-items: center;
         gap: 5px;
       }
-      .likeIcon {
+      .like-icon {
         width: 1.3rem;
         height: 1rem;
+      }
+      .reply-icon {
+        height: 1rem;
+        width: 1.3rem;
+        stroke-width: 5;
       }
       .active {
         fill: var(--color-text);
       }
       .comment-options-icon {
         padding: 0.3rem;
+        stroke-width: 3;
+        height: 2rem;
         &:hover {
           background: var(--button-hover-color);
         }
       }
-      .commentOptionsTray {
+      .comment-options-tray {
         position: absolute;
-        right: -6rem;
+        right: -1rem;
+        top: 2rem;
         display: none;
         align-items: center;
         flex-direction: column;
@@ -246,7 +276,7 @@ function editComment() {
       margin-block-end: 0.4rem;
     }
   }
-  .anonymousUser {
+  .anonymous-user {
     aspect-ratio: 1/1;
     width: 53px;
     height: 53px;
