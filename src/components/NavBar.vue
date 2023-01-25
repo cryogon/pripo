@@ -5,8 +5,8 @@ import { RouterLink } from "vue-router";
 import { ref, watch } from "vue";
 import { useDark, useScroll, useToggle } from "@vueuse/core";
 import { useAuth0 } from "@auth0/auth0-vue";
-import { setContext } from "@apollo/client/link/context";
 import LoginButton from "./LoginButton.vue";
+// import { setContext } from "@apollo/client/link/context";
 const isDropDownVisible = ref(false);
 const isDark = useDark();
 const toggleDark = useToggle(isDark);
@@ -57,12 +57,10 @@ if (isAuthenticated) {
   token.then((d) => {
     localStorage.setItem("token", d);
   });
-  setContext((request, { headers }) => ({
-    headers: {
-      ...headers,
-      Authorization: `Bearer ${token}`,
-    },
-  }));
+}
+async function openSetting() {
+  const emitter = (await import("@/composables/EventEmitter")).useEmitter();
+  emitter.emit("alert", "This option is not available yet");
 }
 </script>
 <template>
@@ -102,7 +100,9 @@ if (isAuthenticated) {
             <span class="hover-item" @click="toggleDark()" role="button">{{
               isDark ? "Dark" : "Light"
             }}</span>
-            <span class="hover-item" role="button">Settings</span>
+            <span class="hover-item" role="button" @click="openSetting"
+              >Settings</span
+            >
             <span class="hover-item" @click="logout" role="button">Logout</span>
           </div>
         </div>
