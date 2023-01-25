@@ -34,17 +34,18 @@ router.afterEach(() => {
 });
 
 function toggleDropDown() {
-  isDropDownVisible.value = !isDropDownVisible.value;
-
-  setTimeout(() => {
-    document.addEventListener(
-      "click",
-      () => {
-        isDropDownVisible.value = false;
-      },
-      { once: true }
-    );
-  }, 10);
+  if (!isDropDownVisible.value) {
+    setTimeout(() => {
+      document.addEventListener(
+        "click",
+        () => {
+          isDropDownVisible.value = false;
+        },
+        { once: true }
+      );
+    }, 10);
+  }
+  isDropDownVisible.value = true;
 }
 function logout() {
   signout({ returnTo: window.location.origin });

@@ -26,24 +26,31 @@ function showFormatedDate(date: Date | string | number): string {
     year: "numeric",
   }).format(new Date(date));
 }
-function replyToggle() {
+
+function toggle() {
   if (!user.value?.email) {
     emitter.emit("alert", "You need to login in order to reply");
     return;
   }
-  commentReplyMode.value = "reply";
-  isReplyInputInactive.value = !isReplyInputInactive.value;
-  setTimeout(() => {
-    document.addEventListener(
-      "click",
-      () => {
-        isReplyInputInactive.value = true;
-      },
-      { once: true }
-    );
-  }, 10);
-}
 
+  if (isReplyInputInactive.value) {
+    setTimeout(() => {
+      document.addEventListener(
+        "click",
+        () => {
+          isReplyInputInactive.value = true;
+          return;
+        },
+        { once: true }
+      );
+    }, 10);
+  }
+  isReplyInputInactive.value = false;
+}
+function replyToggle() {
+  commentReplyMode.value = "reply";
+  toggle();
+}
 emitter.on("replyInactive", () => {
   isReplyInputInactive.value = true;
 });
@@ -97,21 +104,23 @@ function hasUserLiked(cmnt: Comment) {
 }
 
 function toggleCommentOptions() {
-  commentOptionToggle.value = !commentOptionToggle.value;
-  setTimeout(() => {
-    document.addEventListener(
-      "click",
-      () => {
-        commentOptionToggle.value = false;
-      },
-      { once: true }
-    );
-  }, 10);
+  if (!commentOptionToggle.value) {
+    setTimeout(() => {
+      document.addEventListener(
+        "click",
+        () => {
+          commentOptionToggle.value = false;
+        },
+        { once: true }
+      );
+    }, 10);
+  }
+  commentOptionToggle.value = true;
 }
 
 function editComment() {
   commentReplyMode.value = "edit";
-  isReplyInputInactive.value = !isReplyInputInactive.value;
+  toggle();
 }
 </script>
 <template>
