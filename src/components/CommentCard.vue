@@ -166,13 +166,8 @@ function editComment() {
             />
             <span class="likeCount">{{ comment.likes }}</span>
           </span>
-          <!-- <fa-icon
-            icon="ellipsis-vertical"
-            class="comment-options-icon"
-            @click="toggleCommentOptions"
-          /> -->
           <OptionsIcon
-            class="comment-options-icon"
+            class="comment-options-icon comment-options-tray-toggle"
             @click="toggleCommentOptions"
           />
           <ul

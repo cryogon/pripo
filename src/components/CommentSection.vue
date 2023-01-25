@@ -8,18 +8,28 @@ import { watch, ref } from "vue";
 const props = defineProps<{
   blogId: number;
 }>();
-const { result: comments } = useQuery(GET_COMMENTS, {
+const { result: comments, refetch } = useQuery(GET_COMMENTS, {
   blogId: props.blogId,
 });
 const builder = ref(new CommentBuilder());
 const currComments = ref();
 
 watch(comments, () => {
+  builder.value.clear();
   builder.value.addMultiple(comments.value.comments);
   currComments.value = builder.value.root?.children;
 });
+//I have a idea but I am just laze to implement it now
+// I will just add new data in CommentBuilder in client side so that they can see it updating in realtime seamlessly
+// and it will even save us refeching again from database but the problem is doing this I will not get any comment_id from db
+// So For now I will just let it refetch
+
+/**
+ *
+ * @param data it contains posted comment data
+ */
 function refetchComment() {
-  console.log("Refetched");
+  refetch();
 }
 </script>
 

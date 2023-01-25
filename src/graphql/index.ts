@@ -84,20 +84,30 @@ export const GET_BLOG = gql`
 
 export const POST_COMMENT = gql`
   mutation submitComment(
-    $blogId: Int
+    $blog_id: Int
     $content: String
-    $name: String
-    $isPublic: Boolean!
+    $username: String
+    $is_public: Boolean!
   ) {
     insert_comments(
       objects: {
-        blog_id: $blogId
+        blog_id: $blog_id
         content: $content
-        username: $name
-        is_public: $isPublic
+        username: $username
+        is_public: $is_public
       }
     ) {
-      affected_rows
+      returning {
+        blog_id
+        children
+        content
+        id
+        is_edited
+        is_public
+        liked_users {
+          id
+        }
+      }
     }
   }
 `;

@@ -149,7 +149,7 @@ function navigateTo(url: string) {
     border-radius: 50%;
     margin: 0.5rem;
     margin-inline-start: 7%;
-    background-color: white;
+    background-color: grey;
   }
   .comment {
     background-color: var(--card-background);

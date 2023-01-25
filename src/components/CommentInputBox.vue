@@ -11,15 +11,17 @@ const { user } = useAuth0();
 const blogId: number = inject("blog_id") as number;
 const isPublic = ref(false);
 const focusedOnCommentBox = ref(false);
+
 function postComment(content: string, blogId: number): void {
   const { mutate: postComment } = useMutation(POST_COMMENT);
-  postComment({
-    blogId: blogId,
+  const variables = {
+    blog_id: blogId,
     content,
-    name: user.value.preferred_username || user.value.nickname,
-    isPublic: isPublic.value,
-  });
-  emit("push");
+    username: user.value.nickname,
+    is_public: isPublic.value,
+  };
+  postComment(variables);
+  emit("push", variables);
   commentInp.value = "";
   focusedOnCommentBox.value = false;
 }
@@ -36,16 +38,15 @@ function setRows(e: any): void {
 }
 
 //Comment Input Toggle
-focusedOnCommentBox.value &&
-  document.addEventListener("click", (e: any) => {
-    if (e.target) {
-      if (e.target.className.includes("input-active-area")) {
-        focusedOnCommentBox.value = true;
-      } else {
-        focusedOnCommentBox.value = false;
-      }
+document.addEventListener("click", (e: any) => {
+  if (e.target) {
+    if (e.target.className.includes("input-active-area")) {
+      focusedOnCommentBox.value = true;
+    } else {
+      focusedOnCommentBox.value = false;
     }
-  });
+  }
+});
 </script>
 <template>
   <div class="comment-input-section" v-if="user?.nickname">
