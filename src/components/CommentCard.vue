@@ -44,6 +44,10 @@ function redirctToProfilePage(id: number) {
  */
 
 function setLikes(cmnt: Comment) {
+  if (!user.value?.email) {
+    emitter.emit("alert", "You need to login in order to like");
+    return;
+  }
   const variable = {
     commentId: cmnt.id,
     userId: user.value.uid,
@@ -53,7 +57,6 @@ function setLikes(cmnt: Comment) {
   for (let cUser of cmnt.liked_users || []) {
     if (cUser.user_id == user.value?.uid) {
       setLikes(variable);
-      // console.log("Set Like");
       return;
     } else {
       removeLikes(variable);
