@@ -288,7 +288,13 @@ export const EDIT_BLOG = gql`
       }
       where: { id: { _eq: $blogId } }
     ) {
-      affected_rows
+      returning {
+        id
+        title
+        content
+        is_public
+        tags
+      }
     }
   }
 `;

@@ -242,6 +242,9 @@ nav {
       border-radius: 50%;
       width: 50px;
       height: 50px;
+      &:hover {
+        outline: 2px solid var(--color-text);
+      }
     }
     .visible {
       display: flex;
