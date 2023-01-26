@@ -72,7 +72,7 @@ function setLikes(cmnt: Comment) {
   }
   const variable = {
     commentId: cmnt.id,
-    userId: user.value.uid,
+    userId: user.value?.uid,
   };
   const { mutate: setLikes } = useMutation(SET_COMMENT_LIKE);
   const { mutate: removeLikes } = useMutation(REMOVE_COMMENT_LIKE);
@@ -174,7 +174,7 @@ function editComment() {
             class="comment-options-tray"
             :class="{ active: commentOptionToggle }"
           >
-            <li @click="editComment" v-if="user.uid === comment.user.id">
+            <li @click="editComment" v-if="user?.uid === comment.user.id">
               Edit
             </li>
           </ul>

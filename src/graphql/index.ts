@@ -292,3 +292,15 @@ export const EDIT_BLOG = gql`
     }
   }
 `;
+
+export const DELETE_COMMENT = gql`
+  mutation deleteComment($id: bigint!) {
+    delete_comments(where: { id: { _eq: $id } }) {
+      returning {
+        content
+        id
+        username
+      }
+    }
+  }
+`;
