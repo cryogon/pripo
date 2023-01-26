@@ -122,6 +122,9 @@ function editComment() {
   commentReplyMode.value = "edit";
   toggle();
 }
+function deleteComment() {
+  emitter.emit("Alert", "Are you sure about that");
+}
 </script>
 <template>
   <div class="comment">
@@ -176,6 +179,9 @@ function editComment() {
           >
             <li @click="editComment" v-if="user?.uid === comment.user.id">
               Edit
+            </li>
+            <li @click="deleteComment" v-if="user?.uid === comment.user.id">
+              Delete
             </li>
           </ul>
         </div>
@@ -254,13 +260,14 @@ function editComment() {
         right: -1rem;
         top: 2rem;
         display: none;
-        align-items: center;
+        // align-items: center;
         flex-direction: column;
         background-color: var(--color-background);
         box-shadow: 2px 0 4px grey;
         min-width: 5rem;
         min-height: auto;
         list-style: none;
+        z-index: 2;
         li {
           padding: 0.3rem 0.7rem;
           &:hover {
