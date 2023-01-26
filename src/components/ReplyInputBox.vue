@@ -9,6 +9,8 @@ const props = defineProps<{
   comment: any;
   mode: "reply" | "edit";
 }>();
+
+const emit = defineEmits(["edit"]);
 const { user } = useAuth0();
 const content = ref("");
 const shouldPostPublicaly = ref(false);
@@ -30,6 +32,7 @@ async function submitReply(cmnt: Comment) {
 }
 
 function editComment(cmnt: Comment) {
+  emit("edit", content.value);
   const { mutate } = useMutation(EDIT_COMMENT);
   mutate({
     commentId: cmnt.id,
@@ -50,10 +53,13 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="reply-input-container" :class="{ hidden: isReplyInputInactive }">
+  <div
+    class="reply-input-container input-active"
+    :class="{ hidden: isReplyInputInactive }"
+  >
     <textarea
       name="reply"
-      class="reply-input"
+      class="reply-input input-active"
       cols="100"
       :rows="2"
       placeholder="Type your reply here"
@@ -62,14 +68,19 @@ onMounted(() => {
     ></textarea>
     <button
       type="submit"
-      class="submit-reply"
+      class="submit-reply input-active"
       @click="mode == 'reply' ? submitReply(comment) : editComment(comment)"
     >
       {{ mode == "reply" ? "Reply" : "Edit" }}
     </button>
     <span class="is_public">
-      <input type="checkbox" id="is_public" v-model="shouldPostPublicaly" />
-      <label for="is_public">Post Publicly</label>
+      <input
+        type="checkbox"
+        id="is_public"
+        v-model="shouldPostPublicaly"
+        class="input-active"
+      />
+      <label for="is_public input-active">Post Publicly</label>
     </span>
   </div>
 </template>

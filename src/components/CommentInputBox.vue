@@ -4,8 +4,10 @@ import { ref, inject } from "vue";
 import { useAuth0 } from "@auth0/auth0-vue";
 import { useMutation } from "@vue/apollo-composable";
 import { POST_COMMENT } from "@/graphql";
+import { useEmitter } from "@/composables/EventEmitter";
 
 const emit = defineEmits(["push"]);
+const emitter = useEmitter();
 const commentInp = ref();
 const { user } = useAuth0();
 const blogId: number = inject("blog_id") as number;
@@ -13,6 +15,10 @@ const isPublic = ref(false);
 const focusedOnCommentBox = ref(false);
 
 function postComment(content: string, blogId: number): void {
+  if (!content) {
+    emitter.emit("alert", "Can't post empty comment");
+    return;
+  }
   const { mutate: postComment } = useMutation(POST_COMMENT);
   const variables = {
     blog_id: blogId,

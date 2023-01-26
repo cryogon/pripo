@@ -37,9 +37,9 @@ function toggle() {
     setTimeout(() => {
       document.addEventListener(
         "click",
-        () => {
-          isReplyInputInactive.value = true;
-          return;
+        (e: any) => {
+          if (!e.target.className.includes("input-active"))
+            isReplyInputInactive.value = true;
         },
         { once: true }
       );
@@ -123,7 +123,12 @@ function editComment() {
   toggle();
 }
 function deleteComment() {
-  emitter.emit("Alert", "Are you sure about that");
+  emitter.emit("alert", "Are you sure about that");
+}
+const editedComment = ref("");
+function commentContentChange(data: string) {
+  editedComment.value = data;
+  isReplyInputInactive.value = true;
 }
 </script>
 <template>
@@ -150,7 +155,7 @@ function deleteComment() {
           }}</span>
         </span>
         <span class="content" :id="`c${comment.id}`">
-          {{ comment.content }}
+          {{ editedComment || comment.content }}
         </span>
         <div class="comment-options">
           <span
@@ -196,6 +201,7 @@ function deleteComment() {
           :is-reply-input-inactive="isReplyInputInactive"
           :mode="commentReplyMode"
           v-if="commentReplyMode == 'edit'"
+          @edit="commentContentChange"
         />
       </div>
     </div>
