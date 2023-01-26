@@ -4,6 +4,7 @@ import { ref, onMounted } from "vue";
 import { POST_REPLY, EDIT_COMMENT } from "@/graphql";
 import { useAuth0 } from "@auth0/auth0-vue";
 import type { Comment } from "@/types";
+import { useEmitter } from "@/composables/EventEmitter";
 const props = defineProps<{
   isReplyInputInactive: boolean;
   comment: any;
@@ -11,6 +12,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits(["edit"]);
+const emitter = useEmitter();
 const { user } = useAuth0();
 const content = ref("");
 const shouldPostPublicaly = ref(false);
@@ -28,6 +30,11 @@ async function submitReply(cmnt: Comment) {
     parent_id: cmnt.id,
     isPublic: shouldPostPublicaly.value,
   });
+
+  //Used To toggle reply input box - handled in CommentCard component;
+  emitter.emit("replied");
+  //Used To refetch comments from db - handled in CommentSection Component;
+  emitter.emit("refetchComments");
   content.value = "";
 }
 

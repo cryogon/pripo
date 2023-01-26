@@ -113,11 +113,11 @@ function shareButton() {
 }
 function editBlog() {
   const { mutate } = useMutation(EDIT_BLOG);
-  if (blogTitle.value?.innerHTML && blogTitle.value.innerHTML.length < 4) {
+  if (blogTitle.value?.innerText && blogTitle.value.innerText.length < 4) {
     emitter.emit("alert", "title is too short");
     return;
   }
-  if (blogContent.value?.innerHTML && blogContent.value.innerHTML.length < 15) {
+  if (blogContent.value?.innerText && blogContent.value.innerText.length < 15) {
     emitter.emit("alert", "Post Content is too short");
     return;
   }

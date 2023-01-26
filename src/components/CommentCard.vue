@@ -130,6 +130,10 @@ function commentContentChange(data: string) {
   editedComment.value = data;
   isReplyInputInactive.value = true;
 }
+
+emitter.on("replied", () => {
+  isReplyInputInactive.value = true;
+});
 </script>
 <template>
   <div class="comment">

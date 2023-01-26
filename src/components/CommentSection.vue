@@ -5,6 +5,7 @@ import { CommentBuilder } from "@/composables/CommentBuilder";
 import { useQuery } from "@vue/apollo-composable";
 import { GET_COMMENTS } from "@/graphql";
 import { watch, ref } from "vue";
+import { useEmitter } from "@/composables/EventEmitter";
 const props = defineProps<{
   blogId: number;
 }>();
@@ -28,14 +29,16 @@ watch(comments, () => {
  *
  * @param data it contains posted comment data
  */
-function refetchComment() {
+
+const emitter = useEmitter();
+emitter.on("refetchComments", () => {
   refetch();
-}
+});
 </script>
 
 <template>
   <section class="comment-section">
-    <CommentInputBox @push="refetchComment" />
+    <CommentInputBox />
 
     <div
       class="comments"

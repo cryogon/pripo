@@ -6,7 +6,6 @@ import { useMutation } from "@vue/apollo-composable";
 import { POST_COMMENT } from "@/graphql";
 import { useEmitter } from "@/composables/EventEmitter";
 
-const emit = defineEmits(["push"]);
 const emitter = useEmitter();
 const commentInp = ref();
 const { user } = useAuth0();
@@ -27,7 +26,7 @@ function postComment(content: string, blogId: number): void {
     is_public: isPublic.value,
   };
   postComment(variables);
-  emit("push", variables);
+  emitter.emit("refetchComments");
   commentInp.value = "";
   focusedOnCommentBox.value = false;
 }
