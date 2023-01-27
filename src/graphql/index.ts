@@ -398,6 +398,7 @@ export const LISTEN_NOTIFICATION = gql`
       where: { has_read: { _eq: false } }
     ) {
       id
+      notification_for
       blog {
         id
       }
@@ -422,10 +423,18 @@ export const MARK_NOTIFICATION_READ = gql`
       _set: { has_read: true }
       where: { id: { _eq: $id } }
     ) {
-      returning {
-        id
-        has_read
-      }
+      affected_rows
+    }
+  }
+`;
+
+export const MARK_ALL_NOTIFICATION_READ = gql`
+  mutation markAllRead($username: String!) {
+    update_user_notifications(
+      _set: { has_read: true }
+      where: { notification_for: { _eq: $username } }
+    ) {
+      affected_rows
     }
   }
 `;
