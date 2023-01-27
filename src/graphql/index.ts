@@ -219,7 +219,7 @@ export const GET_COMMENTS = gql`
 `;
 
 export const GET_USER_BY_ID = gql`
-  query getUser($id: bigint!) {
+  query getUser($id: Int!) {
     users(where: { id: { _eq: $id } }) {
       id
       name

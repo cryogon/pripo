@@ -19,7 +19,6 @@ const {
 } = !isNaN(+userParam)
   ? useQuery(GET_USER_BY_ID, { id: userParam })
   : useQuery(GET_USER_BY_USERNAME, { username: userParam });
-
 const userFound = ref(false);
 
 onResult((r) => {
@@ -30,8 +29,8 @@ onResult((r) => {
   }
 });
 
-onError(() => {
-  // router.push("/404");
+onError((e) => {
+  console.log(e);
   console.log("Error");
 });
 
