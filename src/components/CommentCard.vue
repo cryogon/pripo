@@ -37,9 +37,9 @@ function toggle() {
     setTimeout(() => {
       document.addEventListener(
         "click",
-        () => {
-          isReplyInputInactive.value = true;
-          return;
+        (e: any) => {
+          if (!e.target.className.includes("input-active"))
+            isReplyInputInactive.value = true;
         },
         { once: true }
       );
@@ -72,7 +72,7 @@ function setLikes(cmnt: Comment) {
   }
   const variable = {
     commentId: cmnt.id,
-    userId: user.value.uid,
+    userId: user.value?.uid,
   };
   const { mutate: setLikes } = useMutation(SET_COMMENT_LIKE);
   const { mutate: removeLikes } = useMutation(REMOVE_COMMENT_LIKE);
@@ -122,6 +122,18 @@ function editComment() {
   commentReplyMode.value = "edit";
   toggle();
 }
+function deleteComment() {
+  emitter.emit("alert", "Are you sure about that");
+}
+const editedComment = ref("");
+function commentContentChange(data: string) {
+  editedComment.value = data;
+  isReplyInputInactive.value = true;
+}
+
+emitter.on("replied", () => {
+  isReplyInputInactive.value = true;
+});
 </script>
 <template>
   <div class="comment">
@@ -147,7 +159,7 @@ function editComment() {
           }}</span>
         </span>
         <span class="content" :id="`c${comment.id}`">
-          {{ comment.content }}
+          {{ editedComment || comment.content }}
         </span>
         <div class="comment-options">
           <span
@@ -166,21 +178,19 @@ function editComment() {
             />
             <span class="likeCount">{{ comment.likes }}</span>
           </span>
-          <!-- <fa-icon
-            icon="ellipsis-vertical"
-            class="comment-options-icon"
-            @click="toggleCommentOptions"
-          /> -->
           <OptionsIcon
-            class="comment-options-icon"
+            class="comment-options-icon comment-options-tray-toggle"
             @click="toggleCommentOptions"
           />
           <ul
             class="comment-options-tray"
             :class="{ active: commentOptionToggle }"
           >
-            <li @click="editComment" v-if="user.uid === comment.user.id">
+            <li @click="editComment" v-if="user?.uid === comment.user.id">
               Edit
+            </li>
+            <li @click="deleteComment" v-if="user?.uid === comment.user.id">
+              Delete
             </li>
           </ul>
         </div>
@@ -195,6 +205,7 @@ function editComment() {
           :is-reply-input-inactive="isReplyInputInactive"
           :mode="commentReplyMode"
           v-if="commentReplyMode == 'edit'"
+          @edit="commentContentChange"
         />
       </div>
     </div>
@@ -259,13 +270,14 @@ function editComment() {
         right: -1rem;
         top: 2rem;
         display: none;
-        align-items: center;
+        // align-items: center;
         flex-direction: column;
         background-color: var(--color-background);
         box-shadow: 2px 0 4px grey;
         min-width: 5rem;
         min-height: auto;
         list-style: none;
+        z-index: 2;
         li {
           padding: 0.3rem 0.7rem;
           &:hover {

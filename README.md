@@ -17,7 +17,7 @@ A platform where you can post anything you want anonymously
 - Removed Extra Component which was doing the same thing as another component.
 - Like is now working properly
 - Bug Fixes
-
+ 
 ## Upcoming
 - ~~Like System~~
 - ~~Fixing Comment Bugs~~

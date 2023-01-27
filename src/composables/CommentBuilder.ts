@@ -12,9 +12,8 @@ export class CommentBuilder {
   }
 
   traverse(callback: any) {
-    let i = 0;
     function walk(node: Comment | null) {
-      callback(node, i++);
+      callback(node);
       node?.children && node.children.forEach(walk);
     }
     walk(this.root);
@@ -56,5 +55,13 @@ export class CommentBuilder {
     sortedComments.forEach((c) => {
       this.add(c);
     });
+  }
+  clear() {
+    this.root = {
+      id: null,
+      content: null,
+      parent_id: null,
+      children: [],
+    };
   }
 }

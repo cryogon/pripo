@@ -5,22 +5,24 @@ import { RouterLink } from "vue-router";
 import { ref, watch } from "vue";
 import { useDark, useScroll, useToggle } from "@vueuse/core";
 import { useAuth0 } from "@auth0/auth0-vue";
-import { setContext } from "@apollo/client/link/context";
 import LoginButton from "./LoginButton.vue";
+import BellIcon from "./Icons/BellIcon.vue";
+import HamBurger from "./Icons/HamBurger.vue";
+// import { setContext } from "@apollo/client/link/context";
 const isDropDownVisible = ref(false);
 const isDark = useDark();
 const toggleDark = useToggle(isDark);
 const navbar = ref();
 const compactNavbar = ref(false);
 const { y } = useScroll(window);
-
+const isMobileOptionVisible = ref(false);
 const {
   user,
   logout: signout,
   isAuthenticated,
   getAccessTokenSilently,
 } = useAuth0();
-
+const windowWidth = ref(window.innerWidth - 49);
 watch(y, () => {
   if (Math.round(y.value) > 130) {
     compactNavbar.value = true;
@@ -47,6 +49,21 @@ function toggleDropDown() {
   }
   isDropDownVisible.value = true;
 }
+
+function toggleMobileOptions() {
+  if (!isMobileOptionVisible.value) {
+    setTimeout(() => {
+      document.addEventListener(
+        "click",
+        () => {
+          isMobileOptionVisible.value = false;
+        },
+        { once: true }
+      );
+    }, 10);
+  }
+  isMobileOptionVisible.value = true;
+}
 function logout() {
   signout({ returnTo: window.location.origin });
   localStorage.removeItem("token");
@@ -57,35 +74,50 @@ if (isAuthenticated) {
   token.then((d) => {
     localStorage.setItem("token", d);
   });
-  setContext((request, { headers }) => ({
-    headers: {
-      ...headers,
-      Authorization: `Bearer ${token}`,
-    },
-  }));
 }
+async function openSetting() {
+  const emitter = (await import("@/composables/EventEmitter")).useEmitter();
+  emitter.emit("alert", "This option is not available yet");
+}
+window.addEventListener("resize", () => {
+  windowWidth.value = window.innerWidth - 49;
+  console.log(windowWidth.value);
+});
 </script>
 <template>
   <!-- <Suspense> -->
   <header>
     <nav ref="navbar" :class="{ compact: compactNavbar }">
-      <div class="icon" @click="router.push('/')">
-        <AppIcon class="icon-image" />
-        <h2>pripo</h2>
-      </div>
-      <ul class="options">
-        <li><router-link to="/contact">Contact</router-link></li>
-      </ul>
+      <section class="left-section">
+        <div class="mobile-options" :style="`--window-size:${windowWidth}px`">
+          <HamBurger class="mobile-options-icon" @click="toggleMobileOptions" />
+          <div
+            class="mobile-options-tray"
+            :class="{ active: isMobileOptionVisible }"
+          >
+            <input
+              type="search"
+              placeholder="search"
+              class="mobile-input-search"
+            />
+            <ul class="mobile-tabs">
+              <li><router-link to="/contact">Contact</router-link></li>
+            </ul>
+          </div>
+        </div>
+        <div class="icon" @click="router.push('/')">
+          <AppIcon class="icon-image" />
+          <h2>pripo</h2>
+        </div>
+        <input type="search" placeholder="search" class="input-search" />
+        <ul class="options">
+          <li><router-link to="/contact">Contact</router-link></li>
+        </ul>
+      </section>
       <div class="buttons">
         <LoginButton v-if="!isAuthenticated" />
         <div class="user-bar" v-else-if="user && isAuthenticated">
-          <button
-            class="post-button"
-            type="submit"
-            @click="router.push('/publish')"
-          >
-            Post
-          </button>
+          <BellIcon class="notification-icon" />
           <img
             :src="user.picture"
             alt="userImg"
@@ -93,16 +125,22 @@ if (isAuthenticated) {
             @click="toggleDropDown"
           />
           <div :class="{ visible: isDropDownVisible }" class="drop-down-menu">
+            <span class="user-item">{{ user.nickname }}</span>
             <router-link
               class="hover-item"
               :to="`/users/${user.username || user.nickname}`"
               role="button"
               >Profile</router-link
             >
+            <router-link class="hover-item" to="/publish" role="button"
+              >Post</router-link
+            >
             <span class="hover-item" @click="toggleDark()" role="button">{{
               isDark ? "Dark" : "Light"
             }}</span>
-            <span class="hover-item" role="button">Settings</span>
+            <span class="hover-item" role="button" @click="openSetting"
+              >Settings</span
+            >
             <span class="hover-item" @click="logout" role="button">Logout</span>
           </div>
         </div>
@@ -137,24 +175,43 @@ nav {
   align-items: center;
   height: 6rem;
   transition: height 300ms;
-  & ul {
-    list-style: none;
-  }
   &.compact {
     height: 5rem;
   }
-  .icon {
+  .left-section {
     display: flex;
-    cursor: pointer;
     align-items: center;
-    gap: 0.8rem;
-    &:hover .icon-image {
-      rotate: -30deg;
+    gap: 15px;
+    .input-search,
+    .mobile-input-search {
+      padding: 0.5rem;
+      border: 1px solid var(--background-color);
+      background-color: var(--card-background);
+      border-radius: 0.5rem;
+      height: 3rem;
+      width: 15rem;
+      outline: none;
+      color: var(--color-text);
     }
-  }
-  .icon-image {
-    transition: 300ms;
-    scale: 1.3;
+    .mobile-options {
+      display: none;
+    }
+    .icon {
+      display: flex;
+      cursor: pointer;
+      align-items: center;
+      gap: 0.8rem;
+      &:hover .icon-image {
+        rotate: -30deg;
+      }
+    }
+    & ul {
+      list-style: none;
+    }
+    .icon-image {
+      transition: 300ms;
+      scale: 1.3;
+    }
   }
   & button {
     max-width: 5rem;
@@ -172,15 +229,22 @@ nav {
   .user-bar {
     display: flex;
     align-items: center;
-    gap: 3rem;
+    gap: 20px;
     position: relative;
+    .notification-icon {
+      width: 1.3rem;
+      aspect-ratio: 1/1;
+    }
     .post-button {
       scale: 1.2;
     }
     .userpfp {
       border-radius: 50%;
-      width: 60px;
-      height: 60px;
+      width: 50px;
+      height: 50px;
+      &:hover {
+        outline: 2px solid var(--color-text);
+      }
     }
     .visible {
       display: flex;
@@ -194,17 +258,67 @@ nav {
   display: none;
   flex-direction: column;
   padding: 0.3rem;
-  top: 4rem;
+  top: 5rem;
   right: -1rem;
   min-width: 6rem;
   min-height: 7rem;
   z-index: 99999;
-  .hover-item {
+  gap: 5px;
+  .hover-item,
+  .user-item {
     color: var(--color-text);
     cursor: pointer;
     padding: 0.3rem 1rem;
-    &:hover {
+    &:hover:not(.user-item) {
       background: var(--nav-background);
+    }
+  }
+  .user-item {
+    cursor: default;
+    font-weight: bold;
+    background-color: var(--accent-color);
+  }
+}
+@media (max-width: 700px) {
+  nav {
+    // background-color: red;
+    .icon > h2 {
+      display: none;
+    }
+    .left-section {
+      .input-search,
+      .options {
+        display: none;
+      }
+      .icon {
+        margin-inline-start: 25vw;
+      }
+      .mobile-options {
+        display: block;
+        // position: relative;
+        .mobile-options-tray {
+          display: none;
+          background-color: var(--nav-background);
+          position: absolute;
+          box-sizing: border-box;
+          padding: 1rem;
+          z-index: 999;
+          flex-direction: column;
+          min-height: 10rem;
+          gap: 15px;
+          top: 5rem;
+          left: 0rem;
+          .mobile-input-search {
+            width: var(--window-size);
+          }
+          &.active {
+            display: flex;
+          }
+        }
+        .mobile-tabs > li {
+          display: block;
+        }
+      }
     }
   }
 }

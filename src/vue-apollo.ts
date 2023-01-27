@@ -21,7 +21,7 @@ const httpLink = createHttpLink({
   uri: "https://pripo-db.hasura.app/v1/graphql",
 });
 // const wsLink = new WebSocketLink({
-//   uri: `ws://pripo-db.hasura.app/v1/graphql`,
+//   uri: `wss://pripo-db.hasura.app/v1/graphql`,
 //   options: {
 //     reconnect: true,
 //   },

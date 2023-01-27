@@ -4,22 +4,29 @@ import { ref, inject } from "vue";
 import { useAuth0 } from "@auth0/auth0-vue";
 import { useMutation } from "@vue/apollo-composable";
 import { POST_COMMENT } from "@/graphql";
+import { useEmitter } from "@/composables/EventEmitter";
 
-const emit = defineEmits(["push"]);
+const emitter = useEmitter();
 const commentInp = ref();
 const { user } = useAuth0();
 const blogId: number = inject("blog_id") as number;
 const isPublic = ref(false);
 const focusedOnCommentBox = ref(false);
+
 function postComment(content: string, blogId: number): void {
+  if (!content) {
+    emitter.emit("alert", "Can't post empty comment");
+    return;
+  }
   const { mutate: postComment } = useMutation(POST_COMMENT);
-  postComment({
-    blogId: blogId,
+  const variables = {
+    blog_id: blogId,
     content,
-    name: user.value.preferred_username || user.value.nickname,
-    isPublic: isPublic.value,
-  });
-  emit("push");
+    username: user.value.nickname,
+    is_public: isPublic.value,
+  };
+  postComment(variables);
+  emitter.emit("refetchComments");
   commentInp.value = "";
   focusedOnCommentBox.value = false;
 }
@@ -36,16 +43,22 @@ function setRows(e: any): void {
 }
 
 //Comment Input Toggle
-focusedOnCommentBox.value &&
-  document.addEventListener("click", (e: any) => {
-    if (e.target) {
-      if (e.target.className.includes("input-active-area")) {
-        focusedOnCommentBox.value = true;
-      } else {
-        focusedOnCommentBox.value = false;
-      }
-    }
-  });
+function toggleInputBox() {
+  setTimeout(() => {
+    document.addEventListener(
+      "click",
+      (e: any) => {
+        if (e.target && focusedOnCommentBox.value) {
+          if (!e.target.className.includes("input-active-area")) {
+            focusedOnCommentBox.value = false;
+          }
+        }
+      },
+      { once: true }
+    );
+  }, 10);
+  focusedOnCommentBox.value = true;
+}
 </script>
 <template>
   <div class="comment-input-section" v-if="user?.nickname">
@@ -66,7 +79,7 @@ focusedOnCommentBox.value &&
         @input="setRows"
         :rows="2"
         cols="100"
-        @click="focusedOnCommentBox = true"
+        @click="toggleInputBox"
         required
       ></textarea>
       <div

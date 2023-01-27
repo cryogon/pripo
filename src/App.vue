@@ -15,6 +15,7 @@ onMounted(() => {
       window.location.reload();
     }
   }, 3000);
+
   emitter.on("alert", (d) => {
     alertDescription.value = d as string;
     setTimeout(() => {
