@@ -29,6 +29,7 @@ function redirectTo(address: string, notification: any) {
       <NotificationItem
         v-for="(notification, index) in notifications"
         :key="index"
+        :id="notification.id"
         :content="notification.sender?.comments[0].content"
         :desc="
           notification.type === 'comment'
@@ -36,6 +37,7 @@ function redirectTo(address: string, notification: any) {
             : 'replied to your comment'
         "
         :user="notification.sender?.username"
+        :created_at="notification.created_at"
         @click="redirectTo(notification.type, notification)"
       />
     </div>
@@ -49,7 +51,7 @@ section {
   padding: 0.5rem;
   position: absolute;
   top: 4rem;
-  left: -11rem;
+  right: -5rem;
   min-width: 20rem;
   min-height: 10rem;
   background-color: var(--nav-background);

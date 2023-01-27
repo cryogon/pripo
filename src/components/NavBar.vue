@@ -110,7 +110,7 @@ window.addEventListener("resize", () => {
           <div class="notification-container">
             <BellIcon
               class="notification-icon"
-              @click="isNotificationActive = !isNotificationActive"
+              @click.prevent="isNotificationActive = !isNotificationActive"
             />
             <NotificationCenter
               class="notifications"

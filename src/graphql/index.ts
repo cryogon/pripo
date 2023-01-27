@@ -397,6 +397,7 @@ export const LISTEN_NOTIFICATION = gql`
       order_by: { created_at: desc }
       where: { has_read: { _eq: false } }
     ) {
+      id
       blog {
         id
       }
@@ -410,6 +411,21 @@ export const LISTEN_NOTIFICATION = gql`
       type
       has_read
       comment_id
+      created_at
+    }
+  }
+`;
+
+export const MARK_NOTIFICATION_READ = gql`
+  mutation markRead($id: Int!) {
+    update_user_notifications(
+      _set: { has_read: true }
+      where: { id: { _eq: $id } }
+    ) {
+      returning {
+        id
+        has_read
+      }
     }
   }
 `;
