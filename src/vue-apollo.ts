@@ -5,7 +5,8 @@ import {
   split,
 } from "@apollo/client/core";
 import { provideApolloClient } from "@vue/apollo-composable";
-import { WebSocketLink } from "@apollo/client/link/ws";
+import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
+import { createClient } from "graphql-ws";
 import { getMainDefinition } from "@apollo/client/utilities";
 const token = localStorage.getItem("token");
 const guestUser = {
@@ -21,17 +22,16 @@ const httpLink = createHttpLink({
   headers,
   uri: "https://pripo-db.hasura.app/v1/graphql",
 });
-const wsLink = new WebSocketLink({
-  uri: `wss://pripo-db.hasura.app/v1/graphql`,
-  options: {
-    reconnect: true,
+const wsLink = new GraphQLWsLink(
+  createClient({
+    url: `wss://pripo-db.hasura.app/v1/graphql`,
     connectionParams: {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     },
-  },
-});
+  })
+);
 
 //Will use later when subscription will be implemented
 const link = split(

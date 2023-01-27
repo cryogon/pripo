@@ -25,7 +25,7 @@ function getTimeDifference(oldtime: Date, currtime: Date) {
   const timeInHours = timeInMinutes / 60;
   const timeInDays = timeInHours / 24;
   if (timeInSeconds < 60) {
-    return [timeInSeconds, "seconds"];
+    return [Math.round(timeInSeconds), "seconds"];
   }
   if (timeInMinutes < 60) {
     return [Math.round(timeInMinutes), "minute"];
@@ -100,7 +100,7 @@ function markRead(id: number) {
     display: none;
     margin-block-start: 0.3rem;
     height: 1.4rem;
-    padding: 0.2rem;
+    padding: 0.2rem 0.5rem;
     &:hover {
       background-color: var(--link-hover-background);
     }

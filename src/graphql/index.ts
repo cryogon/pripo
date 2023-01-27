@@ -423,7 +423,16 @@ export const MARK_NOTIFICATION_READ = gql`
       _set: { has_read: true }
       where: { id: { _eq: $id } }
     ) {
-      affected_rows
+      returning {
+        id
+        has_read
+        blog_id
+        comment_id
+        created_at
+        notification_by
+        notification_for
+        type
+      }
     }
   }
 `;
@@ -434,7 +443,16 @@ export const MARK_ALL_NOTIFICATION_READ = gql`
       _set: { has_read: true }
       where: { notification_for: { _eq: $username } }
     ) {
-      affected_rows
+      returning {
+        id
+        has_read
+        blog_id
+        comment_id
+        created_at
+        notification_by
+        notification_for
+        type
+      }
     }
   }
 `;

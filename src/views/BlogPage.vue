@@ -36,7 +36,6 @@ const blogTitle = ref<HTMLHeadingElement>();
 const blogTags = ref();
 
 provide("blog_id", blogId);
-
 function showFormatedDate(date: Date | string | number) {
   return Intl.DateTimeFormat("en", {
     day: "2-digit",
@@ -65,7 +64,8 @@ watch(result, () => {
   }
 });
 
-onError(() => {
+onError((e) => {
+  console.log(e);
   stop();
 });
 function setLike() {

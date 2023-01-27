@@ -7,7 +7,7 @@ import NotificationItem from "./NotificationItem.vue";
 const { result } = useSubscription(LISTEN_NOTIFICATION);
 const notifications = ref<any[]>([]);
 watch(result, (data) => {
-  notifications.value = data.user_notifications;
+  notifications.value = data.user_notifications || [];
 });
 function redirectTo(address: string, notification: any) {
   switch (address) {
@@ -67,7 +67,7 @@ section {
   position: absolute;
   top: 4rem;
   right: -5rem;
-  min-width: 20rem;
+  min-width: 23rem;
   min-height: 10rem;
   background-color: var(--nav-background);
   z-index: 99;
