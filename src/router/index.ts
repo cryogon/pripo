@@ -35,6 +35,22 @@ const router = createRouter({
       component: () => import("@/views/NotFound.vue"),
     },
   ],
+  scrollBehavior(to, from, savedPosition) {
+    if (to.hash) {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          if (savedPosition) {
+            resolve(savedPosition);
+          } else {
+            resolve({
+              el: to.hash,
+              top: -10,
+            });
+          }
+        }, 200);
+      });
+    }
+  },
 });
 
 router.afterEach(() => {

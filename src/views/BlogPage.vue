@@ -34,6 +34,7 @@ const isPostPublic = ref(false);
 const blogContent = ref<HTMLParagraphElement>();
 const blogTitle = ref<HTMLHeadingElement>();
 const blogTags = ref();
+
 provide("blog_id", blogId);
 
 function showFormatedDate(date: Date | string | number) {
@@ -207,7 +208,7 @@ function editBlog() {
         >
       </div>
     </section>
-    <CommentSection :blog-id="blogId" />
+    <CommentSection :blog="blog" />
   </main>
 
   <main v-else-if="loading && !error">Loading...</main>

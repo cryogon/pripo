@@ -1,19 +1,22 @@
 <script setup lang="ts">
 import router from "@/router";
-import { ref, inject } from "vue";
+import { ref } from "vue";
 import { useAuth0 } from "@auth0/auth0-vue";
 import { useMutation } from "@vue/apollo-composable";
 import { POST_COMMENT } from "@/graphql";
 import { useEmitter } from "@/composables/EventEmitter";
+import type { Blog } from "@/types";
 
+defineProps<{
+  blog: Blog;
+}>();
 const emitter = useEmitter();
 const commentInp = ref();
 const { user } = useAuth0();
-const blogId: number = inject("blog_id") as number;
 const isPublic = ref(false);
 const focusedOnCommentBox = ref(false);
 
-function postComment(content: string, blogId: number): void {
+function postComment(content: string, blogId: number, author: string): void {
   if (!content) {
     emitter.emit("alert", "Can't post empty comment");
     return;
@@ -24,6 +27,7 @@ function postComment(content: string, blogId: number): void {
     content,
     username: user.value.nickname,
     is_public: isPublic.value,
+    receiver: author,
   };
   postComment(variables);
   emitter.emit("refetchComments");
@@ -89,7 +93,7 @@ function toggleInputBox() {
         <button
           type="submit"
           class="post-button input-active-area"
-          @click="postComment(commentInp, blogId)"
+          @click="postComment(commentInp, blog.id, blog?.user.username)"
         >
           Post
         </button>

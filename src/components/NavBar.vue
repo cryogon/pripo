@@ -8,6 +8,7 @@ import { useAuth0 } from "@auth0/auth0-vue";
 import LoginButton from "./LoginButton.vue";
 import BellIcon from "./Icons/BellIcon.vue";
 import HamBurger from "./Icons/HamBurger.vue";
+import NotificationCenter from "./NotificationCenter.vue";
 // import { setContext } from "@apollo/client/link/context";
 const isDropDownVisible = ref(false);
 const isDark = useDark();
@@ -16,6 +17,7 @@ const navbar = ref();
 const compactNavbar = ref(false);
 const { y } = useScroll(window);
 const isMobileOptionVisible = ref(false);
+const isNotificationActive = ref(false);
 const {
   user,
   logout: signout,
@@ -51,18 +53,7 @@ function toggleDropDown() {
 }
 
 function toggleMobileOptions() {
-  if (!isMobileOptionVisible.value) {
-    setTimeout(() => {
-      document.addEventListener(
-        "click",
-        () => {
-          isMobileOptionVisible.value = false;
-        },
-        { once: true }
-      );
-    }, 10);
-  }
-  isMobileOptionVisible.value = true;
+  isMobileOptionVisible.value = !isMobileOptionVisible.value;
 }
 function logout() {
   signout({ returnTo: window.location.origin });
@@ -81,7 +72,6 @@ async function openSetting() {
 }
 window.addEventListener("resize", () => {
   windowWidth.value = window.innerWidth - 49;
-  console.log(windowWidth.value);
 });
 </script>
 <template>
@@ -117,7 +107,16 @@ window.addEventListener("resize", () => {
       <div class="buttons">
         <LoginButton v-if="!isAuthenticated" />
         <div class="user-bar" v-else-if="user && isAuthenticated">
-          <BellIcon class="notification-icon" />
+          <div class="notification-container">
+            <BellIcon
+              class="notification-icon"
+              @click="isNotificationActive = !isNotificationActive"
+            />
+            <NotificationCenter
+              class="notifications"
+              v-show="isNotificationActive"
+            />
+          </div>
           <img
             :src="user.picture"
             alt="userImg"
@@ -231,9 +230,12 @@ nav {
     align-items: center;
     gap: 20px;
     position: relative;
-    .notification-icon {
-      width: 1.3rem;
-      aspect-ratio: 1/1;
+    .notification-container {
+      position: relative;
+      .notification-icon {
+        width: 1.3rem;
+        aspect-ratio: 1/1;
+      }
     }
     .post-button {
       scale: 1.2;

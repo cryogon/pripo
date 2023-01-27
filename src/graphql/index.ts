@@ -23,7 +23,16 @@ export const INSERT_BLOG = gql`
         }
       ]
     ) {
-      affected_rows
+      returning {
+        id
+        title
+        content
+        is_public
+        tags
+        username
+        likes
+        shares
+      }
     }
   }
 `;
@@ -84,10 +93,11 @@ export const GET_BLOG = gql`
 
 export const POST_COMMENT = gql`
   mutation submitComment(
-    $blog_id: Int
+    $blog_id: Int!
     $content: String
     $username: String
     $is_public: Boolean!
+    $receiver: String!
   ) {
     insert_comments(
       objects: {
@@ -104,9 +114,28 @@ export const POST_COMMENT = gql`
         id
         is_edited
         is_public
-        liked_users {
+        user {
           id
+          username
+          profile_picture
         }
+      }
+    }
+    insert_user_notifications(
+      objects: {
+        notification_by: $username
+        notification_for: $receiver
+        type: "comment"
+        blog_id: $blog_id
+      }
+    ) {
+      returning {
+        id
+        has_read
+        notification_by
+        notification_for
+        blog_id
+        comment_id
       }
     }
   }
@@ -119,6 +148,7 @@ export const POST_REPLY = gql`
     $name: String!
     $parent_id: Int!
     $isPublic: Boolean!
+    $receiver: String!
   ) {
     insert_comments(
       objects: {
@@ -129,7 +159,38 @@ export const POST_REPLY = gql`
         is_public: $isPublic
       }
     ) {
-      affected_rows
+      returning {
+        id
+        blog_id
+        content
+        username
+        parent_id
+        is_edited
+        is_public
+        user {
+          id
+          username
+          profile_picture
+        }
+      }
+    }
+    insert_user_notifications(
+      objects: {
+        notification_by: $name
+        notification_for: $receiver
+        type: "reply"
+        comment_id: $parent_id
+        blog_id: $blogId
+      }
+    ) {
+      returning {
+        id
+        has_read
+        notification_by
+        notification_for
+        blog_id
+        comment_id
+      }
     }
   }
 `;
@@ -236,7 +297,14 @@ export const SET_COMMENT_LIKE = gql`
       affected_rows
     }
     update_comments(_inc: { likes: 1 }, where: { id: { _eq: $commentId } }) {
-      affected_rows
+      returning {
+        id
+        likes
+        liked_users {
+          id
+          user_id
+        }
+      }
     }
   }
 `;
@@ -251,7 +319,14 @@ export const REMOVE_COMMENT_LIKE = gql`
       affected_rows
     }
     update_comments(_inc: { likes: -1 }, where: { id: { _eq: $commentId } }) {
-      affected_rows
+      returning {
+        id
+        likes
+        liked_users {
+          id
+          user_id
+        }
+      }
     }
   }
 `;
@@ -266,7 +341,12 @@ export const EDIT_COMMENT = gql`
       _set: { content: $content, is_public: $isPublic, is_edited: true }
       where: { id: { _eq: $commentId } }
     ) {
-      affected_rows
+      returning {
+        id
+        content
+        is_public
+        is_edited
+      }
     }
   }
 `;
@@ -307,6 +387,29 @@ export const DELETE_COMMENT = gql`
         id
         username
       }
+    }
+  }
+`;
+
+export const LISTEN_NOTIFICATION = gql`
+  subscription listenNotification {
+    user_notifications(
+      order_by: { created_at: desc }
+      where: { has_read: { _eq: false } }
+    ) {
+      blog {
+        id
+      }
+      sender {
+        username
+        comments(order_by: { updated_at: desc }, limit: 1) {
+          id
+          content
+        }
+      }
+      type
+      has_read
+      comment_id
     }
   }
 `;
