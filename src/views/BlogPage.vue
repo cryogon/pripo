@@ -64,8 +64,7 @@ watch(result, () => {
   }
 });
 
-onError((e) => {
-  console.log(e);
+onError(() => {
   stop();
 });
 function setLike() {

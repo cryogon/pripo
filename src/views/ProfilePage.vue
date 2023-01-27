@@ -29,9 +29,8 @@ onResult((r) => {
   }
 });
 
-onError((e) => {
-  console.log(e);
-  console.log("Error");
+onError(() => {
+  console.error("Some Error Occured In Accessing DB! try to refetch");
 });
 
 watch(y, () => {

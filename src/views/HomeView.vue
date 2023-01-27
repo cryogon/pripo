@@ -3,8 +3,11 @@ import PostCard from "@/components/PostCard.vue";
 import { useQuery } from "@vue/apollo-composable";
 import { GET_ALL_BLOGS } from "@/graphql";
 
-const blogs = useQuery(GET_ALL_BLOGS).result;
+const { result: blogs, onError } = useQuery(GET_ALL_BLOGS);
 localStorage.setItem("currentTitle", "Pripo");
+onError(() => {
+  console.error("Some Error Occured! Try to refetch");
+});
 </script>
 <template>
   <main v-if="blogs?.blogs">
