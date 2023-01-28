@@ -67,7 +67,7 @@ section {
   position: absolute;
   top: 4rem;
   right: -5rem;
-  min-width: 23rem;
+  min-width: 21rem;
   min-height: 10rem;
   background-color: var(--nav-background);
   z-index: 99;
