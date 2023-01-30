@@ -463,6 +463,7 @@ export const GET_NOTIFICATIONS = gql`
       where: { notification_for: { _eq: $user } }
       order_by: { created_at: desc }
     ) {
+      id
       sender {
         username
         profile_picture

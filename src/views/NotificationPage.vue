@@ -1,24 +1,27 @@
 <script setup lang="ts">
-import { useQuery } from "@vue/apollo-composable";
+import { useMutation, useQuery } from "@vue/apollo-composable";
 import CheckIcon from "../components/Icons/CheckIcon.vue";
-import { GET_NOTIFICATIONS } from "@/graphql";
+import { GET_NOTIFICATIONS, MARK_NOTIFICATION_READ } from "@/graphql";
 import { useAuth0 } from "@auth0/auth0-vue";
 import { ref } from "vue";
 import { getTimeDifference } from "@/helper";
 const { user } = useAuth0();
-const { onError, onResult } = useQuery(GET_NOTIFICATIONS, {
+const { onResult } = useQuery(GET_NOTIFICATIONS, {
   user: user.value.nickname,
 });
 const notifications = ref();
+const { mutate } = useMutation(MARK_NOTIFICATION_READ);
+
 onResult((r) => {
   notifications.value = r.data?.user_notifications;
   console.log(notifications.value);
 });
-onError((e) => {
-  console.log(e);
-});
+
 function dateFormatter(notification: any) {
   return getTimeDifference(new Date(notification.created_at), new Date());
+}
+function markRead(id: number) {
+  mutate({ id });
 }
 </script>
 <template>
@@ -53,7 +56,11 @@ function dateFormatter(notification: any) {
             </div>
           </div>
           <div class="markread-and-date">
-            <span class="check-icon-background">
+            <span
+              class="check-icon-background"
+              v-if="!notification.has_read"
+              @click="markRead(notification.id)"
+            >
               <CheckIcon class="checkicon" />
             </span>
             <span class="date">
@@ -105,6 +112,7 @@ main {
           display: flex;
           flex-direction: column;
           align-items: center;
+          justify-content: flex-end;
 
           .check-icon-background {
             padding: 0.3rem;
