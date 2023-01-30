@@ -4,6 +4,7 @@ import { ref } from "vue";
 import BellIcon from "./Icons/BellIcon.vue";
 import CheckIcon from "./Icons/CheckIcon.vue";
 import { MARK_NOTIFICATION_READ } from "@/graphql";
+import { getTimeDifference } from "@/helper";
 const props = defineProps<{
   user: string;
   desc: string;
@@ -12,32 +13,7 @@ const props = defineProps<{
   created_at: string;
 }>();
 const date = new Date(props.created_at);
-const timeFormatter = new Intl.RelativeTimeFormat("en", {
-  localeMatcher: "best fit",
-  numeric: "always",
-  style: "long",
-});
 const timeDifference = ref(getTimeDifference(date, new Date()));
-
-function getTimeDifference(oldtime: Date, currtime: Date) {
-  const timeInSeconds = (currtime.getTime() - oldtime.getTime()) / 1000; // Converted Miliseconds to seconds
-  const timeInMinutes = timeInSeconds / 60;
-  const timeInHours = timeInMinutes / 60;
-  const timeInDays = timeInHours / 24;
-  if (timeInSeconds < 60) {
-    return [Math.round(timeInSeconds), "seconds"];
-  }
-  if (timeInMinutes < 60) {
-    return [Math.round(timeInMinutes), "minute"];
-  }
-  if (timeInHours < 24) {
-    return [Math.round(timeInHours), "hour"];
-  }
-  if (timeInDays < 30) {
-    return [Math.round(timeInDays), "day"];
-  }
-  return [Math.round(timeInDays / 30), "month"];
-}
 
 function markRead(id: number) {
   const { mutate } = useMutation(MARK_NOTIFICATION_READ);
@@ -59,9 +35,7 @@ function markRead(id: number) {
           }}
         </p>
       </div>
-      <span class="time">{{
-        timeFormatter.format(-timeDifference[0], timeDifference[1] as any)
-      }}</span>
+      <span class="time">{{ -timeDifference }}</span>
     </div>
     <div class="check">
       <CheckIcon @click="markRead(id)" />

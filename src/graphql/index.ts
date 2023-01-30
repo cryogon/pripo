@@ -456,3 +456,24 @@ export const MARK_ALL_NOTIFICATION_READ = gql`
     }
   }
 `;
+
+export const GET_NOTIFICATIONS = gql`
+  query getNotifications($user: String!) {
+    user_notifications(
+      where: { notification_for: { _eq: $user } }
+      order_by: { created_at: desc }
+    ) {
+      sender {
+        username
+        profile_picture
+        comments(order_by: { updated_at: desc }, limit: 1) {
+          id
+          content
+        }
+      }
+      type
+      created_at
+      has_read
+    }
+  }
+`;
