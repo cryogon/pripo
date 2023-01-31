@@ -19,7 +19,6 @@ const {
 } = !isNaN(+userParam)
   ? useQuery(GET_USER_BY_ID, { id: userParam })
   : useQuery(GET_USER_BY_USERNAME, { username: userParam });
-
 const userFound = ref(false);
 
 onResult((r) => {
@@ -31,8 +30,7 @@ onResult((r) => {
 });
 
 onError(() => {
-  // router.push("/404");
-  console.log("Error");
+  console.error("Some Error Occured In Accessing DB! try to refetch");
 });
 
 watch(y, () => {

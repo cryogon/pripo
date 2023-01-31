@@ -6,11 +6,12 @@ import { useQuery } from "@vue/apollo-composable";
 import { GET_COMMENTS } from "@/graphql";
 import { watch, ref } from "vue";
 import { useEmitter } from "@/composables/EventEmitter";
+import type { Blog } from "@/types";
 const props = defineProps<{
-  blogId: number;
+  blog: Blog;
 }>();
 const { result: comments, refetch } = useQuery(GET_COMMENTS, {
-  blogId: props.blogId,
+  blogId: props.blog?.id,
 });
 const builder = ref(new CommentBuilder());
 const currComments = ref();
@@ -38,7 +39,7 @@ emitter.on("refetchComments", () => {
 
 <template>
   <section class="comment-section">
-    <CommentInputBox />
+    <CommentInputBox :blog="blog" />
 
     <div
       class="comments"

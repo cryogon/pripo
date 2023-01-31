@@ -22,6 +22,11 @@ const shouldPostPublicaly = ref(false);
  * @param id uniquely identifies the current comment user clicked on
  */
 async function submitReply(cmnt: Comment) {
+  if (!content.value) {
+    emitter.emit("alert", "Reply can't be empty");
+    emitter.emit("replied");
+    return;
+  }
   const { mutate } = useMutation(POST_REPLY);
   mutate({
     blogId: cmnt.blog_id,
@@ -29,6 +34,7 @@ async function submitReply(cmnt: Comment) {
     name: user.value.preferred_username || user.value.nickname,
     parent_id: cmnt.id,
     isPublic: shouldPostPublicaly.value,
+    receiver: cmnt.user.username,
   });
 
   //Used To toggle reply input box - handled in CommentCard component;
