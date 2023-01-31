@@ -5,16 +5,16 @@ import { GET_NOTIFICATIONS, MARK_NOTIFICATION_READ } from "@/graphql";
 import { useAuth0 } from "@auth0/auth0-vue";
 import { ref } from "vue";
 import { getTimeDifference } from "@/helper";
+import router from "@/router";
 const { user } = useAuth0();
 const { onResult } = useQuery(GET_NOTIFICATIONS, {
   user: user.value.nickname,
 });
 const notifications = ref();
 const { mutate } = useMutation(MARK_NOTIFICATION_READ);
-
+const filter = ref("all");
 onResult((r) => {
   notifications.value = r.data?.user_notifications;
-  console.log(notifications.value);
 });
 
 function dateFormatter(notification: any) {
@@ -23,20 +23,51 @@ function dateFormatter(notification: any) {
 function markRead(id: number) {
   mutate({ id });
 }
+function redirectTo(type: string, notification: any) {
+  switch (type) {
+    case "comment":
+      router.push(
+        `/posts/${notification.blog.id}#c${notification.sender?.comments[0].id}`
+      );
+      break;
+    case "reply":
+      router.push(`/posts/${notification.blog.id}#c${notification.comment_id}`);
+      break;
+  }
+}
+
+function getFilteredComments(): any {
+  if (filter.value === "all") {
+    return notifications.value;
+  }
+  if (filter.value === "read") {
+    return notifications.value.filter((n: any) => n.has_read === true);
+  }
+  return notifications.value.filter((n: any) => n.has_read === false);
+}
 </script>
 <template>
   <main>
     <h1>Notifications</h1>
     <section class="notification-card">
       <div class="filters">
-        <div role="button" class="all">All</div>
+        <div role="button" class="filter-option" @click="filter = 'all'">
+          All
+        </div>
+        <div role="button" class="filter-option" @click="filter = 'unread'">
+          Unread
+        </div>
+        <div role="button" class="filter-option" @click="filter = 'read'">
+          Read
+        </div>
       </div>
-      <div class="notifications-container">
+      <div class="notifications-container" v-if="getFilteredComments()?.length">
         <div
-          v-for="(notification, index) in notifications"
+          v-for="(notification, index) in getFilteredComments()"
           :key="index"
           class="notification-item"
           :class="{ read: notification.has_read }"
+          @click="redirectTo(notification.type, notification)"
         >
           <img
             :src="notification.sender.profile_picture"
@@ -69,6 +100,7 @@ function markRead(id: number) {
           </div>
         </div>
       </div>
+      <div v-else>No Notification Found</div>
     </section>
   </main>
 </template>
@@ -80,18 +112,21 @@ main {
     padding: 0.2rem 1rem;
     .filters {
       display: flex;
-      .all {
+      .filter-option {
         margin: 0.4rem;
         padding: 0.4rem 1.4rem;
         border-radius: 2rem;
         background-color: var(--color-background);
+        cursor: pointer;
       }
     }
     .notifications-container {
       .notification-item {
-        margin-block: 0.2rem 1rem;
+        margin-block: 0.7rem 1.5rem;
+        min-height: 4rem;
+        cursor: pointer;
         &.read {
-          opacity: 0.5;
+          opacity: 0.8;
         }
         background-color: var(--color-background);
         padding: 0.5rem;
@@ -103,8 +138,13 @@ main {
           border-radius: 50%;
         }
         .notification-info {
+          .user-info {
+            margin-block-start: 0.2rem;
+          }
           .content {
+            margin-block: 0.4rem;
             color: #dae937;
+            font-size: 13px;
           }
         }
         .markread-and-date {

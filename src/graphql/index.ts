@@ -475,6 +475,7 @@ export const GET_NOTIFICATIONS = gql`
       type
       created_at
       has_read
+      blog_id
     }
   }
 `;
