@@ -179,7 +179,6 @@ export const POST_REPLY = gql`
         notification_by: $name
         notification_for: $receiver
         type: "reply"
-        comment_id: $parent_id
         blog_id: $blogId
       }
     ) {
@@ -189,7 +188,6 @@ export const POST_REPLY = gql`
         notification_by
         notification_for
         blog_id
-        comment_id
       }
     }
   }

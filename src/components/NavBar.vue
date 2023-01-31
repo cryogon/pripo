@@ -99,7 +99,12 @@ window.addEventListener("resize", () => {
           <AppIcon class="icon-image" />
           <h2>pripo</h2>
         </div>
-        <input type="search" placeholder="search" class="input-search" />
+        <input
+          type="search"
+          placeholder="search"
+          class="input-search"
+          @keydown.enter="router.push('/search')"
+        />
         <ul class="options">
           <li><router-link to="/contact">Contact</router-link></li>
         </ul>

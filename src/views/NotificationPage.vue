@@ -6,6 +6,7 @@ import { useAuth0 } from "@auth0/auth0-vue";
 import { ref } from "vue";
 import { getTimeDifference } from "@/helper";
 import router from "@/router";
+
 const { user } = useAuth0();
 const { onResult } = useQuery(GET_NOTIFICATIONS, {
   user: user.value.nickname,
@@ -13,6 +14,7 @@ const { onResult } = useQuery(GET_NOTIFICATIONS, {
 const notifications = ref();
 const { mutate } = useMutation(MARK_NOTIFICATION_READ);
 const filter = ref("all");
+
 onResult((r) => {
   notifications.value = r.data?.user_notifications;
 });
@@ -51,13 +53,28 @@ function getFilteredComments(): any {
     <h1>Notifications</h1>
     <section class="notification-card">
       <div class="filters">
-        <div role="button" class="filter-option" @click="filter = 'all'">
+        <div
+          role="button"
+          class="filter-option"
+          @click="filter = 'all'"
+          :class="{ selected: filter === 'all' }"
+        >
           All
         </div>
-        <div role="button" class="filter-option" @click="filter = 'unread'">
+        <div
+          role="button"
+          class="filter-option"
+          @click="filter = 'unread'"
+          :class="{ selected: filter === 'unread' }"
+        >
           Unread
         </div>
-        <div role="button" class="filter-option" @click="filter = 'read'">
+        <div
+          role="button"
+          class="filter-option"
+          @click="filter = 'read'"
+          :class="{ selected: filter === 'read' }"
+        >
           Read
         </div>
       </div>
@@ -118,6 +135,9 @@ main {
         border-radius: 2rem;
         background-color: var(--color-background);
         cursor: pointer;
+        &.selected {
+          background-color: #00000000;
+        }
       }
     }
     .notifications-container {
