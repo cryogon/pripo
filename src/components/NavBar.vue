@@ -25,6 +25,8 @@ const {
   getAccessTokenSilently,
 } = useAuth0();
 const windowWidth = ref(window.innerWidth - 49);
+const searchInputData = ref("");
+
 watch(y, () => {
   if (Math.round(y.value) > 130) {
     compactNavbar.value = true;
@@ -73,6 +75,11 @@ async function openSetting() {
 window.addEventListener("resize", () => {
   windowWidth.value = window.innerWidth - 49;
 });
+
+function search() {
+  router.push({ path: "/search", query: { q: searchInputData.value } });
+  searchInputData.value = "";
+}
 </script>
 <template>
   <!-- <Suspense> -->
@@ -89,6 +96,8 @@ window.addEventListener("resize", () => {
               type="search"
               placeholder="search"
               class="mobile-input-search"
+              v-model="searchInputData"
+              @keydown.enter="search"
             />
             <ul class="mobile-tabs">
               <li><router-link to="/contact">Contact</router-link></li>
@@ -103,7 +112,8 @@ window.addEventListener("resize", () => {
           type="search"
           placeholder="search"
           class="input-search"
-          @keydown.enter="router.push('/search')"
+          @keydown.enter="search"
+          v-model="searchInputData"
         />
         <ul class="options">
           <li><router-link to="/contact">Contact</router-link></li>

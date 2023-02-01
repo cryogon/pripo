@@ -1,15 +1,21 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import type { User } from "@/types";
+
+defineProps<{
+  user: User | any;
+}>();
+</script>
 <template>
-  <div class="post-item">
+  <div class="user-item">
     <img
-      src="https://avatars.githubusercontent.com/u/75153974?v=4"
+      :src="user.profile_picture"
       alt="user-avatar"
       referrerpolicy="no-referrer"
       class="user-avatar"
     />
     <div class="user-info">
-      <span class="name">Jatin Thakur</span>
-      <span class="username">@cryogon</span>
+      <span class="name">{{ user.name }}</span>
+      <span class="username">{{ "@" + user.username }}</span>
     </div>
     <div class="options">
       <button class="follow">Follow</button>
@@ -17,7 +23,7 @@
   </div>
 </template>
 <style scoped lang="scss">
-.post-item {
+.user-item {
   margin-block: 0.7rem 1.5rem;
   min-height: 4rem;
   cursor: pointer;

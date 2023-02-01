@@ -477,3 +477,32 @@ export const GET_NOTIFICATIONS = gql`
     }
   }
 `;
+
+export const GET_FILTERED_POSTS = gql`
+  query getFilteredPosts($query: String!) {
+    blogs(
+      where: {
+        _or: [
+          { title: { _ilike: $query } }
+          { content: { _ilike: $query } }
+          { username: { _ilike: $query } }
+        ]
+      }
+    ) {
+      id
+      title
+      content
+      likes
+    }
+    users(
+      where: {
+        _or: [{ name: { _ilike: $query } }, { username: { _ilike: $query } }]
+      }
+    ) {
+      id
+      name
+      username
+      profile_picture
+    }
+  }
+`;
