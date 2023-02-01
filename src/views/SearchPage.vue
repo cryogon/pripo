@@ -1,4 +1,6 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import SearchUserItem from "../components/SearchUserItem.vue";
+</script>
 <template>
   <main>
     <h1>Search</h1>
@@ -7,7 +9,9 @@
         <div role="button" class="filter-option">Posts</div>
         <div role="button" class="filter-option">Users</div>
       </div>
-      <div class="search-item-container"></div>
+      <div class="search-item-container">
+        <SearchUserItem />
+      </div>
     </section>
   </main>
 </template>
