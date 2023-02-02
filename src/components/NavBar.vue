@@ -26,6 +26,7 @@ const {
 } = useAuth0();
 const windowWidth = ref(window.innerWidth - 49);
 const searchInputData = ref("");
+const filter = ref("posts");
 
 watch(y, () => {
   if (Math.round(y.value) > 130) {
@@ -77,7 +78,22 @@ window.addEventListener("resize", () => {
 });
 
 function search() {
-  router.push({ path: "/search", query: { q: searchInputData.value } });
+  if (searchInputData.value.startsWith("user:")) {
+    filter.value = "users";
+    searchInputData.value = searchInputData.value.replace("user:", "");
+  }
+  if (searchInputData.value.startsWith("tag:")) {
+    filter.value = "tags";
+    searchInputData.value = searchInputData.value.replace("tag:", "");
+  }
+  if (searchInputData.value.startsWith("#")) {
+    filter.value = "tags";
+    searchInputData.value = searchInputData.value.replace("#", "");
+  }
+  router.push({
+    path: "/search",
+    query: { q: searchInputData.value, f: filter.value },
+  });
   searchInputData.value = "";
 }
 </script>

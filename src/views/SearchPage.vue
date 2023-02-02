@@ -3,15 +3,37 @@ import router from "@/router";
 import { useQuery } from "@vue/apollo-composable";
 import SearchPostItem from "../components/SearchPostItem.vue";
 import SearchUserItem from "../components/SearchUserItem.vue";
-import { GET_FILTERED_POSTS } from "@/graphql";
-import { ref } from "vue";
+import { GET_FILTERED_POSTS, FILTER_BY_TAGS } from "@/graphql";
+import { ref, onMounted } from "vue";
 const results = ref();
 const filter = ref("posts");
-const { onResult, loading } = useQuery(GET_FILTERED_POSTS, {
-  query: `%${router.currentRoute.value.query.q}%`,
-});
+const { onResult, loading } =
+  router.currentRoute.value.query.f === "tags"
+    ? useQuery(FILTER_BY_TAGS, { tags: router.currentRoute.value.query.q })
+    : useQuery(GET_FILTERED_POSTS, {
+        query: `%${router.currentRoute.value.query.q}%`,
+      });
+
+function changeFilter(_filter: string) {
+  filter.value = _filter;
+  router.replace({
+    query: { q: router.currentRoute.value.query.q, f: _filter },
+  });
+}
+
+function changeFilterOnMount() {
+  if (router.currentRoute.value.query.f === "posts") {
+    filter.value = "posts";
+  }
+  if (router.currentRoute.value.query.f === "users") {
+    filter.value = "users";
+  }
+}
 onResult((r) => {
   results.value = r.data;
+});
+onMounted(() => {
+  changeFilterOnMount();
 });
 </script>
 <template>
@@ -19,10 +41,10 @@ onResult((r) => {
     <h1>Search</h1>
     <section class="search-card">
       <div class="filters">
-        <div role="button" class="filter-option" @click="filter = 'posts'">
+        <div role="button" class="filter-option" @click="changeFilter('posts')">
           Posts
         </div>
-        <div role="button" class="filter-option" @click="filter = 'users'">
+        <div role="button" class="filter-option" @click="changeFilter('users')">
           Users
         </div>
       </div>

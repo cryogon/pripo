@@ -47,7 +47,8 @@ const router = createRouter({
   ],
   scrollBehavior(to, from, savedPosition) {
     if (to.hash) {
-      return new Promise((resolve, reject) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      return new Promise((resolve, _reject) => {
         setTimeout(() => {
           if (savedPosition) {
             resolve(savedPosition);

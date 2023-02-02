@@ -5,7 +5,7 @@ export const INSERT_BLOG = gql`
     $title: String!
     $content: String!
     $isPublic: Boolean!
-    $tags: json!
+    $tags: jsonb!
     $username: String!
     $likes: Int!
     $shares: Int
@@ -355,7 +355,7 @@ export const EDIT_BLOG = gql`
     $title: String!
     $content: String!
     $isPublic: Boolean!
-    $tags: json!
+    $tags: jsonb!
   ) {
     update_blogs(
       _set: {
@@ -503,6 +503,17 @@ export const GET_FILTERED_POSTS = gql`
       name
       username
       profile_picture
+    }
+  }
+`;
+
+export const FILTER_BY_TAGS = gql`
+  query getFilteredPosts($tags: jsonb!) {
+    blogs(where: { tags: { _contains: $tags } }) {
+      id
+      title
+      content
+      likes
     }
   }
 `;
