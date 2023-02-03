@@ -46,7 +46,17 @@ const link = split(
   wsLink,
   httpLink
 );
-const cache = new InMemoryCache();
+const cache = new InMemoryCache({
+  typePolicies: {
+    blogs: {
+      fields: {
+        favourites: {
+          merge: false,
+        },
+      },
+    },
+  },
+});
 export const apolloClient = new ApolloClient({
   link,
   cache,

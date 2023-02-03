@@ -64,4 +64,14 @@ export class CommentBuilder {
       children: [],
     };
   }
+  returnJsx(callback: (node: Comment | null) => void) {
+    const arr = [] as any;
+    function walk(node: Comment | null) {
+      callback(node);
+      node?.children && node.children.forEach(walk);
+      arr.push(node);
+    }
+    walk(this.root);
+    return arr;
+  }
 }
