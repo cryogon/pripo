@@ -11,16 +11,15 @@ import CommentCardv2 from "./CommentCardv2.vue";
 const props = defineProps<{
   blog: Blog;
 }>();
-const { result: comments, refetch } = useQuery(GET_COMMENTS, {
+const { result, refetch } = useQuery(GET_COMMENTS, {
   blogId: props.blog?.id,
 });
 const builder = ref(new CommentBuilder());
-const currComments = ref();
-
-watch(comments, () => {
+const comments = ref();
+watch(result, () => {
   builder.value.clear();
-  builder.value.addMultiple(comments.value.comments);
-  currComments.value = builder.value.root?.children;
+  builder.value.addMultiple(result.value.comments);
+  comments.value = builder.value.root?.children;
 });
 //I have a idea but I am just laze to implement it now
 // I will just add new data in CommentBuilder in client side so that they can see it updating in realtime seamlessly
@@ -41,52 +40,39 @@ emitter.on("refetchComments", () => {
 <template>
   <section class="comment-section">
     <CommentInputBox :blog="blog" />
-
-    <div
-      class="comments"
-      v-for="comment in currComments"
-      :key="(comment.id as number)"
-    >
-      <div class="comment-reply-container">
-        <CommentCard :comment="comment" />
-        <div class="reply">
-          <div class="reply--main">
-            <div v-for="reply in comment.children" :key="(reply.id as number)">
-              <CommentCard :comment="reply" class="r" />
+    <div class="comment-container" v-if="comments">
+      <div class="comment-main" v-for="comment in comments" :key="comment.id">
+        <CommentCardv2 :comment="comment" />
+        <div
+          class="reply-main"
+          v-for="reply in comment.children"
+          :key="(reply.id as number)"
+        >
+          <CommentCardv2 :comment="reply" />
+          <div
+            class="reply-main"
+            v-for="reply2 in reply.children"
+            :key="(reply2.id as number)"
+          >
+            <CommentCardv2 :comment="reply2" />
+            <div
+              class="reply-main"
+              v-for="reply3 in reply2.children"
+              :key="(reply3.id as number)"
+            >
+              <CommentCardv2 :comment="reply3" />
               <div
-                class="reply--child"
-                v-for="reply2 in reply.children"
-                :key="(reply2.id as number)"
-                :reply="reply2"
+                class="reply-main"
+                v-for="reply4 in reply3.children"
+                :key="(reply4.id as number)"
               >
-                <CommentCard :comment="reply2" class="r" />
+                <CommentCardv2 :comment="reply4" />
                 <div
-                  class="reply--child"
-                  v-for="reply3 in reply2.children"
-                  :key="(reply3.id as number)"
+                  class="reply-main"
+                  v-for="reply5 in reply4.children"
+                  :key="(reply5.id as number)"
                 >
-                  <CommentCard :comment="reply3" class="r" />
-                  <div
-                    class="reply--child"
-                    v-for="reply4 in reply3.children"
-                    :key="(reply4.id as number)"
-                  >
-                    <CommentCard :comment="reply4" class="r" />
-                    <div
-                      class="reply--child"
-                      v-for="reply5 in reply4.children"
-                      :key="(reply5.id as number)"
-                    >
-                      <CommentCard :comment="reply5" class="r" />
-                      <div
-                        class="reply--child"
-                        v-for="reply6 in reply5.children"
-                        :key="(reply6.id as number)"
-                      >
-                        <CommentCard :comment="reply6" class="r" />
-                      </div>
-                    </div>
-                  </div>
+                  <CommentCardv2 :comment="reply5" />
                 </div>
               </div>
             </div>
@@ -98,31 +84,20 @@ emitter.on("refetchComments", () => {
 </template>
 <style scoped lang="scss">
 .comment-section {
-  .comment-reply-container {
-    display: flex;
-    flex-direction: column;
-  }
-  // .userIcon {
-  //   align-self: flex-start;
-  //   grid-row: 1 / span 2;
-  //   width: 45px;
-  //   height: 45px;
-  //   border-radius: 50%;
-  //   cursor: pointer;
-  // }
-
-  .comments {
-    display: flex;
-    align-items: center;
-    margin-block: 1rem;
-    gap: 10px;
-  }
-  .r {
-    margin-inline-start: 1em;
-    margin-block: 0.5rem;
-  }
-  .reply--child {
-    margin-inline-start: 1.5vw;
+  .comment-container {
+    background-color: rgb(8, 8, 8, 0.2);
+    padding: 1rem 1.2rem;
+    min-height: 10rem;
+    .comment-main {
+      background-color: #161616;
+      overflow-y: hidden;
+    }
+    .reply-main {
+      padding-inline-start: 3em;
+      &:nth-last-child(2) {
+        overflow-y: hidden;
+      }
+    }
   }
 }
 </style>
