@@ -7,6 +7,7 @@ import { GET_COMMENTS } from "@/graphql";
 import { watch, ref } from "vue";
 import { useEmitter } from "@/composables/EventEmitter";
 import type { Blog } from "@/types";
+import CommentCardv2 from "./CommentCardv2.vue";
 const props = defineProps<{
   blog: Blog;
 }>();

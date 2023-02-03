@@ -64,7 +64,7 @@ export class CommentBuilder {
       children: [],
     };
   }
-  returnJsx(callback: (node: Comment | null) => void) {
+  returnJsx(callback: any) {
     const arr = [] as any;
     function walk(node: Comment | null) {
       callback(node);
