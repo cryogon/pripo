@@ -211,7 +211,7 @@ function editBlog() {
   </main>
 
   <main v-else-if="loading && !error">Loading...</main>
-  <main v-else-if="error || !loading">Blog Not Found</main>
+  <main v-else-if="error || !loading">Post Not Found</main>
 </template>
 <style scoped lang="scss">
 .container {

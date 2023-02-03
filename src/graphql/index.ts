@@ -5,7 +5,7 @@ export const INSERT_BLOG = gql`
     $title: String!
     $content: String!
     $isPublic: Boolean!
-    $tags: json!
+    $tags: jsonb!
     $username: String!
     $likes: Int!
     $shares: Int
@@ -179,7 +179,6 @@ export const POST_REPLY = gql`
         notification_by: $name
         notification_for: $receiver
         type: "reply"
-        comment_id: $parent_id
         blog_id: $blogId
       }
     ) {
@@ -189,7 +188,6 @@ export const POST_REPLY = gql`
         notification_by
         notification_for
         blog_id
-        comment_id
       }
     }
   }
@@ -357,7 +355,7 @@ export const EDIT_BLOG = gql`
     $title: String!
     $content: String!
     $isPublic: Boolean!
-    $tags: json!
+    $tags: jsonb!
   ) {
     update_blogs(
       _set: {
@@ -476,6 +474,46 @@ export const GET_NOTIFICATIONS = gql`
       created_at
       has_read
       blog_id
+    }
+  }
+`;
+
+export const GET_FILTERED_POSTS = gql`
+  query getFilteredPosts($query: String!) {
+    blogs(
+      where: {
+        _or: [
+          { title: { _ilike: $query } }
+          { content: { _ilike: $query } }
+          { username: { _ilike: $query } }
+        ]
+      }
+    ) {
+      id
+      title
+      content
+      likes
+    }
+    users(
+      where: {
+        _or: [{ name: { _ilike: $query } }, { username: { _ilike: $query } }]
+      }
+    ) {
+      id
+      name
+      username
+      profile_picture
+    }
+  }
+`;
+
+export const FILTER_BY_TAGS = gql`
+  query getFilteredPosts($tags: jsonb!) {
+    blogs(where: { tags: { _contains: $tags } }) {
+      id
+      title
+      content
+      likes
     }
   }
 `;
