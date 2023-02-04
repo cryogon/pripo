@@ -146,7 +146,7 @@ export const POST_REPLY = gql`
     $blogId: Int!
     $content: String!
     $name: String!
-    $parent_id: Int!
+    $parent_id: bigint!
     $isPublic: Boolean!
     $receiver: String!
   ) {
@@ -553,6 +553,7 @@ export const FILTER_BY_TAGS = gql`
 export const GET_THREAD_COMMENT = gql`
   query threadComment($id: bigint!) {
     comments(
+      order_by: { id: asc }
       where: { _or: [{ id: { _eq: $id } }, { parent_id: { _eq: $id } }] }
     ) {
       blog_id
@@ -569,6 +570,9 @@ export const GET_THREAD_COMMENT = gql`
       }
       liked_users {
         user_id
+      }
+      blog {
+        title
       }
       is_public
     }

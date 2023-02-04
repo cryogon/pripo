@@ -40,7 +40,7 @@ const router = createRouter({
       component: () => import("@/views/SearchPage.vue"),
     },
     {
-      path: "/comments",
+      path: "/comments/:id",
       name: "comments",
       component: () => import("@/views/CommentThread.vue"),
     },

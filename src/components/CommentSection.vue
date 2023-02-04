@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import CommentInputBox from "./CommentInputBox.vue";
-import CommentCard from "./CommentCard.vue";
 import { CommentBuilder } from "@/composables/CommentBuilder";
 import { useQuery } from "@vue/apollo-composable";
 import { GET_COMMENTS } from "@/graphql";
@@ -20,11 +19,8 @@ watch(result, () => {
   builder.value.clear();
   builder.value.addMultiple(result.value.comments);
   comments.value = builder.value.root?.children;
+  console.log(comments.value);
 });
-//I have a idea but I am just laze to implement it now
-// I will just add new data in CommentBuilder in client side so that they can see it updating in realtime seamlessly
-// and it will even save us refeching again from database but the problem is doing this I will not get any comment_id from db
-// So For now I will just let it refetch
 
 /**
  *
@@ -48,31 +44,38 @@ emitter.on("refetchComments", () => {
           v-for="reply in comment.children"
           :key="(reply.id as number)"
         >
-          <CommentCardv2 :comment="reply" />
+          <CommentCardv2 :comment="reply" class="reply" />
           <div
             class="reply-main"
             v-for="reply2 in reply.children"
             :key="(reply2.id as number)"
           >
-            <CommentCardv2 :comment="reply2" />
+            <CommentCardv2 :comment="reply2" class="reply" />
             <div
               class="reply-main"
               v-for="reply3 in reply2.children"
               :key="(reply3.id as number)"
             >
-              <CommentCardv2 :comment="reply3" />
+              <CommentCardv2 :comment="reply3" class="reply" />
               <div
                 class="reply-main"
                 v-for="reply4 in reply3.children"
                 :key="(reply4.id as number)"
               >
-                <CommentCardv2 :comment="reply4" />
+                <CommentCardv2 :comment="reply4" class="reply" />
                 <div
                   class="reply-main"
                   v-for="reply5 in reply4.children"
                   :key="(reply5.id as number)"
                 >
-                  <CommentCardv2 :comment="reply5" />
+                  <CommentCardv2 :comment="reply5" class="reply" />
+                  <div
+                    class="reply-main"
+                    v-for="reply6 in reply5.children"
+                    :key="(reply6.id as number)"
+                  >
+                    <CommentCardv2 :comment="reply6" class="reply" />
+                  </div>
                 </div>
               </div>
             </div>
@@ -94,7 +97,7 @@ emitter.on("refetchComments", () => {
     }
     .reply-main {
       padding-inline-start: 3em;
-      &:nth-last-child(2) {
+      &:nth-child(2) {
         overflow-y: hidden;
       }
     }

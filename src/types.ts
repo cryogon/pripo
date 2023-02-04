@@ -42,5 +42,8 @@ export interface Comment {
   liked_users: {
     user_id: number;
   }[];
+  blog: {
+    title: string;
+  };
   children?: Comment[];
 }
