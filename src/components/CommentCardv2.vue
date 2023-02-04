@@ -9,11 +9,14 @@ import { ref } from "vue";
 import router from "@/router";
 import { useMutation } from "@vue/apollo-composable";
 import { SET_COMMENT_LIKE, REMOVE_COMMENT_LIKE } from "@/graphql";
+import { useClipboard } from "@vueuse/core";
 defineProps<{ comment: Comment }>();
 const { user } = useAuth0();
 const emitter = useEmitter();
 const isReplyInputInactive = ref(true);
 const commentReplyMode = ref<"reply" | "edit">("reply");
+const { copy, copied } = useClipboard();
+
 function toggle() {
   if (!user.value?.email) {
     emitter.emit("alert", "You need to login in order to reply");
@@ -85,9 +88,12 @@ function deleteComment() {
   emitter.emit("alert", "Are you sure about that");
 }
 
-emitter.on("replied", () => {
+function toggleReply() {
   isReplyInputInactive.value = true;
-});
+}
+function commentUrl(id: number) {
+  return `${location.origin}/comments/${id}`;
+}
 </script>
 <template>
   <div class="comment-item" :id="`c${comment.id}`">
@@ -134,18 +140,27 @@ emitter.on("replied", () => {
         v-if="user?.uid === comment.user.id"
         >delete</span
       >
+      <span
+        class="copy options-item"
+        @click="copy(commentUrl(comment.id as number))"
+        v-if="!copied"
+        >permalink</span
+      >
+      <span class="copy options-item" v-else>copied</span>
     </div>
     <ReplyInputBoxv2
       :is-reply-input-inactive="isReplyInputInactive"
       :comment="comment"
       :mode="commentReplyMode"
       v-if="commentReplyMode == 'reply'"
+      :toggle-reply="toggleReply"
     />
     <ReplyInputBoxv2
       :comment="comment"
       :is-reply-input-inactive="isReplyInputInactive"
       :mode="commentReplyMode"
       v-if="commentReplyMode == 'edit'"
+      :toggle-reply="toggleReply"
     />
   </div>
 </template>

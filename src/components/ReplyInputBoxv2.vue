@@ -7,6 +7,7 @@ import type { Comment } from "@/types";
 import { useEmitter } from "@/composables/EventEmitter";
 const props = defineProps<{
   isReplyInputInactive: boolean;
+  toggleReply: () => void;
   comment: any;
   mode: "reply" | "edit";
 }>();
@@ -37,8 +38,7 @@ async function submitReply(cmnt: Comment) {
     receiver: cmnt.user.username,
   });
 
-  //Used To toggle reply input box - handled in CommentCard component;
-  emitter.emit("replied");
+  props.toggleReply();
   //Used To refetch comments from db - handled in CommentSection Component;
   emitter.emit("refetchComments");
   content.value = "";
@@ -55,9 +55,6 @@ function editComment(cmnt: Comment) {
   content.value = "";
 }
 
-function cancelReply() {
-  emitter.emit("replied"); //Sending reply since all it is doing is appling hidden class on reply input container
-}
 onMounted(() => {
   if (props.mode == "edit") {
     content.value = props.comment.content;
@@ -78,11 +75,13 @@ onMounted(() => {
       <div
         class="post-button"
         role="button"
+        :disabled="!content.length"
         @click="mode == 'reply' ? submitReply(comment) : editComment(comment)"
+        :class="{ deactive: !content.length }"
       >
         {{ mode == "reply" ? "Reply" : "Edit" }}
       </div>
-      <div class="cancel-button" role="button" @click="cancelReply">Cancel</div>
+      <div class="cancel-button" role="button" @click="toggleReply">Cancel</div>
       <span class="post-public-toggle">
         <input
           type="checkbox"
@@ -101,6 +100,7 @@ onMounted(() => {
   margin-inline: 5rem;
   padding: 0.3rem 0.5rem;
   margin-block-start: 1rem;
+
   &.hidden {
     display: none;
   }
@@ -125,6 +125,10 @@ onMounted(() => {
       padding: 0.3rem 1rem;
       border-radius: 2rem;
       cursor: pointer;
+      &.deactive {
+        background-color: var(--deactive-input-box-background);
+        cursor: default;
+      }
     }
     .post-public-toggle {
       display: flex;
