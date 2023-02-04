@@ -12,11 +12,9 @@ const builder = ref(new CommentBuilder());
 const { result } = useQuery(GET_THREAD_COMMENT, { id: commentId });
 const comments = ref<Comment[]>();
 watch(result, () => {
-  // builder.value.clear();
+  builder.value.clear();
   builder.value.addMultiple(result.value.comments);
   comments.value = builder.value.root?.children;
-  console.log(result.value.comments);
-  console.log(comments.value);
 });
 </script>
 <template>

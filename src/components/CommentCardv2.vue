@@ -165,7 +165,7 @@ emitter.on("replied", () => {
     .user-avatar-container {
       position: relative;
       .threadline {
-        height: 100rem;
+        height: 200rem;
         width: 0.1rem;
         background-color: var(--color-text);
         position: absolute;
