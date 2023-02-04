@@ -1,30 +1,26 @@
 <script setup lang="ts">
 import CommentInputBox from "./CommentInputBox.vue";
-import CommentCard from "./CommentCard.vue";
 import { CommentBuilder } from "@/composables/CommentBuilder";
 import { useQuery } from "@vue/apollo-composable";
 import { GET_COMMENTS } from "@/graphql";
 import { watch, ref } from "vue";
 import { useEmitter } from "@/composables/EventEmitter";
 import type { Blog } from "@/types";
+import CommentCardv2 from "./CommentCardv2.vue";
+import router from "@/router";
 const props = defineProps<{
   blog: Blog;
 }>();
-const { result: comments, refetch } = useQuery(GET_COMMENTS, {
+const { result, refetch } = useQuery(GET_COMMENTS, {
   blogId: props.blog?.id,
 });
 const builder = ref(new CommentBuilder());
-const currComments = ref();
-
-watch(comments, () => {
+const comments = ref();
+watch(result, () => {
   builder.value.clear();
-  builder.value.addMultiple(comments.value.comments);
-  currComments.value = builder.value.root?.children;
+  builder.value.addMultiple(result.value.comments);
+  comments.value = builder.value.root?.children;
 });
-//I have a idea but I am just laze to implement it now
-// I will just add new data in CommentBuilder in client side so that they can see it updating in realtime seamlessly
-// and it will even save us refeching again from database but the problem is doing this I will not get any comment_id from db
-// So For now I will just let it refetch
 
 /**
  *
@@ -40,49 +36,131 @@ emitter.on("refetchComments", () => {
 <template>
   <section class="comment-section">
     <CommentInputBox :blog="blog" />
-
-    <div
-      class="comments"
-      v-for="comment in currComments"
-      :key="(comment.id as number)"
-    >
-      <div class="comment-reply-container">
-        <CommentCard :comment="comment" />
-        <div class="reply">
-          <div class="reply--main">
-            <div v-for="reply in comment.children" :key="(reply.id as number)">
-              <CommentCard :comment="reply" class="r" />
+    <div class="comment-container" v-if="comments">
+      <div class="comment-main" v-for="comment in comments" :key="comment.id">
+        <CommentCardv2 :comment="comment" />
+        <div class="reply-container">
+          <div
+            class="reply-main"
+            v-for="reply in comment.children"
+            :key="(reply.id as number)"
+          >
+            <CommentCardv2 :comment="reply" class="reply" />
+            <div class="reply-container">
               <div
-                class="reply--child"
+                class="reply-main"
                 v-for="reply2 in reply.children"
                 :key="(reply2.id as number)"
-                :reply="reply2"
               >
-                <CommentCard :comment="reply2" class="r" />
-                <div
-                  class="reply--child"
-                  v-for="reply3 in reply2.children"
-                  :key="(reply3.id as number)"
-                >
-                  <CommentCard :comment="reply3" class="r" />
+                <CommentCardv2 :comment="reply2" class="reply" />
+
+                <div class="reply-container">
                   <div
-                    class="reply--child"
-                    v-for="reply4 in reply3.children"
-                    :key="(reply4.id as number)"
+                    class="reply-main"
+                    v-for="reply3 in reply2.children"
+                    :key="(reply3.id as number)"
                   >
-                    <CommentCard :comment="reply4" class="r" />
-                    <div
-                      class="reply--child"
-                      v-for="reply5 in reply4.children"
-                      :key="(reply5.id as number)"
-                    >
-                      <CommentCard :comment="reply5" class="r" />
+                    <CommentCardv2 :comment="reply3" class="reply" />
+                    <div class="reply-container">
                       <div
-                        class="reply--child"
-                        v-for="reply6 in reply5.children"
-                        :key="(reply6.id as number)"
+                        class="reply-main"
+                        v-for="reply4 in reply3.children"
+                        :key="(reply4.id as number)"
                       >
-                        <CommentCard :comment="reply6" class="r" />
+                        <CommentCardv2 :comment="reply4" class="reply" />
+                        <div class="reply-container">
+                          <div
+                            class="reply-main"
+                            v-for="reply5 in reply4.children"
+                            :key="(reply5.id as number)"
+                          >
+                            <CommentCardv2 :comment="reply5" class="reply" />
+                            <div class="reply-container">
+                              <div
+                                class="reply-main"
+                                v-for="reply6 in reply5.children"
+                                :key="(reply6.id as number)"
+                              >
+                                <CommentCardv2
+                                  :comment="reply6"
+                                  class="reply"
+                                />
+                                <div class="reply-container">
+                                  <div
+                                    class="reply-main"
+                                    v-for="reply7 in reply6.children"
+                                    :key="(reply7.id as number)"
+                                  >
+                                    <CommentCardv2
+                                      :comment="reply7"
+                                      class="reply"
+                                    />
+                                    <div class="reply-container">
+                                      <div
+                                        class="reply-main"
+                                        v-for="reply8 in reply7.children"
+                                        :key="(reply8.id as number)"
+                                      >
+                                        <CommentCardv2
+                                          :comment="reply8"
+                                          class="reply"
+                                        />
+                                        <div class="reply-container">
+                                          <div
+                                            class="reply-main"
+                                            v-for="reply7 in reply8.children"
+                                            :key="(reply7.id as number)"
+                                          >
+                                            <CommentCardv2
+                                              :comment="reply7"
+                                              class="reply"
+                                            />
+                                            <div class="reply-container">
+                                              <div
+                                                class="reply-main"
+                                                v-for="reply8 in reply7.children"
+                                                :key="(reply8.id as number)"
+                                              >
+                                                <CommentCardv2
+                                                  :comment="reply8"
+                                                  class="reply"
+                                                />
+                                                <div class="reply-container">
+                                                  <div
+                                                    class="reply-main"
+                                                    v-for="reply9 in reply8.children"
+                                                    :key="(reply9.id as number)"
+                                                  >
+                                                    <CommentCardv2
+                                                      :comment="reply9"
+                                                      class="reply"
+                                                    />
+                                                  </div>
+                                                </div>
+                                                <div
+                                                  class="continue-thread"
+                                                  v-if="reply8.children.length"
+                                                  @click="
+                                                    router.push(
+                                                      `/comments/${reply8.id}`
+                                                    )
+                                                  "
+                                                  role="button"
+                                                >
+                                                  Continue this Thread
+                                                </div>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -97,31 +175,29 @@ emitter.on("refetchComments", () => {
 </template>
 <style scoped lang="scss">
 .comment-section {
-  .comment-reply-container {
-    display: flex;
-    flex-direction: column;
-  }
-  // .userIcon {
-  //   align-self: flex-start;
-  //   grid-row: 1 / span 2;
-  //   width: 45px;
-  //   height: 45px;
-  //   border-radius: 50%;
-  //   cursor: pointer;
-  // }
-
-  .comments {
-    display: flex;
-    align-items: center;
-    margin-block: 1rem;
-    gap: 10px;
-  }
-  .r {
-    margin-inline-start: 1em;
-    margin-block: 0.5rem;
-  }
-  .reply--child {
-    margin-inline-start: 1.5vw;
+  .comment-container {
+    background-color: rgb(8, 8, 8, 0.2);
+    padding: 1rem 1.2rem;
+    min-height: 10rem;
+    .comment-main {
+      background-color: #161616;
+      overflow-y: hidden;
+    }
+    .reply-container {
+      overflow-y: hidden;
+      .reply-main {
+        padding-inline-start: 3em;
+      }
+      .continue-thread {
+        font-size: 13px;
+        background-color: var(--input-box-background);
+        display: inline-flex;
+        padding: 1rem;
+        border-radius: 1rem;
+        margin-inline-start: 4.2rem;
+        cursor: pointer;
+      }
+    }
   }
 }
 </style>

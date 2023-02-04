@@ -94,6 +94,7 @@ function search() {
     path: "/search",
     query: { q: searchInputData.value, f: filter.value },
   });
+  filter.value = "posts";
   searchInputData.value = "";
 }
 </script>

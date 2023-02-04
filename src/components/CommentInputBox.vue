@@ -123,11 +123,11 @@ function toggleInputBox() {
 }
 .input-container {
   position: relative;
-  background-color: var(--card-background);
+  background-color: var(--input-box-background);
   display: flex;
   flex-direction: column;
   .comment_input {
-    background-color: var(--card-background);
+    background-color: var(--input-box-background);
     outline: none;
     border: none;
     width: min(60vw, 49rem);
@@ -170,6 +170,7 @@ function toggleInputBox() {
       color: var(--text-color);
       font-size: 18px;
       transition: 150ms;
+      outline-color: transparent;
     }
   }
 }

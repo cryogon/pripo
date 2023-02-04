@@ -146,7 +146,7 @@ export const POST_REPLY = gql`
     $blogId: Int!
     $content: String!
     $name: String!
-    $parent_id: Int!
+    $parent_id: bigint!
     $isPublic: Boolean!
     $receiver: String!
   ) {
@@ -266,10 +266,26 @@ export const GET_USER_BY_USERNAME = gql`
 export const SET_LIKE = gql`
   mutation setLike($blogId: Int!, $userId: Int!) {
     insert_blog_likes(objects: { blog_id: $blogId, user_id: $userId }) {
-      affected_rows
+      returning {
+        id
+        blog_id
+        user_id
+      }
     }
     update_blogs(_inc: { likes: 1 }, where: { id: { _eq: $blogId } }) {
-      affected_rows
+      returning {
+        id
+        likes
+        favourites {
+          id
+          user_id
+          users {
+            id
+            name
+            username
+          }
+        }
+      }
     }
   }
 `;
@@ -279,10 +295,26 @@ export const REMOVE_LIKE = gql`
     delete_blog_likes(
       where: { _and: { blog_id: { _eq: $blogId }, user_id: { _eq: $userId } } }
     ) {
-      affected_rows
+      returning {
+        id
+        blog_id
+        user_id
+      }
     }
     update_blogs(_inc: { likes: -1 }, where: { id: { _eq: $blogId } }) {
-      affected_rows
+      returning {
+        id
+        likes
+        favourites {
+          id
+          user_id
+          users {
+            id
+            name
+            username
+          }
+        }
+      }
     }
   }
 `;
@@ -514,6 +546,35 @@ export const FILTER_BY_TAGS = gql`
       title
       content
       likes
+    }
+  }
+`;
+
+export const GET_THREAD_COMMENT = gql`
+  query threadComment($id: bigint!) {
+    comments(
+      order_by: { id: asc }
+      where: { _or: [{ id: { _eq: $id } }, { parent_id: { _eq: $id } }] }
+    ) {
+      blog_id
+      id
+      parent_id
+      content
+      posted_on
+      likes
+      username
+      user {
+        id
+        profile_picture
+        username
+      }
+      liked_users {
+        user_id
+      }
+      blog {
+        title
+      }
+      is_public
     }
   }
 `;
