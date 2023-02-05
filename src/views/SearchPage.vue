@@ -33,6 +33,7 @@ function changeFilterOnMount() {
     filter.value = "users";
   }
 }
+
 onResult((r) => {
   results.value = r.data;
 });
@@ -42,13 +43,23 @@ onMounted(() => {
 </script>
 <template>
   <main>
-    <h1>Search</h1>
+    <h2>Results for: {{ params.q }}</h2>
     <section class="search-card">
       <div class="filters">
-        <div role="button" class="filter-option" @click="changeFilter('posts')">
+        <div
+          role="button"
+          class="filter-option"
+          @click="changeFilter('posts')"
+          :class="{ active: filter == 'posts' }"
+        >
           Posts
         </div>
-        <div role="button" class="filter-option" @click="changeFilter('users')">
+        <div
+          role="button"
+          class="filter-option"
+          @click="changeFilter('users')"
+          :class="{ active: filter === 'users' }"
+        >
           Users
         </div>
       </div>
@@ -81,7 +92,7 @@ onMounted(() => {
 </template>
 <style scoped lang="scss">
 main {
-  padding: 1rem 10rem;
+  padding: 2rem 10rem;
   .search-card {
     background-color: var(--nav-background);
     padding: 0.2rem 1.2rem;
@@ -94,7 +105,7 @@ main {
         border-radius: 2rem;
         background-color: var(--color-background);
         cursor: pointer;
-        &.selected {
+        &.active {
           background-color: #00000000;
         }
       }
