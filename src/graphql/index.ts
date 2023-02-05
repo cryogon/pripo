@@ -426,6 +426,7 @@ export const LISTEN_NOTIFICATION = gql`
     user_notifications(
       order_by: { created_at: desc }
       where: { has_read: { _eq: false } }
+      limit: 5
     ) {
       id
       notification_for
