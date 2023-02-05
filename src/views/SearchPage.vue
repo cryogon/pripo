@@ -5,27 +5,31 @@ import SearchPostItem from "../components/SearchPostItem.vue";
 import SearchUserItem from "../components/SearchUserItem.vue";
 import { GET_FILTERED_POSTS, FILTER_BY_TAGS } from "@/graphql";
 import { ref, onMounted } from "vue";
+import type { LocationQueryValue } from "vue-router";
 const results = ref();
 const filter = ref("posts");
+const params = router.currentRoute.value.query;
 const { onResult, loading } =
-  router.currentRoute.value.query.f === "tags"
-    ? useQuery(FILTER_BY_TAGS, { tags: router.currentRoute.value.query.q })
+  params.f === "tags"
+    ? useQuery(FILTER_BY_TAGS, {
+        tags: (params.q as LocationQueryValue)?.toLowerCase(),
+      })
     : useQuery(GET_FILTERED_POSTS, {
-        query: `%${router.currentRoute.value.query.q}%`,
+        query: `%${params.q}%`,
       });
 
 function changeFilter(_filter: string) {
   filter.value = _filter;
   router.replace({
-    query: { q: router.currentRoute.value.query.q, f: _filter },
+    query: { q: params.q, f: _filter },
   });
 }
 
 function changeFilterOnMount() {
-  if (router.currentRoute.value.query.f === "posts") {
+  if (params.f === "posts") {
     filter.value = "posts";
   }
-  if (router.currentRoute.value.query.f === "users") {
+  if (params.f === "users") {
     filter.value = "users";
   }
 }
@@ -54,7 +58,6 @@ onMounted(() => {
             v-for="(post, index) in results?.blogs"
             :key="index"
             :post="post"
-            @click="router.push(`/posts/${post.id}`)"
           />
           <div class="loading" v-if="loading">Loading....</div>
           <div class="not-found" v-if="!results?.blogs.length && !loading">

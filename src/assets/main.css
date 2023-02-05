@@ -14,11 +14,14 @@
   --card-background: #d4d4d4;
   --dropdown-background-light: #f1f1f1;
   --dropdown-background-dark: #202020;
-  --input-box-background:#202020;
-  --deactive-input-box-background:#9B9B9B;
   --link-visited-dark: #ffffffb4;
   --link-visited-light: #000000b4;
+  --input-box-background:#202020;
+  --deactive-input-box-background:#9B9B9B;
+  --tag-background:#e9c46a,#f4a261,#e76f51;
+  --tag-color:#0d1b2a;
 }
+
 
 :root {
   --color-text: var(--color-light);
@@ -76,9 +79,6 @@ a {
   padding: 0.3rem;
   border-radius: 0.4rem;
   text-decoration: none;
-}
-a:hover {
-  background: var(--link-hover-background);
 }
 
 button {

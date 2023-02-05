@@ -35,8 +35,8 @@ emitter.on("refetchComments", () => {
 
 <template>
   <section class="comment-section">
-    <CommentInputBox :blog="blog" />
     <div class="comment-container" v-if="comments">
+      <CommentInputBox :blog="blog" />
       <div class="comment-main" v-for="comment in comments" :key="comment.id">
         <CommentCardv2 :comment="comment" />
         <div class="reply-container">

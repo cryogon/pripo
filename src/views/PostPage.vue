@@ -35,7 +35,7 @@ function pushPostToDB() {
     title: postTitle.value,
     content: JSON.stringify(postContent.value),
     isPublic: isPostPublic.value,
-    tags: blogTags.value?.split(" "),
+    tags: blogTags.value?.split(" ").map((c) => c.toLowerCase()),
     username: user.value.nickname,
     likes: 0,
     shares: 0,
