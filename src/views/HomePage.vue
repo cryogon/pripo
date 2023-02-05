@@ -2,12 +2,32 @@
 import PostCard from "@/components/PostCard.vue";
 import { useQuery } from "@vue/apollo-composable";
 import { GET_ALL_BLOGS } from "@/graphql";
-
-const { result: blogs, onError } = useQuery(GET_ALL_BLOGS);
+const {
+  result: blogs,
+  onError,
+  loading,
+  fetchMore,
+} = useQuery(GET_ALL_BLOGS, { offset: 0, limit: 3 });
 localStorage.setItem("currentTitle", "Pripo");
 onError(() => {
   console.error("Some Error Occured! Try to refetch");
 });
+
+function fetchMoreBlogs() {
+  fetchMore({
+    variables: { offset: blogs.value.blogs.length },
+    updateQuery: (previousResult, { fetchMoreResult }) => {
+      // No new feed posts
+      if (!fetchMoreResult) return previousResult;
+
+      // Concat previous feed with new feed posts
+      return {
+        ...previousResult,
+        blogs: [...previousResult.blogs, ...fetchMoreResult.blogs],
+      };
+    },
+  });
+}
 </script>
 <template>
   <main v-if="blogs?.blogs">
@@ -23,15 +43,27 @@ onError(() => {
       :is-public="blog.is_public"
       :comment="blog.comments || null"
     />
+
+    <div v-if="loading" role="text" class="load-more">Fetching...</div>
+    <div @click="fetchMoreBlogs" class="load-more" role="button" v-else>
+      Load More
+    </div>
   </main>
 </template>
-<style scoped>
+<style scoped lang="scss">
 main {
   transition: 400ms;
   display: flex;
   padding: 2rem 10vw;
   gap: 2rem;
   flex-direction: column;
+  .load-more {
+    place-self: center;
+    background-color: var(--input-box-background);
+    padding: 0.5rem;
+    border-radius: 1rem;
+    cursor: pointer;
+  }
 }
 @media (max-width: 600px) {
   main {

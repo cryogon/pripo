@@ -125,18 +125,6 @@ emitter.on("refetchComments", () => {
                                                   :comment="reply8"
                                                   class="reply"
                                                 />
-                                                <div class="reply-container">
-                                                  <div
-                                                    class="reply-main"
-                                                    v-for="reply9 in reply8.children"
-                                                    :key="(reply9.id as number)"
-                                                  >
-                                                    <CommentCardv2
-                                                      :comment="reply9"
-                                                      class="reply"
-                                                    />
-                                                  </div>
-                                                </div>
                                                 <div
                                                   class="continue-thread"
                                                   v-if="reply8.children.length"

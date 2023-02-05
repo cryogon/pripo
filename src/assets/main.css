@@ -16,6 +16,8 @@
   --dropdown-background-dark: #202020;
   --input-box-background:#202020;
   --deactive-input-box-background:#9B9B9B;
+  --link-visited-dark: #ffffffb4;
+  --link-visited-light: #000000b4;
 }
 
 :root {
@@ -27,6 +29,7 @@
   --link-color: #5f9ea0;
   --dropdown-background: var(--dropdown-background-light);
   --accent-color: var(--link-color);
+  --link-visited:var(--link-visited-light);
 }
 
 html.dark {
@@ -37,6 +40,7 @@ html.dark {
   --link-hover-background: var(--link-hover-background-dark);
   --card-background: #121212;
   --dropdown-background: var(--dropdown-background-dark);
+  --link-visited: var(--link-visited-dark);
 }
 
 /* @media screen and (prefers-color-scheme: dark) {
