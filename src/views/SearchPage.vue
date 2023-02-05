@@ -5,14 +5,13 @@ import SearchPostItem from "../components/SearchPostItem.vue";
 import SearchUserItem from "../components/SearchUserItem.vue";
 import { GET_FILTERED_POSTS, FILTER_BY_TAGS } from "@/graphql";
 import { ref, onMounted } from "vue";
-import type { LocationQueryValue } from "vue-router";
 const results = ref();
 const filter = ref("posts");
 const params = router.currentRoute.value.query;
 const { onResult, loading } =
   params.f === "tags"
     ? useQuery(FILTER_BY_TAGS, {
-        tags: (params.q as LocationQueryValue)?.toLowerCase(),
+        tags: params.q,
       })
     : useQuery(GET_FILTERED_POSTS, {
         query: `%${params.q}%`,
@@ -36,6 +35,7 @@ function changeFilterOnMount() {
 
 onResult((r) => {
   results.value = r.data;
+  console.log(results.value);
 });
 onMounted(() => {
   changeFilterOnMount();
@@ -58,6 +58,7 @@ onMounted(() => {
           role="button"
           class="filter-option"
           @click="changeFilter('users')"
+          v-if="params.f !== 'tags'"
           :class="{ active: filter === 'users' }"
         >
           Users

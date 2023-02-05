@@ -172,12 +172,12 @@ function editBlog() {
           {{ JSON.parse(blog.content) }}
         </p>
         <div class="tags" v-if="!blogEditable">
-          <span
+          <router-link
+            :to="`/search?q=${tag}&f=tags`"
             v-for="tag in blog.tags"
             :key="tag"
             class="tag"
-            @click="router.push(`/search?q=${tag}&f=tags`)"
-            >{{ tag }}</span
+            >{{ tag }}</router-link
           >
         </div>
         <div class="extra-editing-options" v-if="blogEditable">
