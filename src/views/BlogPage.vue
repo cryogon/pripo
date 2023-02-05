@@ -215,7 +215,6 @@ function editBlog() {
   padding-block-start: 3rem;
   padding-inline: min(10rem, 10vw);
   max-width: 80rem;
-  .title,
   .content {
     p {
       margin-block-end: 0.8rem;
@@ -311,6 +310,7 @@ function editBlog() {
   .tags {
     display: flex;
     gap: 10px;
+    flex-wrap: wrap;
     .tag {
       background: linear-gradient(var(--tag-background));
       color: var(--tag-color);

@@ -167,7 +167,7 @@ function commentUrl(id: number) {
 <style scoped lang="scss">
 .comment-item {
   font-size: 14px;
-  margin: 1rem 0.2rem;
+  margin: 1rem 0.3rem;
   .user-info-container {
     min-height: 4rem;
     cursor: pointer;
