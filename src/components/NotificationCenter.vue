@@ -7,6 +7,7 @@ import NotificationItem from "./NotificationItem.vue";
 const { result } = useSubscription(LISTEN_NOTIFICATION);
 const notifications = ref<any[]>([]);
 watch(result, (data) => {
+  console.log(result.value);
   notifications.value = data.user_notifications || [];
 });
 function redirectTo(address: string, notification: any) {

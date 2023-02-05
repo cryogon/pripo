@@ -441,7 +441,6 @@ export const LISTEN_NOTIFICATION = gql`
       }
       type
       has_read
-      comment_id
       created_at
     }
   }

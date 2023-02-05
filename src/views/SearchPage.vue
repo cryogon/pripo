@@ -35,7 +35,6 @@ function changeFilterOnMount() {
 
 onResult((r) => {
   results.value = r.data;
-  console.log(results.value);
 });
 onMounted(() => {
   changeFilterOnMount();
