@@ -38,8 +38,8 @@ export const INSERT_BLOG = gql`
 `;
 
 export const GET_ALL_BLOGS = gql`
-  query getBlog {
-    blogs {
+  query getBlog($limit: Int!, $offset: Int!) {
+    blogs(limit: $limit, offset: $offset) {
       id
       title
       content

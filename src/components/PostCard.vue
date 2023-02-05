@@ -61,10 +61,12 @@ function navigateTo(url: string) {
       </span>
     </h4>
     <div v-if="title && content">
-      <p class="content" @click="navigateTo(`/posts/${id}`)">
-        <span class="title">{{ title }}</span>
-        {{ JSON.parse(content) }}
-      </p>
+      <router-link :to="`/posts/${id}`" class="link">
+        <p class="content">
+          <span class="title">{{ title }}</span>
+          {{ JSON.parse(content) }}
+        </p>
+      </router-link>
     </div>
 
     <div class="recent-comment" v-if="comment && comment[0]?.id">
@@ -119,18 +121,24 @@ function navigateTo(url: string) {
     opacity: 0.7;
     margin-left: auto;
   }
-  .content {
-    cursor: pointer;
-    background-color: var(--card-background);
-    margin-block-start: 0.5rem;
-    max-width: 80rem;
-    min-height: 5rem;
-    overflow: hidden;
-    padding: 1rem 1rem 0 1rem;
-    line-height: 1.3rem;
-    display: -webkit-box;
-    -webkit-line-clamp: 7;
-    -webkit-box-orient: vertical;
+  .link {
+    color: var(--text-color);
+    &:visited {
+      color: var(--link-visited);
+    }
+    .content {
+      cursor: pointer;
+      background-color: var(--card-background);
+      margin-block-start: 0.5rem;
+      max-width: 80rem;
+      min-height: 5rem;
+      overflow: hidden;
+      padding: 1rem 1rem 0 1rem;
+      line-height: 1.3rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 7;
+      -webkit-box-orient: vertical;
+    }
   }
   .title {
     display: block;
