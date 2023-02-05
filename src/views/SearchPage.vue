@@ -69,7 +69,6 @@ onMounted(() => {
             v-for="(user, index) in results?.users"
             :key="index"
             :user="user"
-            @click="router.push(`/users/${user.id}`)"
           />
           <div class="loading" v-if="loading">Loading....</div>
           <div class="not-found" v-if="!results?.users.length && !loading">
