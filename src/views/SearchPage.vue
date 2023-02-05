@@ -5,30 +5,35 @@ import SearchPostItem from "../components/SearchPostItem.vue";
 import SearchUserItem from "../components/SearchUserItem.vue";
 import { GET_FILTERED_POSTS, FILTER_BY_TAGS } from "@/graphql";
 import { ref, onMounted } from "vue";
+import type { LocationQueryValue } from "vue-router";
 const results = ref();
 const filter = ref("posts");
+const params = router.currentRoute.value.query;
 const { onResult, loading } =
-  router.currentRoute.value.query.f === "tags"
-    ? useQuery(FILTER_BY_TAGS, { tags: router.currentRoute.value.query.q })
+  params.f === "tags"
+    ? useQuery(FILTER_BY_TAGS, {
+        tags: (params.q as LocationQueryValue)?.toLowerCase(),
+      })
     : useQuery(GET_FILTERED_POSTS, {
-        query: `%${router.currentRoute.value.query.q}%`,
+        query: `%${params.q}%`,
       });
 
 function changeFilter(_filter: string) {
   filter.value = _filter;
   router.replace({
-    query: { q: router.currentRoute.value.query.q, f: _filter },
+    query: { q: params.q, f: _filter },
   });
 }
 
 function changeFilterOnMount() {
-  if (router.currentRoute.value.query.f === "posts") {
+  if (params.f === "posts") {
     filter.value = "posts";
   }
-  if (router.currentRoute.value.query.f === "users") {
+  if (params.f === "users") {
     filter.value = "users";
   }
 }
+
 onResult((r) => {
   results.value = r.data;
 });
@@ -38,13 +43,23 @@ onMounted(() => {
 </script>
 <template>
   <main>
-    <h1>Search</h1>
+    <h2>Results for: {{ params.q }}</h2>
     <section class="search-card">
       <div class="filters">
-        <div role="button" class="filter-option" @click="changeFilter('posts')">
+        <div
+          role="button"
+          class="filter-option"
+          @click="changeFilter('posts')"
+          :class="{ active: filter == 'posts' }"
+        >
           Posts
         </div>
-        <div role="button" class="filter-option" @click="changeFilter('users')">
+        <div
+          role="button"
+          class="filter-option"
+          @click="changeFilter('users')"
+          :class="{ active: filter === 'users' }"
+        >
           Users
         </div>
       </div>
@@ -54,7 +69,6 @@ onMounted(() => {
             v-for="(post, index) in results?.blogs"
             :key="index"
             :post="post"
-            @click="router.push(`/posts/${post.id}`)"
           />
           <div class="loading" v-if="loading">Loading....</div>
           <div class="not-found" v-if="!results?.blogs.length && !loading">
@@ -66,7 +80,6 @@ onMounted(() => {
             v-for="(user, index) in results?.users"
             :key="index"
             :user="user"
-            @click="router.push(`/users/${user.id}`)"
           />
           <div class="loading" v-if="loading">Loading....</div>
           <div class="not-found" v-if="!results?.users.length && !loading">
@@ -79,7 +92,7 @@ onMounted(() => {
 </template>
 <style scoped lang="scss">
 main {
-  padding: 1rem 10rem;
+  padding: 2rem 10rem;
   .search-card {
     background-color: var(--nav-background);
     padding: 0.2rem 1.2rem;
@@ -92,7 +105,7 @@ main {
         border-radius: 2rem;
         background-color: var(--color-background);
         cursor: pointer;
-        &.selected {
+        &.active {
           background-color: #00000000;
         }
       }

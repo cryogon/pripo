@@ -525,6 +525,12 @@ export const GET_FILTERED_POSTS = gql`
       title
       content
       likes
+      user {
+        id
+      }
+      favourites {
+        user_id
+      }
     }
     users(
       where: {

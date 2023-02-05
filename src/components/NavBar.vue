@@ -133,7 +133,7 @@ function search() {
           v-model="searchInputData"
         />
         <ul class="options">
-          <li><router-link to="/contact">Contact</router-link></li>
+          <li><router-link to="/contact" class="link">Contact</router-link></li>
         </ul>
       </section>
       <div class="buttons">

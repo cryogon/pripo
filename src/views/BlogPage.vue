@@ -10,7 +10,7 @@ import ShareIcon from "../components/Icons/ShareIcon.vue";
 import EditIcon from "../components/Icons/EditIcon.vue";
 import { useShare } from "@vueuse/core";
 import { useEmitter } from "@/composables/EventEmitter";
-
+import { getTimeDifference } from "@/helper";
 const emitter = useEmitter();
 const { user } = useAuth0();
 const params = router.currentRoute.value.params;
@@ -36,13 +36,6 @@ const blogTitle = ref<HTMLHeadingElement>();
 const blogTags = ref();
 
 provide("blog_id", blogId);
-function showFormatedDate(date: Date | string | number) {
-  return Intl.DateTimeFormat("en", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-  }).format(new Date(date));
-}
 
 watch(result, () => {
   //This is not working since router is appling value of currentTitle first and it is updating later since blog is updating late
@@ -53,7 +46,6 @@ watch(result, () => {
   //This is workaround for title updating
   document.title = result.value.blogs[0].title + " - Pripo";
   blog.value = result.value.blogs[0];
-
   isPostPublic.value = blog.value.is_public;
   blogTags.value = blog.value.tags.join(" ");
   if (
@@ -130,7 +122,7 @@ function editBlog() {
     title: blogTitle.value?.innerText,
     content: JSON.stringify(blogContent.value?.innerText),
     isPublic: isPostPublic.value,
-    tags: blogTags.value.split(" "),
+    tags: blogTags.value.split(" ").map((c: any) => c.toLowerCase()),
   });
   blogEditable.value = false;
   refetchBlog();
@@ -150,10 +142,14 @@ function editBlog() {
           referrerpolicy="no-referrer"
           v-else
         />
-        <span class="author-name"
-          >Posted by
-          {{ blog.is_public ? blog.user.username : "Anonymous" }}</span
-        >
+        <div class="basic-post-info">
+          <span class="author-name">
+            {{ blog.is_public ? blog.user.username : "Anonymous" }}</span
+          >
+          <span class="date-posted">
+            {{ getTimeDifference(new Date(blog.date_posted), new Date()) }}
+          </span>
+        </div>
         <div class="blog-options">
           <EditIcon
             class="icon edit"
@@ -176,8 +172,12 @@ function editBlog() {
           {{ JSON.parse(blog.content) }}
         </p>
         <div class="tags" v-if="!blogEditable">
-          <span v-for="tag in blog.tags" :key="tag" class="link"
-            >#{{ tag }}</span
+          <span
+            v-for="tag in blog.tags"
+            :key="tag"
+            class="tag"
+            @click="router.push(`/search?q=${tag}&f=tags`)"
+            >{{ tag }}</span
           >
         </div>
         <div class="extra-editing-options" v-if="blogEditable">
@@ -202,9 +202,6 @@ function editBlog() {
             Edit
           </button>
         </div>
-        <span class="date-posted"
-          >posted on {{ showFormatedDate(blog.date_posted) }}</span
-        >
       </div>
     </section>
     <CommentSection :blog="blog" />
@@ -261,19 +258,23 @@ function editBlog() {
   .title {
     line-height: 2.4rem;
   }
-  .date-posted {
-    display: flex;
-    justify-content: flex-end;
-    opacity: 0.7;
-  }
 
   .author {
     display: flex;
     align-items: center;
     gap: 10px;
     margin-bottom: 1.5rem;
-    .author-name {
-      width: 100%;
+    .basic-post-info {
+      display: flex;
+      gap: 3px;
+      flex-direction: column;
+      .date-posted {
+        opacity: 0.7;
+        font-size: 14px;
+      }
+      .author-name {
+        width: 100%;
+      }
     }
     .blog-options {
       display: flex;
@@ -306,6 +307,17 @@ function editBlog() {
   }
   .anonymous {
     background-color: grey;
+  }
+  .tags {
+    display: flex;
+    gap: 10px;
+    .tag {
+      background: linear-gradient(var(--tag-background));
+      color: var(--tag-color);
+      padding: 0.4rem 0.6rem;
+      border-radius: 2rem;
+      cursor: pointer;
+    }
   }
 }
 </style>

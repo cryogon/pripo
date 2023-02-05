@@ -11,6 +11,9 @@ export interface Blog {
   is_public: boolean;
   date_posted: Date | string;
   likes: number;
+  favourites: {
+    user_id: number;
+  }[];
   shares: number;
   comments?: Comment[];
 }
