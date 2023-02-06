@@ -7,6 +7,7 @@ import { useQuery } from "@vue/apollo-composable";
 import type { Blog } from "@/types";
 import { GET_USER_BY_ID, GET_USER_BY_USERNAME } from "@/graphql";
 import { useAuth0 } from "@auth0/auth0-vue";
+import LoadingScreen from "@/components/LoadingScreen.vue";
 const isCompact = ref(false);
 const { y } = useScroll(window);
 const currentTab = ref<"posts" | "favorites">("posts");
@@ -16,6 +17,7 @@ const {
   result: user,
   onResult,
   onError,
+  loading,
 } = !isNaN(+userParam)
   ? useQuery(GET_USER_BY_ID, { id: userParam })
   : useQuery(GET_USER_BY_USERNAME, { username: userParam });
@@ -58,7 +60,7 @@ const getFilteredBlogs = computed(() => {
 </script>
 
 <template>
-  <main v-if="user && userFound">
+  <main v-if="user && userFound && !loading">
     <div class="user-display-container" :class="{ compact: isCompact }">
       <img
         :src="user.users[0].profile_picture"
@@ -120,6 +122,7 @@ const getFilteredBlogs = computed(() => {
       </div>
     </div>
   </main>
+  <LoadingScreen v-else />
 </template>
 <style scoped lang="scss">
 main {

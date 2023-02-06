@@ -11,6 +11,7 @@ import EditIcon from "../components/Icons/EditIcon.vue";
 import { useShare } from "@vueuse/core";
 import { useEmitter } from "@/composables/EventEmitter";
 import { getTimeDifference } from "@/helper";
+import LoadingScreen from "../components/LoadingScreen.vue";
 const emitter = useEmitter();
 const { user } = useAuth0();
 const params = router.currentRoute.value.params;
@@ -134,14 +135,14 @@ function editBlog() {
     <section class="blog-section">
       <div class="author">
         <div class="author-pfp anonymous" v-if="!blog.is_public"></div>
-        <img
-          :src="blog.user.profile_picture"
-          alt="author"
-          class="author-pfp"
-          @click="router.push(`/users/${blog.user.id}`)"
-          referrerpolicy="no-referrer"
-          v-else
-        />
+        <router-link :to="`/users/${blog.user.id}`" v-else>
+          <img
+            :src="blog.user.profile_picture"
+            alt="author"
+            class="author-pfp"
+            referrerpolicy="no-referrer"
+          />
+        </router-link>
         <div class="basic-post-info">
           <span class="author-name">
             {{ blog.is_public ? blog.user.username : "Anonymous" }}</span
@@ -206,8 +207,7 @@ function editBlog() {
     </section>
     <CommentSection :blog="blog" />
   </main>
-
-  <main v-else-if="loading && !error">Loading...</main>
+  <LoadingScreen v-else-if="loading && !error" />
   <main v-else-if="error || !loading">Post Not Found</main>
 </template>
 <style scoped lang="scss">
@@ -263,6 +263,9 @@ function editBlog() {
     align-items: center;
     gap: 10px;
     margin-bottom: 1.5rem;
+    a: {
+      padding: 0;
+    }
     .basic-post-info {
       display: flex;
       gap: 3px;

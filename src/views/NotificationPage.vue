@@ -6,9 +6,10 @@ import { useAuth0 } from "@auth0/auth0-vue";
 import { ref } from "vue";
 import { getTimeDifference } from "@/helper";
 import router from "@/router";
+import LoadingScreen from "../components/LoadingScreen.vue";
 
 const { user } = useAuth0();
-const { onResult } = useQuery(GET_NOTIFICATIONS, {
+const { onResult, loading } = useQuery(GET_NOTIFICATIONS, {
   user: user.value.nickname,
 });
 const notifications = ref();
@@ -49,7 +50,7 @@ function getFilteredComments(): any {
 }
 </script>
 <template>
-  <main>
+  <main v-if="notifications && !loading">
     <h1>Notifications</h1>
     <section class="notification-card">
       <div class="filters">
@@ -120,6 +121,7 @@ function getFilteredComments(): any {
       <div v-else>No Notification Found</div>
     </section>
   </main>
+  <LoadingScreen v-else />
 </template>
 <style scoped lang="scss">
 main {
