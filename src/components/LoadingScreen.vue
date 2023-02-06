@@ -1,9 +1,9 @@
 <script setup lang="ts"></script>
 <template>
-  <main class="loading-screen"></main>
+  <div class="loading-screen"></div>
 </template>
 <style scoped lang="scss">
-.loading-screen {
+div.loading-screen {
   width: 10rem;
   height: 10rem;
   position: absolute;

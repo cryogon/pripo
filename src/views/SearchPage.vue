@@ -5,6 +5,7 @@ import SearchPostItem from "../components/SearchPostItem.vue";
 import SearchUserItem from "../components/SearchUserItem.vue";
 import { GET_FILTERED_POSTS, FILTER_BY_TAGS } from "@/graphql";
 import { ref, onMounted } from "vue";
+import LoadingScreen from "../components/LoadingScreen.vue";
 const results = ref();
 const filter = ref("posts");
 const params = router.currentRoute.value.query;
@@ -41,7 +42,7 @@ onMounted(() => {
 });
 </script>
 <template>
-  <main>
+  <main v-if="!loading && results?.blogs">
     <h2>Results for: {{ params.q }}</h2>
     <section class="search-card">
       <div class="filters">
@@ -70,7 +71,6 @@ onMounted(() => {
             :key="index"
             :post="post"
           />
-          <div class="loading" v-if="loading">Loading....</div>
           <div class="not-found" v-if="!results?.blogs.length && !loading">
             Post not found
           </div>
@@ -81,7 +81,6 @@ onMounted(() => {
             :key="index"
             :user="user"
           />
-          <div class="loading" v-if="loading">Loading....</div>
           <div class="not-found" v-if="!results?.users.length && !loading">
             User not found
           </div>
@@ -89,6 +88,7 @@ onMounted(() => {
       </div>
     </section>
   </main>
+  <LoadingScreen class="loading" v-else-if="loading && !results?.blogs" />
 </template>
 <style scoped lang="scss">
 main {
