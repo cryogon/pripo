@@ -2,6 +2,7 @@
 import PostCard from "@/components/PostCard.vue";
 import { useQuery } from "@vue/apollo-composable";
 import { GET_ALL_BLOGS } from "@/graphql";
+import LoadingScreen from "../components/LoadingScreen.vue";
 const {
   result: blogs,
   onError,
@@ -49,6 +50,7 @@ function fetchMoreBlogs() {
       Load More
     </div>
   </main>
+  <LoadingScreen v-else />
 </template>
 <style scoped lang="scss">
 main {
