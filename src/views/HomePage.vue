@@ -44,7 +44,7 @@ function fetchMoreBlogs() {
       :comment="blog.comments || null"
     />
 
-    <div v-if="loading" role="text" class="load-more">Fetching...</div>
+    <div v-if="loading" role="text" class="load-more fetching">Fetching...</div>
     <div @click="fetchMoreBlogs" class="load-more" role="button" v-else>
       Load More
     </div>
@@ -63,6 +63,9 @@ main {
     padding: 0.5rem;
     border-radius: 1rem;
     cursor: pointer;
+    &.fetching {
+      cursor: wait;
+    }
   }
 }
 @media (max-width: 600px) {

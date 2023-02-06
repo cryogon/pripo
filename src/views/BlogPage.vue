@@ -172,12 +172,12 @@ function editBlog() {
           {{ JSON.parse(blog.content) }}
         </p>
         <div class="tags" v-if="!blogEditable">
-          <span
+          <router-link
+            :to="`/search?q=${tag}&f=tags`"
             v-for="tag in blog.tags"
             :key="tag"
             class="tag"
-            @click="router.push(`/search?q=${tag}&f=tags`)"
-            >{{ tag }}</span
+            >{{ tag }}</router-link
           >
         </div>
         <div class="extra-editing-options" v-if="blogEditable">
@@ -215,7 +215,6 @@ function editBlog() {
   padding-block-start: 3rem;
   padding-inline: min(10rem, 10vw);
   max-width: 80rem;
-  .title,
   .content {
     p {
       margin-block-end: 0.8rem;
@@ -311,6 +310,7 @@ function editBlog() {
   .tags {
     display: flex;
     gap: 10px;
+    flex-wrap: wrap;
     .tag {
       background: linear-gradient(var(--tag-background));
       color: var(--tag-color);

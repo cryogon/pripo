@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import router from "@/router";
 defineProps<{
   id: number;
   user: {
@@ -30,23 +29,20 @@ function showFormatedDate(date: Date | string | number) {
     year: "numeric",
   }).format(new Date(date));
 }
-function navigateTo(url: string) {
-  router.push(url);
-}
 </script>
 
 <template>
   <div class="container">
     <h4 class="header">
-      <img
-        :src="user?.profile_picture"
-        alt="userProfile"
-        class="user-profile-picture"
-        @click="navigateTo(`/users/${user?.id}`)"
-        style="cursor: pointer"
-        referrerpolicy="no-referrer"
-        v-if="isPublic"
-      />
+      <router-link :to="`/users/${user?.id}`" v-if="isPublic">
+        <img
+          :src="user?.profile_picture"
+          alt="userProfile"
+          class="user-profile-picture"
+          style="cursor: pointer"
+          referrerpolicy="no-referrer"
+        />
+      </router-link>
       <div class="user-profile-picture" v-else></div>
       <span class="username">{{
         isPublic ? user?.username : "Anonymous"
@@ -84,8 +80,11 @@ function navigateTo(url: string) {
 <style scoped lang="scss">
 .container {
   .header {
-    display: flex;
+    display: inline-flex;
     align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 80rem;
   }
   .user-profile-picture {
     aspect-ratio: 1/1;

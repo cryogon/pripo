@@ -15,6 +15,7 @@ const props = defineProps<{
 }>();
 
 if (
+  props.post.favourites &&
   props.post.favourites.filter((u: any) => u.user_id === user.value?.uid)
     .length != 0
 ) {
