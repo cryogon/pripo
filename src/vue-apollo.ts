@@ -33,7 +33,6 @@ const wsLink = new GraphQLWsLink(
   })
 );
 
-//Will use later when subscription will be implemented
 const link = split(
   // split based on operation type
   ({ query }) => {

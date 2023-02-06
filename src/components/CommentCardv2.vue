@@ -6,7 +6,6 @@ import ReplyInputBoxv2 from "./ReplyInputBoxv2.vue";
 import { useEmitter } from "@/composables/EventEmitter";
 import { useAuth0 } from "@auth0/auth0-vue";
 import { ref } from "vue";
-import router from "@/router";
 import { useMutation } from "@vue/apollo-composable";
 import { SET_COMMENT_LIKE, REMOVE_COMMENT_LIKE } from "@/graphql";
 import { useClipboard } from "@vueuse/core";
@@ -31,10 +30,6 @@ function replyToggle() {
 emitter.on("replyInactive", () => {
   isReplyInputInactive.value = true;
 });
-
-function redirctToProfilePage(username: string) {
-  router.push(`/users/${username}`);
-}
 
 /**
  * @method setLikes
@@ -100,19 +95,22 @@ function commentUrl(id: number) {
     <div class="user-info-container">
       <div class="user-avatar-container">
         <i class="threadline"></i>
-        <img
-          :src="comment.user.profile_picture"
-          alt="user-avatar"
-          class="user-avatar"
-          @click="redirctToProfilePage(comment.user.username)"
+        <router-link
           v-if="comment.is_public"
-        />
+          :to="`/users/${comment.user.username}`"
+        >
+          <img
+            :src="comment.user.profile_picture"
+            alt="user-avatar"
+            class="user-avatar"
+          />
+        </router-link>
         <div class="anonymous-user" v-else></div>
       </div>
       <div class="user-info">
-        <div class="username">
+        <router-link :to="`/users/${comment.user.username}`" class="username">
           {{ comment.is_public ? comment.user.username : "Anonymous" }}
-        </div>
+        </router-link>
         <div class="content">{{ comment.content }}</div>
       </div>
     </div>
@@ -170,7 +168,6 @@ function commentUrl(id: number) {
   margin: 1rem 0.3rem;
   .user-info-container {
     min-height: 4rem;
-    cursor: pointer;
     padding: 0.5rem;
     display: flex;
     align-items: center;
@@ -179,6 +176,9 @@ function commentUrl(id: number) {
     background-color: #161616;
     .user-avatar-container {
       position: relative;
+      a {
+        padding: 0;
+      }
       .threadline {
         height: 200rem;
         width: 0.1rem;
@@ -194,6 +194,9 @@ function commentUrl(id: number) {
         height: 3rem;
         border-radius: 50%;
       }
+      .user-avatar {
+        cursor: pointer;
+      }
       .anonymous-user {
         background-color: grey;
         &:hover {
@@ -202,9 +205,17 @@ function commentUrl(id: number) {
       }
     }
     .user-info {
+      display: flex;
+      flex-direction: column;
       .username {
+        padding: 0;
+        color: var(--color-text);
         margin-block-end: 0.3rem;
         opacity: 0.6;
+        cursor: pointer;
+        &:hover {
+          text-decoration: underline;
+        }
       }
     }
   }

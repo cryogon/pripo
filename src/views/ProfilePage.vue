@@ -60,7 +60,7 @@ const getFilteredBlogs = computed(() => {
 </script>
 
 <template>
-  <main v-if="user && userFound && !loading">
+  <main v-if="user && userFound && !loading" class="container">
     <div class="user-display-container" :class="{ compact: isCompact }">
       <img
         :src="user.users[0].profile_picture"
@@ -125,7 +125,7 @@ const getFilteredBlogs = computed(() => {
   <LoadingScreen v-else />
 </template>
 <style scoped lang="scss">
-main {
+.container {
   display: flex;
   flex-direction: column;
   align-items: center;
