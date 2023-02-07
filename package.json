@@ -1,6 +1,6 @@
 {
-  "name": "pripo-vue",
-  "version": "0.12.4",
+  "name": "pripo",
+  "version": "0.12.5",
   "license": "MIT",
   "scripts": {
     "dev": "vite",

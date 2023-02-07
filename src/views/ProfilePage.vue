@@ -38,8 +38,8 @@ onError(() => {
 
 //For user to change even when page not refreshed
 //For instance, checking a user's profile and then checking your own profile
-router.afterEach((to) => {
-  if (to.name === "users")
+router.afterEach((to, from) => {
+  if (to.name === "users" && from.name === "users")
     refetch({ id: to.params.user, username: to.params.user });
 });
 watch(y, () => {

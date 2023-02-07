@@ -173,7 +173,7 @@ function commentUrl(id: number) {
     align-items: center;
     gap: 10px;
     padding-inline-end: 1rem;
-    background-color: #161616;
+    background-color: var(--color-background);
     .user-avatar-container {
       position: relative;
       a {

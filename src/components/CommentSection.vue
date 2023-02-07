@@ -163,12 +163,13 @@ emitter.on("refetchComments", () => {
 </template>
 <style scoped lang="scss">
 .comment-section {
+  margin-block-start: 2rem;
   .comment-container {
-    background-color: rgb(8, 8, 8, 0.2);
+    background-color: var(--comment-section-background);
     padding: 1rem 1.2rem;
     min-height: 10rem;
     .comment-main {
-      background-color: #161616;
+      background-color: var(--color-background);
       overflow-y: hidden;
     }
     .reply-container {

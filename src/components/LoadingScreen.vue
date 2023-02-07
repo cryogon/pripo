@@ -10,7 +10,7 @@ div.loading-screen {
   top: 50%;
   left: 50%;
   translate: -50% -50%;
-  background-color: var(--color-text);
+  background: var(--loading-background);
   animation: anim infinite 2s;
   @keyframes anim {
     0% {

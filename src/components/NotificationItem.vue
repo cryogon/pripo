@@ -39,8 +39,7 @@ function markRead(id: number) {
       <span class="time">{{ timeDifference }}</span>
     </div>
     <div class="check">
-      <!-- @click="markRead(id)" -->
-      <CheckIcon class="mark-read" />
+      <CheckIcon class="mark-read" @click="markRead(id)" />
     </div>
   </div>
 </template>

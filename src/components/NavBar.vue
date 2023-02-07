@@ -144,6 +144,7 @@ function toggleNotification() {
       <div class="buttons">
         <LoginButton v-if="!isAuthenticated" />
         <div class="user-bar" v-else-if="user && isAuthenticated">
+          <span v-if="!isDark" title="Light mode is on alpha stage">Alpha</span>
           <div class="notification-container">
             <BellIcon
               class="notification-icon"
@@ -173,7 +174,7 @@ function toggleNotification() {
               >Post</router-link
             >
             <span class="hover-item" @click="toggleDark()" role="button">{{
-              isDark ? "Dark" : "Light (Alpha)"
+              isDark ? "Dark" : "Light"
             }}</span>
             <router-link class="hover-item" to="/settings" role="button"
               >Settings</router-link
