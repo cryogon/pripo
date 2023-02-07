@@ -43,6 +43,7 @@ watch(y, () => {
 });
 router.afterEach(() => {
   isDropDownVisible.value = false;
+  isNotificationActive.value = false;
 });
 
 function toggleDropDown() {
@@ -98,6 +99,9 @@ function search() {
   filter.value = "posts";
   searchInputData.value = "";
 }
+function toggleNotification() {
+  isNotificationActive.value = !isNotificationActive.value;
+}
 </script>
 <template>
   <!-- <Suspense> -->
@@ -143,7 +147,7 @@ function search() {
           <div class="notification-container">
             <BellIcon
               class="notification-icon"
-              @click.prevent="isNotificationActive = !isNotificationActive"
+              @click.prevent="toggleNotification"
             />
             <NotificationCenter
               class="notifications"
@@ -278,7 +282,7 @@ nav {
         border-radius: 50%;
         width: 0.5rem;
         height: 0.5rem;
-        background-color: red;
+        background: linear-gradient(var(--tag-background));
       }
     }
     .userpfp {

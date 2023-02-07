@@ -469,8 +469,14 @@ export const MARK_ALL_NOTIFICATION_READ = gql`
   mutation markAllRead($username: String!) {
     update_user_notifications(
       _set: { has_read: true }
-      where: { notification_for: { _eq: $username } }
+      where: {
+        _and: [
+          { notification_for: { _eq: $username } }
+          { has_read: { _eq: false } }
+        ]
+      }
     ) {
+      affected_rows
       returning {
         id
         has_read

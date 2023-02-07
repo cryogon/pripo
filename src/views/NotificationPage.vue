@@ -12,6 +12,7 @@ const { user } = useAuth0();
 const { onResult, loading } = useQuery(GET_NOTIFICATIONS, {
   user: user.value.nickname,
 });
+
 const notifications = ref();
 const { mutate } = useMutation(MARK_NOTIFICATION_READ);
 const filter = ref("all");

@@ -70,7 +70,7 @@ const router = createRouter({
           } else {
             resolve({
               el: to.hash,
-              top: -10,
+              top: 150,
             });
           }
         }, 200);
