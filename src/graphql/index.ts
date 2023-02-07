@@ -135,7 +135,6 @@ export const POST_COMMENT = gql`
         notification_by
         notification_for
         blog_id
-        comment_id
       }
     }
   }
@@ -457,7 +456,6 @@ export const MARK_NOTIFICATION_READ = gql`
         id
         has_read
         blog_id
-        comment_id
         created_at
         notification_by
         notification_for
@@ -477,7 +475,6 @@ export const MARK_ALL_NOTIFICATION_READ = gql`
         id
         has_read
         blog_id
-        comment_id
         created_at
         notification_by
         notification_for

@@ -1,13 +1,15 @@
 <script setup lang="ts">
-import { LISTEN_NOTIFICATION, MARK_ALL_NOTIFICATION_READ } from "@/graphql";
+import { MARK_ALL_NOTIFICATION_READ } from "@/graphql";
 import router from "@/router";
-import { useSubscription, useMutation } from "@vue/apollo-composable";
-import { watch, ref } from "vue";
+import { useMutation } from "@vue/apollo-composable";
+import { ref } from "vue";
 import NotificationItem from "./NotificationItem.vue";
-const { result } = useSubscription(LISTEN_NOTIFICATION);
+import { usePripoStore } from "@/stores";
+const store = usePripoStore();
+
 const notifications = ref<any[]>([]);
-watch(result, (data) => {
-  notifications.value = data.user_notifications || [];
+store.notification.onResult((n) => {
+  notifications.value = n.data.user_notifications || [];
 });
 function redirectTo(address: string, notification: any) {
   switch (address) {

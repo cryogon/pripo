@@ -54,6 +54,13 @@ const cache = new InMemoryCache({
         },
       },
     },
+    Subscription: {
+      fields: {
+        user_notifications: {
+          merge: false,
+        },
+      },
+    },
   },
 });
 export const apolloClient = new ApolloClient({

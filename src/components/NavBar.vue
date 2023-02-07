@@ -9,6 +9,8 @@ import LoginButton from "./LoginButton.vue";
 import BellIcon from "./Icons/BellIcon.vue";
 import HamBurger from "./Icons/HamBurger.vue";
 import NotificationCenter from "./NotificationCenter.vue";
+import { usePripoStore } from "@/stores";
+const store = usePripoStore();
 // import { setContext } from "@apollo/client/link/context";
 const isDropDownVisible = ref(false);
 const isDark = useDark();
@@ -27,7 +29,10 @@ const {
 const windowWidth = ref(window.innerWidth - 49);
 const searchInputData = ref("");
 const filter = ref("posts");
-
+const unreadNotification = ref();
+store.notification.onResult((n) => {
+  unreadNotification.value = n.data.user_notifications.length;
+});
 watch(y, () => {
   if (Math.round(y.value) > 130) {
     compactNavbar.value = true;
@@ -68,10 +73,6 @@ if (isAuthenticated) {
   token.then((d) => {
     localStorage.setItem("token", d);
   });
-}
-async function openSetting() {
-  const emitter = (await import("@/composables/EventEmitter")).useEmitter();
-  emitter.emit("alert", "This option is not available yet");
 }
 window.addEventListener("resize", () => {
   windowWidth.value = window.innerWidth - 49;
@@ -146,6 +147,7 @@ function search() {
             />
             <NotificationCenter
               class="notifications"
+              :class="{ 'has-notification': unreadNotification }"
               v-show="isNotificationActive"
             />
           </div>
@@ -167,10 +169,10 @@ function search() {
               >Post</router-link
             >
             <span class="hover-item" @click="toggleDark()" role="button">{{
-              isDark ? "Dark" : "Light"
+              isDark ? "Dark" : "Light (Alpha)"
             }}</span>
-            <span class="hover-item" role="button" @click="openSetting"
-              >Settings</span
+            <router-link class="hover-item" to="/settings" role="button"
+              >Settings</router-link
             >
             <span class="hover-item" @click="logout" role="button">Logout</span>
           </div>
@@ -268,9 +270,16 @@ nav {
         width: 1.3rem;
         aspect-ratio: 1/1;
       }
-    }
-    .post-button {
-      scale: 1.2;
+      &:has(.has-notification)::after {
+        content: "";
+        position: absolute;
+        top: 0.4rem;
+        left: 0.8rem;
+        border-radius: 50%;
+        width: 0.5rem;
+        height: 0.5rem;
+        background-color: red;
+      }
     }
     .userpfp {
       border-radius: 50%;

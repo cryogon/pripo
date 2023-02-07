@@ -108,7 +108,6 @@ function toggleInputBox() {
 <style scoped lang="scss">
 .comment-input-section {
   display: flex;
-  align-items: center;
   gap: 10px;
   margin-block: 1rem 2rem;
   a {

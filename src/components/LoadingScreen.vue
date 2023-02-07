@@ -16,14 +16,17 @@ div.loading-screen {
     0% {
       border-radius: 0;
       rotate: 0;
+      opacity: 1;
     }
     50% {
       border-radius: 50%;
       rotate: 0.5turn;
+      opacity: 0.5;
     }
     100% {
       border-radius: 0;
       rotate: 0;
+      opacity: 1;
     }
   }
 }

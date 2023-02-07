@@ -16,14 +16,7 @@ const emitter = useEmitter();
 const { user } = useAuth0();
 const params = router.currentRoute.value.params;
 const blogId = parseInt(params?.id as string);
-const {
-  result,
-  loading,
-  error,
-  onError,
-  stop,
-  refetch: refetchBlog,
-} = useQuery(GET_BLOG, {
+const { result, loading, error, onError, stop } = useQuery(GET_BLOG, {
   id: blogId,
 });
 const isFav = ref(false);
@@ -126,7 +119,6 @@ function editBlog() {
     tags: blogTags.value.split(" ").map((c: any) => c.toLowerCase()),
   });
   blogEditable.value = false;
-  refetchBlog();
 }
 </script>
 
