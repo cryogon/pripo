@@ -48,8 +48,8 @@ function setLikes(cmnt: Comment) {
   };
   const { mutate: setLikes } = useMutation(SET_COMMENT_LIKE);
   const { mutate: removeLikes } = useMutation(REMOVE_COMMENT_LIKE);
-  for (let cUser of cmnt.liked_users || []) {
-    if (cUser.user_id == user.value?.uid) {
+  for (let cUser of cmnt.liked_users) {
+    if (cUser.user_id != user.value?.uid) {
       setLikes(variable);
       return;
     } else {

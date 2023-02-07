@@ -61,6 +61,13 @@ const cache = new InMemoryCache({
         },
       },
     },
+    comments: {
+      fields: {
+        liked_users: {
+          merge: false,
+        },
+      },
+    },
   },
 });
 export const apolloClient = new ApolloClient({
