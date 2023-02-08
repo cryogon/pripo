@@ -50,6 +50,11 @@ const router = createRouter({
       component: () => import("@/views/CommentThread"),
     },
     {
+      path: "/settings",
+      name: "settings",
+      component: () => import("@/views/UserSettingPage.vue"),
+    },
+    {
       path: "/404",
       name: "notfound",
       component: () => import("@/views/NotFound.vue"),
@@ -65,7 +70,7 @@ const router = createRouter({
           } else {
             resolve({
               el: to.hash,
-              top: -10,
+              top: 150,
             });
           }
         }, 200);

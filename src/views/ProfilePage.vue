@@ -18,6 +18,7 @@ const {
   onResult,
   onError,
   loading,
+  refetch,
 } = !isNaN(+userParam)
   ? useQuery(GET_USER_BY_ID, { id: userParam })
   : useQuery(GET_USER_BY_USERNAME, { username: userParam });
@@ -35,6 +36,12 @@ onError(() => {
   console.error("Some Error Occured In Accessing DB! try to refetch");
 });
 
+//For user to change even when page not refreshed
+//For instance, checking a user's profile and then checking your own profile
+router.afterEach((to, from) => {
+  if (to.name === "users" && from.name === "users")
+    refetch({ id: to.params.user, username: to.params.user });
+});
 watch(y, () => {
   if (y.value > 20) {
     isCompact.value = true;
@@ -60,7 +67,7 @@ const getFilteredBlogs = computed(() => {
 </script>
 
 <template>
-  <main v-if="user && userFound && !loading">
+  <main v-if="user && userFound && !loading" class="container">
     <div class="user-display-container" :class="{ compact: isCompact }">
       <img
         :src="user.users[0].profile_picture"
@@ -103,6 +110,7 @@ const getFilteredBlogs = computed(() => {
             {{ blog.title }}
           </span>
         </div>
+        <div v-if="!getFilteredBlogs.length">Empty, just like my wallet</div>
       </div>
       <div
         class="favoritePostsContainer"
@@ -119,13 +127,14 @@ const getFilteredBlogs = computed(() => {
             {{ blog.blog[0].title }}
           </span>
         </div>
+        <div v-if="!user.users[0].liked_blogs.length">Nothing Here.</div>
       </div>
     </div>
   </main>
   <LoadingScreen v-else />
 </template>
 <style scoped lang="scss">
-main {
+.container {
   display: flex;
   flex-direction: column;
   align-items: center;

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import router from "@/router";
 import { ref } from "vue";
 import { useAuth0 } from "@auth0/auth0-vue";
 import { useMutation } from "@vue/apollo-composable";
@@ -35,9 +34,6 @@ function postComment(content: string, blogId: number, author: string): void {
   focusedOnCommentBox.value = false;
 }
 
-function redirctToProfilePage(id: number) {
-  router.push(`/users/${id}`);
-}
 function setRows(e: any): void {
   if ((e.target.value.match(/\n/gm) || []).length == 0) {
     e.target.rows = 2;
@@ -66,14 +62,9 @@ function toggleInputBox() {
 </script>
 <template>
   <div class="comment-input-section" v-if="user?.nickname">
-    <img
-      :src="user.picture"
-      alt="user"
-      class="user-icon"
-      @click="redirctToProfilePage(user.uid)"
-      v-if="user"
-    />
-    <div class="anonymousUser" v-else></div>
+    <router-link :to="`/users/${user.nickname}`">
+      <img :src="user.picture" alt="user" class="user-icon" />
+    </router-link>
     <div class="input-container">
       <textarea
         placeholder="Type you comment"
@@ -117,9 +108,11 @@ function toggleInputBox() {
 <style scoped lang="scss">
 .comment-input-section {
   display: flex;
-  align-items: center;
   gap: 10px;
   margin-block: 1rem 2rem;
+  a {
+    padding: 0;
+  }
 }
 .input-container {
   position: relative;

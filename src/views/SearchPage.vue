@@ -42,7 +42,7 @@ onMounted(() => {
 });
 </script>
 <template>
-  <main v-if="!loading && results?.blogs">
+  <main v-if="!loading && results?.blogs" class="container">
     <h2>Results for: {{ params.q }}</h2>
     <section class="search-card">
       <div class="filters">
@@ -91,7 +91,7 @@ onMounted(() => {
   <LoadingScreen class="loading" v-else-if="loading && !results?.blogs" />
 </template>
 <style scoped lang="scss">
-main {
+.container {
   padding: 2rem 10rem;
   .search-card {
     background-color: var(--nav-background);

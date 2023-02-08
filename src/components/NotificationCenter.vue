@@ -1,26 +1,28 @@
 <script setup lang="ts">
-import { LISTEN_NOTIFICATION, MARK_ALL_NOTIFICATION_READ } from "@/graphql";
+import { MARK_ALL_NOTIFICATION_READ } from "@/graphql";
 import router from "@/router";
-import { useSubscription, useMutation } from "@vue/apollo-composable";
-import { watch, ref } from "vue";
+import { useMutation } from "@vue/apollo-composable";
+import { ref } from "vue";
 import NotificationItem from "./NotificationItem.vue";
-const { result } = useSubscription(LISTEN_NOTIFICATION);
+import { usePripoStore } from "@/stores";
+const store = usePripoStore();
+
 const notifications = ref<any[]>([]);
-watch(result, (data) => {
-  notifications.value = data.user_notifications || [];
+store.notification.onResult((n) => {
+  notifications.value = n.data.user_notifications || [];
 });
-function redirectTo(address: string, notification: any) {
-  switch (address) {
-    case "comment":
-      router.push(
-        `/posts/${notification.blog.id}#c${notification.sender?.comments[0].id}`
-      );
-      break;
-    case "reply":
-      router.push(`/posts/${notification.blog.id}#c${notification.comment_id}`);
-      break;
-  }
-}
+// function redirectTo(address: string, notification: any) {
+//   switch (address) {
+//     case "comment":
+//       router.push(
+//         `/posts/${notification.blog.id}#c${notification.sender?.comments[0].id}`
+//       );
+//       break;
+//     case "reply":
+//       router.push(`/posts/${notification.blog.id}#c${notification.comment_id}`);
+//       break;
+//   }
+// }
 
 function markAllRead(username: string) {
   const { mutate } = useMutation(MARK_ALL_NOTIFICATION_READ);
@@ -34,7 +36,7 @@ function markAllRead(username: string) {
       <NotificationItem
         v-for="(notification, index) in notifications"
         :key="index"
-        :id="notification.id"
+        :id="notification.sender?.comments[0].id"
         :content="notification.sender?.comments[0].content"
         :desc="
           notification.type === 'comment'
@@ -43,7 +45,7 @@ function markAllRead(username: string) {
         "
         :user="notification.sender?.username"
         :created_at="notification.created_at"
-        @click="redirectTo(notification.type, notification)"
+        :blog_id="notification.blog.id"
       />
     </div>
     <div class="options-group">

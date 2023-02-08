@@ -9,6 +9,8 @@ import LoginButton from "./LoginButton.vue";
 import BellIcon from "./Icons/BellIcon.vue";
 import HamBurger from "./Icons/HamBurger.vue";
 import NotificationCenter from "./NotificationCenter.vue";
+import { usePripoStore } from "@/stores";
+const store = usePripoStore();
 // import { setContext } from "@apollo/client/link/context";
 const isDropDownVisible = ref(false);
 const isDark = useDark();
@@ -27,7 +29,10 @@ const {
 const windowWidth = ref(window.innerWidth - 49);
 const searchInputData = ref("");
 const filter = ref("posts");
-
+const unreadNotification = ref();
+store.notification.onResult((n) => {
+  unreadNotification.value = n.data.user_notifications.length;
+});
 watch(y, () => {
   if (Math.round(y.value) > 130) {
     compactNavbar.value = true;
@@ -38,6 +43,7 @@ watch(y, () => {
 });
 router.afterEach(() => {
   isDropDownVisible.value = false;
+  isNotificationActive.value = false;
 });
 
 function toggleDropDown() {
@@ -69,10 +75,6 @@ if (isAuthenticated) {
     localStorage.setItem("token", d);
   });
 }
-async function openSetting() {
-  const emitter = (await import("@/composables/EventEmitter")).useEmitter();
-  emitter.emit("alert", "This option is not available yet");
-}
 window.addEventListener("resize", () => {
   windowWidth.value = window.innerWidth - 49;
 });
@@ -96,6 +98,9 @@ function search() {
   });
   filter.value = "posts";
   searchInputData.value = "";
+}
+function toggleNotification() {
+  isNotificationActive.value = !isNotificationActive.value;
 }
 </script>
 <template>
@@ -139,13 +144,15 @@ function search() {
       <div class="buttons">
         <LoginButton v-if="!isAuthenticated" />
         <div class="user-bar" v-else-if="user && isAuthenticated">
+          <span v-if="!isDark" title="Light mode is on alpha stage">Alpha</span>
           <div class="notification-container">
             <BellIcon
               class="notification-icon"
-              @click.prevent="isNotificationActive = !isNotificationActive"
+              @click.prevent="toggleNotification"
             />
             <NotificationCenter
               class="notifications"
+              :class="{ 'has-notification': unreadNotification }"
               v-show="isNotificationActive"
             />
           </div>
@@ -169,8 +176,8 @@ function search() {
             <span class="hover-item" @click="toggleDark()" role="button">{{
               isDark ? "Dark" : "Light"
             }}</span>
-            <span class="hover-item" role="button" @click="openSetting"
-              >Settings</span
+            <router-link class="hover-item" to="/settings" role="button"
+              >Settings</router-link
             >
             <span class="hover-item" @click="logout" role="button">Logout</span>
           </div>
@@ -268,9 +275,16 @@ nav {
         width: 1.3rem;
         aspect-ratio: 1/1;
       }
-    }
-    .post-button {
-      scale: 1.2;
+      &:has(.has-notification)::after {
+        content: "";
+        position: absolute;
+        top: 0.4rem;
+        left: 0.8rem;
+        border-radius: 50%;
+        width: 0.5rem;
+        height: 0.5rem;
+        background: linear-gradient(var(--tag-background));
+      }
     }
     .userpfp {
       border-radius: 50%;

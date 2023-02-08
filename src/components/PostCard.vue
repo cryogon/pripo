@@ -49,10 +49,17 @@ function showFormatedDate(date: Date | string | number) {
       }}</span>
       <span class="tags">
         posted about
-        <span class="tag" v-for="tag in tags" :key="tag"> {{ tag + " " }}</span>
+        <router-link
+          :to="`/search?q=${tag}&f=tags`"
+          class="tag"
+          v-for="tag in tags"
+          :key="tag"
+        >
+          {{ tag + " " }}</router-link
+        >
       </span>
       <span class="post-date">
-        posted on
+        on
         <span class="date"> {{ showFormatedDate(date_posted) }}</span>
       </span>
     </h4>
@@ -103,7 +110,7 @@ function showFormatedDate(date: Date | string | number) {
   }
   .tag {
     cursor: pointer;
-    color: var(--link-color);
+    padding: 0;
     position: relative;
   }
   .tag:hover {

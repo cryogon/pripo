@@ -11,6 +11,7 @@ const props = defineProps<{
   content: string;
   id: number;
   created_at: string;
+  blog_id: number;
 }>();
 const date = new Date(props.created_at);
 const timeDifference = ref(getTimeDifference(date, new Date()));
@@ -24,7 +25,7 @@ function markRead(id: number) {
   <div class="link container">
     <BellIcon class="bell" />
     <div class="info">
-      <div>
+      <router-link :to="`/posts/${blog_id}#c${id}`" class="user-info">
         <span class="user">{{ user + " " }}</span>
         <span class="description"> {{ desc }}</span>
         <p class="content">
@@ -34,23 +35,25 @@ function markRead(id: number) {
               : content.substring(0, 20) + "..."
           }}
         </p>
-      </div>
+      </router-link>
       <span class="time">{{ timeDifference }}</span>
     </div>
     <div class="check">
-      <CheckIcon @click="markRead(id)" />
+      <CheckIcon class="mark-read" @click="markRead(id)" />
     </div>
   </div>
 </template>
 <style scoped lang="scss">
 .container {
-  padding: 0.1rem;
+  padding: 0.2rem;
+  padding-block-end: 1.4rem;
   color: var(--color-text);
   background-color: var(--dropdown-background);
   margin-block-end: 0.5rem;
   display: flex;
   font-size: 14px;
   gap: 10px;
+  position: relative;
 
   .bell {
     width: 1.2rem;
@@ -59,9 +62,14 @@ function markRead(id: number) {
   }
   .info {
     padding-top: 0.4rem;
+    .user-info {
+      color: var(--color-text);
+      padding: 0;
+    }
     .time {
       margin-inline-start: 9rem;
       opacity: 0.6;
+      position: absolute;
     }
     .user {
       font-weight: bolder;

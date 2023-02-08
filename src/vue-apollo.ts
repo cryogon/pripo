@@ -33,7 +33,6 @@ const wsLink = new GraphQLWsLink(
   })
 );
 
-//Will use later when subscription will be implemented
 const link = split(
   // split based on operation type
   ({ query }) => {
@@ -51,6 +50,20 @@ const cache = new InMemoryCache({
     blogs: {
       fields: {
         favourites: {
+          merge: false,
+        },
+      },
+    },
+    Subscription: {
+      fields: {
+        user_notifications: {
+          merge: false,
+        },
+      },
+    },
+    comments: {
+      fields: {
+        liked_users: {
           merge: false,
         },
       },

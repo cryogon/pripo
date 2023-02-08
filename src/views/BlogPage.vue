@@ -15,17 +15,18 @@ import LoadingScreen from "../components/LoadingScreen.vue";
 const emitter = useEmitter();
 const { user } = useAuth0();
 const params = router.currentRoute.value.params;
-const blogId = parseInt(params?.id as string);
-const {
-  result,
-  loading,
-  error,
-  onError,
-  stop,
-  refetch: refetchBlog,
-} = useQuery(GET_BLOG, {
+const blogId = params?.id as string;
+const { result, loading, error, onError, stop } = useQuery(GET_BLOG, {
   id: blogId,
 });
+//Will implement refetch when user click on notification
+// router.afterEach((to, from) => {
+//   if (to.name === "posts" && from.name === "posts") {
+//     console.log("Refetch");
+//     console.log(blogId);
+//     refetch({ id: to.params.id as string });
+//   }
+// });
 const isFav = ref(false);
 const { share, isSupported } = useShare();
 const blog = ref<any>();
@@ -126,7 +127,6 @@ function editBlog() {
     tags: blogTags.value.split(" ").map((c: any) => c.toLowerCase()),
   });
   blogEditable.value = false;
-  refetchBlog();
 }
 </script>
 
