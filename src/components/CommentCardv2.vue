@@ -7,7 +7,11 @@ import { useEmitter } from "@/composables/EventEmitter";
 import { useAuth0 } from "@auth0/auth0-vue";
 import { ref } from "vue";
 import { useMutation } from "@vue/apollo-composable";
-import { SET_COMMENT_LIKE, REMOVE_COMMENT_LIKE } from "@/graphql";
+import {
+  SET_COMMENT_LIKE,
+  REMOVE_COMMENT_LIKE,
+  DELETE_COMMENT,
+} from "@/graphql";
 import { useClipboard } from "@vueuse/core";
 defineProps<{ comment: Comment }>();
 const { user } = useAuth0();
@@ -79,8 +83,12 @@ function editComment() {
   commentReplyMode.value = "edit";
   toggle();
 }
-function deleteComment() {
-  emitter.emit("alert", "Are you sure about that");
+function deleteComment(id: number) {
+  const { mutate } = useMutation(DELETE_COMMENT);
+  console.log(id);
+  mutate({ id: id });
+
+  // emitter.emit("alert", "Are you sure about that");
 }
 
 function toggleReply() {
@@ -134,7 +142,7 @@ function commentUrl(id: number) {
       >
       <span
         class="delete options-item"
-        @click="deleteComment"
+        @click="deleteComment(comment.id as number)"
         v-if="user?.uid === comment.user.id"
         >delete</span
       >

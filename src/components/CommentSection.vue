@@ -11,8 +11,11 @@ import router from "@/router";
 const props = defineProps<{
   blog: Blog;
 }>();
-const { result, refetch } = useQuery(GET_COMMENTS, {
+const { result, refetch, onError } = useQuery(GET_COMMENTS, {
   blogId: props.blog?.id,
+});
+onError((e) => {
+  console.error("Some problem on our side.");
 });
 const builder = ref(new CommentBuilder());
 const comments = ref();

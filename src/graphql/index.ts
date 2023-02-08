@@ -194,7 +194,12 @@ export const POST_REPLY = gql`
 
 export const GET_COMMENTS = gql`
   query getComments($blogId: Int!) {
-    comments(order_by: { id: asc }, where: { blog_id: { _eq: $blogId } }) {
+    comments(
+      where: {
+        _and: [{ blog_id: { _eq: $blogId } }, { is_deleted: { _eq: false } }]
+      }
+      order_by: { id: asc }
+    ) {
       blog_id
       id
       parent_id
@@ -410,11 +415,10 @@ export const EDIT_BLOG = gql`
 
 export const DELETE_COMMENT = gql`
   mutation deleteComment($id: bigint!) {
-    delete_comments(where: { id: { _eq: $id } }) {
+    update_comments(_set: { is_deleted: true }, where: { id: { _eq: $id } }) {
       returning {
-        content
         id
-        username
+        is_deleted
       }
     }
   }

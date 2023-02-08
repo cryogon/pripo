@@ -8,7 +8,7 @@ const {
   onError,
   loading,
   fetchMore,
-} = useQuery(GET_ALL_BLOGS, { offset: 0, limit: 3 });
+} = useQuery(GET_ALL_BLOGS, { offset: 0, limit: 6 });
 localStorage.setItem("currentTitle", "Pripo");
 onError(() => {
   console.error("Some Error Occured! Try to refetch");
@@ -45,10 +45,10 @@ function fetchMoreBlogs() {
       :comment="blog.comments || null"
     />
 
-    <div v-if="loading" role="text" class="load-more fetching">Fetching...</div>
+    <!-- <div v-if="loading" role="text" class="load-more fetching">Fetching...</div>
     <div @click="fetchMoreBlogs" class="load-more" role="button" v-else>
       Load More
-    </div>
+    </div> -->
   </main>
   <LoadingScreen v-else />
 </template>
