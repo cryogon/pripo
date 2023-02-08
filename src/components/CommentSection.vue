@@ -14,7 +14,7 @@ const props = defineProps<{
 const { result, refetch, onError } = useQuery(GET_COMMENTS, {
   blogId: props.blog?.id,
 });
-onError((e) => {
+onError(() => {
   console.error("Some problem on our side.");
 });
 const builder = ref(new CommentBuilder());
