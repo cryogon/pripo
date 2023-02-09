@@ -31,7 +31,7 @@ library.add(
   faChevronDown
 );
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("service-worker.ts");
+  navigator.serviceWorker.register("/service-worker.ts");
 }
 const app = createApp({
   setup() {
