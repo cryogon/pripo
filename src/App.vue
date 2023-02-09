@@ -23,6 +23,9 @@ onMounted(() => {
     }, 3000);
   });
 });
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("../service-worker");
+}
 </script>
 
 <template>

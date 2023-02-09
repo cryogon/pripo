@@ -233,6 +233,7 @@ function commentUrl(id: number) {
     display: flex;
     gap: 13px;
     align-items: center;
+    user-select: none;
     .options-item {
       &.date {
         margin-inline-end: 0.6rem;

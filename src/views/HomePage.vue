@@ -10,7 +10,8 @@ const {
   fetchMore,
 } = useQuery(GET_ALL_BLOGS, { offset: 0, limit: 6 });
 localStorage.setItem("currentTitle", "Pripo");
-onError(() => {
+onError((e) => {
+  console.error(e);
   console.error("Some Error Occured! Try to refetch");
 });
 

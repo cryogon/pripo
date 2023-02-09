@@ -233,7 +233,7 @@ export const GET_USER_BY_ID = gql`
           title
         }
       }
-      blogs {
+      blogs(order_by: { id: asc }) {
         id
         title
         content
@@ -256,7 +256,7 @@ export const GET_USER_BY_USERNAME = gql`
           title
         }
       }
-      blogs {
+      blogs(order_by: { id: asc }) {
         id
         title
         content
