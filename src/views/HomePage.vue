@@ -9,6 +9,7 @@ const {
   loading,
   fetchMore,
 } = useQuery(GET_ALL_BLOGS, { offset: 0, limit: 6 });
+const isOnline = navigator.onLine;
 localStorage.setItem("currentTitle", "Pripo");
 onError((e) => {
   console.error(e);
@@ -51,6 +52,7 @@ function fetchMoreBlogs() {
       Load More
     </div> -->
   </main>
+  <main v-else-if="!isOnline">You are currently Offline</main>
   <LoadingScreen v-else />
 </template>
 <style scoped lang="scss">
