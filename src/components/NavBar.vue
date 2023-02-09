@@ -190,6 +190,8 @@ function toggleNotification() {
 <style scoped lang="scss">
 header {
   z-index: 9999;
+  user-select: none;
+  -webkit-user-select: none;
 }
 header:has(.compact) {
   position: sticky;

@@ -55,6 +55,12 @@ const router = createRouter({
       component: () => import("@/views/UserSettingPage.vue"),
     },
     {
+      //For Testing Purpose. Must remove when moved to production
+      path: "/loading",
+      name: "loading",
+      component: () => import("@/components/LoadingScreen.vue"),
+    },
+    {
       path: "/404",
       name: "notfound",
       component: () => import("@/views/NotFound.vue"),

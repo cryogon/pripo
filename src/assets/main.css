@@ -76,7 +76,7 @@ html{
   scroll-padding-block-start: 10rem;
 }
 body {
-  font-family: "Inter", sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont,"Inter", sans-serif;
   color: var(--color-text);
   background-color: var(--color-background);
   transition: background 200ms;
