@@ -1,6 +1,6 @@
 {
     "name":"pripo",
-    "start_url":"/home",
+    "start_url":"/?home=true",
     "icons":[ {
         "src": "icons/manifest-icon-192.maskable.png",
         "sizes": "192x192",
