@@ -4,9 +4,9 @@ import CheckIcon from "../components/Icons/CheckIcon.vue";
 import { GET_NOTIFICATIONS, MARK_NOTIFICATION_READ } from "@/graphql";
 import { useAuth0 } from "@auth0/auth0-vue";
 import { ref } from "vue";
-import { getTimeDifference } from "@/helper";
 import router from "@/router";
 import LoadingScreen from "../components/LoadingScreen.vue";
+import { useTimeAgo } from "@vueuse/core";
 
 const { user } = useAuth0();
 const { onResult, loading } = useQuery(GET_NOTIFICATIONS, {
@@ -22,7 +22,7 @@ onResult((r) => {
 });
 
 function dateFormatter(notification: any) {
-  return getTimeDifference(new Date(notification.created_at), new Date());
+  return useTimeAgo(new Date(notification.created_at)).value;
 }
 function markRead(id: number) {
   mutate({ id });

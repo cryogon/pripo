@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import ThumbsUp from "../components/Icons/ThumbsUp.vue";
 import type { Comment } from "@/types";
-import { getTimeDifference } from "@/helper";
 import ReplyInputBoxv2 from "./ReplyInputBoxv2.vue";
 import { useEmitter } from "@/composables/EventEmitter";
 import { useAuth0 } from "@auth0/auth0-vue";
@@ -12,7 +11,7 @@ import {
   REMOVE_COMMENT_LIKE,
   DELETE_COMMENT,
 } from "@/graphql";
-import { useClipboard } from "@vueuse/core";
+import { useClipboard, useTimeAgo } from "@vueuse/core";
 defineProps<{ comment: Comment }>();
 const { user } = useAuth0();
 const emitter = useEmitter();
@@ -124,7 +123,7 @@ function commentUrl(id: number) {
     </div>
     <div class="options-container">
       <span class="date options-item">
-        {{ getTimeDifference(new Date(comment.posted_on), new Date()) }}
+        {{ useTimeAgo(new Date(comment.posted_on)).value }}
       </span>
       <span class="reply options-item" @click="replyToggle"> reply </span>
       <span class="like options-item" @click="setLikes(comment)">
