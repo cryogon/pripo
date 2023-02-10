@@ -4,7 +4,7 @@ defineProps<{
 }>();
 </script>
 <template>
-  <main class="alert-box">
+  <main class="alert-box" role="alert">
     <span>{{ description }}</span>
   </main>
 </template>
