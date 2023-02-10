@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { useScroll } from "@vueuse/core";
+import { useOnline, useScroll } from "@vueuse/core";
 import { ref, watch, computed } from "vue";
 import router from "@/router";
 import type { RouteLocationRaw } from "vue-router";
@@ -23,7 +23,7 @@ const {
   ? useQuery(GET_USER_BY_ID, { id: userParam })
   : useQuery(GET_USER_BY_USERNAME, { username: userParam });
 const userFound = ref(false);
-
+const online = useOnline();
 onResult((r) => {
   if (r.data.users.length == 0) {
     router.push("/404");
@@ -131,6 +131,7 @@ const getFilteredBlogs = computed(() => {
       </div>
     </div>
   </main>
+  <main v-else-if="!online">You are currently offline</main>
   <LoadingScreen v-else />
 </template>
 <style scoped lang="scss">

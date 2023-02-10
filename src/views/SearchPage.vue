@@ -6,9 +6,11 @@ import SearchUserItem from "../components/SearchUserItem.vue";
 import { GET_FILTERED_POSTS, FILTER_BY_TAGS } from "@/graphql";
 import { ref, onMounted } from "vue";
 import LoadingScreen from "../components/LoadingScreen.vue";
+import { useOnline } from "@vueuse/core";
 const results = ref();
 const filter = ref("posts");
 const params = router.currentRoute.value.query;
+const online = useOnline();
 const { onResult, loading } =
   params.f === "tags"
     ? useQuery(FILTER_BY_TAGS, {
@@ -88,6 +90,7 @@ onMounted(() => {
       </div>
     </section>
   </main>
+  <main v-else-if="!online">You are currently offline</main>
   <LoadingScreen class="loading" v-else-if="loading && !results?.blogs" />
 </template>
 <style scoped lang="scss">
