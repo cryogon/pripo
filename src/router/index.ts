@@ -61,6 +61,12 @@ const router = createRouter({
       component: () => import("@/components/LoadingScreen.vue"),
     },
     {
+      //For Testing Purpose. Must remove when moved to production
+      path: "/cb",
+      name: "confirmbox",
+      component: () => import("@/components/ConfirmBox.vue"),
+    },
+    {
       path: "/404",
       name: "notfound",
       component: () => import("@/views/NotFound.vue"),

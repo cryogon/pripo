@@ -50,3 +50,8 @@ export interface Comment {
   };
   children?: Comment[];
 }
+
+export interface ConfirmRequest {
+  mutate: (v: any) => void;
+  id: number;
+}

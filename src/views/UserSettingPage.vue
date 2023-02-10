@@ -1,23 +1,21 @@
-<script setup lang="ts">
-import { useRegisterSW } from "virtual:pwa-register/vue";
-const { offlineReady, needRefresh, updateServiceWorker } = useRegisterSW();
-
-const close = async () => {
-  offlineReady.value = false;
-  needRefresh.value = false;
-};
-</script>
+<script setup lang="ts"></script>
 <template>
-  <main v-if="offlineReady || needRefresh" class="pwa-toast" role="alert">
-    <div class="message">
-      <span v-if="offlineReady"> App ready to work offline </span>
-      <span v-else>
-        New content available, click on reload button to update.
-      </span>
-    </div>
-    <button v-if="needRefresh" @click="updateServiceWorker()">Reload</button>
-    <button @click="close">Close</button>
+  <main class="settings-container">
+    <section class="profile-section">
+      <h3 id="profile">Profile</h3>
+      <label for="username">Username: </label>
+      <span class="username" id="username">cryogon</span>
+      <button type="button" class="username-change-button">Change</button>
+      <hr />
+      <label for="name">Name:</label>
+      <input type="text" id="name" class="profile-name" />
+    </section>
   </main>
-  <main role="alert" v-else>Nothing Here</main>
 </template>
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.settings-container {
+  padding: 1rem 20rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+</style>
