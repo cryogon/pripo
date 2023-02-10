@@ -6,6 +6,9 @@
     "paths": {
       "@/*": ["./src/*"]
     },
+    "types": [
+      "vite-plugin-pwa/client"
+    ],
     "target": "ESNext",
     "strict": true,
     "jsx": "preserve",

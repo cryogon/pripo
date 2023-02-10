@@ -24,7 +24,7 @@ function markAllRead(username: string) {
       <NotificationItem
         v-for="(notification, index) in notifications"
         :key="index"
-        :id="notification.comment.id"
+        :id="notification.id"
         :content="notification.comment.content"
         :desc="
           notification.type === 'comment'
