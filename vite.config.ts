@@ -9,34 +9,37 @@ const pwaOptions: Partial<VitePWAOptions> = {
   base: "/",
   includeAssets: [
     "icon.svg",
-    "icons/manifest-icon-192.maskable.png",
-    "icons/manifest-icon-512.maskable.png",
+    "manifest-icon-192.maskable.png",
+    "manifest-icon-512.maskable.png",
     "icons/apple-icon-180.png",
   ],
+  devOptions: {
+    enabled: true,
+  },
   manifest: {
     name: "pripo",
     start_url: "/?home=true",
     icons: [
       {
-        src: "icons/manifest-icon-192.maskable.png",
+        src: "manifest-icon-192.maskable.png",
         sizes: "192x192",
         type: "image/png",
         purpose: "any",
       },
       {
-        src: "icons/manifest-icon-192.maskable.png",
+        src: "manifest-icon-192.maskable.png",
         sizes: "192x192",
         type: "image/png",
         purpose: "maskable",
       },
       {
-        src: "icons/manifest-icon-512.maskable.png",
+        src: "manifest-icon-512.maskable.png",
         sizes: "512x512",
         type: "image/png",
         purpose: "any",
       },
       {
-        src: "icons/manifest-icon-512.maskable.png",
+        src: "manifest-icon-512.maskable.png",
         sizes: "512x512",
         type: "image/png",
         purpose: "maskable",
