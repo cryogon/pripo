@@ -5,9 +5,11 @@ import { RouterView } from "vue-router";
 import NavBar from "./components/NavBar.vue";
 import AlertBox from "./components/AlertBox.vue";
 import { useEmitter } from "./composables/EventEmitter";
+import ConfirmBox from "./components/ConfirmBox.vue";
 const emitter = useEmitter();
 const { isAuthenticated } = useAuth0();
 const alertDescription = ref("");
+
 onMounted(() => {
   setTimeout(() => {
     if (!isAuthenticated.value && localStorage.getItem("token")) {
@@ -27,6 +29,7 @@ onMounted(() => {
 
 <template>
   <AlertBox :description="alertDescription" v-show="alertDescription" />
+  <ConfirmBox />
   <NavBar />
   <RouterView />
 </template>

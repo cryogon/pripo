@@ -84,10 +84,8 @@ function editComment() {
 }
 function deleteComment(id: number) {
   const { mutate } = useMutation(DELETE_COMMENT);
-  console.log(id);
-  mutate({ id: id });
-
-  // emitter.emit("alert", "Are you sure about that");
+  //This event fire up custom confirm box which will call mutate function and pass id as variable if confirmed else it will skip it
+  emitter.emit("confirm", { mutate, id });
 }
 
 function toggleReply() {
