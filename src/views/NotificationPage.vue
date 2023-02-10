@@ -30,9 +30,7 @@ function markRead(id: number) {
 function redirectTo(type: string, notification: any) {
   switch (type) {
     case "comment":
-      router.push(
-        `/posts/${notification.blog.id}#c${notification.sender?.comments[0].id}`
-      );
+      router.push(`/posts/${notification.blog.id}#c${notification.comment.id}`);
       break;
     case "reply":
       router.push(`/posts/${notification.blog.id}#c${notification.comment_id}`);
@@ -102,7 +100,7 @@ function getFilteredComments(): any {
               <span class="action">commented on your post</span>
             </div>
             <div class="content">
-              {{ notification.sender?.comments[0].content }}
+              {{ notification.comment.content }}
             </div>
           </div>
           <div class="markread-and-date">
