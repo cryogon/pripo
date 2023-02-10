@@ -439,7 +439,7 @@ export const LISTEN_NOTIFICATION = gql`
 `;
 
 export const MARK_NOTIFICATION_READ = gql`
-  mutation markRead($id: Int!) {
+  mutation markRead($id: bigint!) {
     update_user_notifications(
       _set: { has_read: true }
       where: { id: { _eq: $id } }
