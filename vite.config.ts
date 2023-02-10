@@ -13,9 +13,6 @@ const pwaOptions: Partial<VitePWAOptions> = {
     "manifest-icon-512.maskable.png",
     "icons/apple-icon-180.png",
   ],
-  devOptions: {
-    enabled: true,
-  },
   manifest: {
     name: "pripo",
     start_url: "/?home=true",
