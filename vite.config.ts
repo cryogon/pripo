@@ -7,7 +7,12 @@ import { VitePWA } from "vite-plugin-pwa";
 const pwaOptions: Partial<VitePWAOptions> = {
   mode: "development",
   base: "/",
-  includeAssets: ["icon.svg"],
+  includeAssets: [
+    "icon.svg",
+    "icons/manifest-icon-192.maskable.png",
+    "icons/manifest-icon-512.maskable.png",
+    "icons/apple-icon-180.png",
+  ],
   manifest: {
     name: "pripo",
     start_url: "/?home=true",
@@ -37,7 +42,7 @@ const pwaOptions: Partial<VitePWAOptions> = {
         purpose: "maskable",
       },
     ],
-    theme_color: "aquamarine",
+    theme_color: "#5f9ea0",
     background_color: "#161616",
     display: "fullscreen",
     orientation: "portrait",
