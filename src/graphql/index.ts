@@ -97,7 +97,6 @@ export const POST_COMMENT = gql`
     $content: String
     $username: String
     $is_public: Boolean!
-    $receiver: String!
   ) {
     insert_comments(
       objects: {
@@ -119,22 +118,6 @@ export const POST_COMMENT = gql`
           username
           profile_picture
         }
-      }
-    }
-    insert_user_notifications(
-      objects: {
-        notification_by: $username
-        notification_for: $receiver
-        type: "comment"
-        blog_id: $blog_id
-      }
-    ) {
-      returning {
-        id
-        has_read
-        notification_by
-        notification_for
-        blog_id
       }
     }
   }
@@ -179,6 +162,7 @@ export const POST_REPLY = gql`
         notification_for: $receiver
         type: "reply"
         blog_id: $blogId
+        comment_id: $parent_id
       }
     ) {
       returning {
@@ -187,6 +171,10 @@ export const POST_REPLY = gql`
         notification_by
         notification_for
         blog_id
+        comment {
+          id
+          content
+        }
       }
     }
   }
@@ -438,10 +426,10 @@ export const LISTEN_NOTIFICATION = gql`
       }
       sender {
         username
-        comments(order_by: { updated_at: desc }, limit: 1) {
-          id
-          content
-        }
+      }
+      comment {
+        id
+        content
       }
       type
       has_read
@@ -504,10 +492,10 @@ export const GET_NOTIFICATIONS = gql`
       sender {
         username
         profile_picture
-        comments(order_by: { updated_at: desc }, limit: 1) {
-          id
-          content
-        }
+      }
+      comment {
+        id
+        content
       }
       type
       created_at
@@ -588,6 +576,34 @@ export const GET_THREAD_COMMENT = gql`
         title
       }
       is_public
+    }
+  }
+`;
+
+export const INSERT_NOTIFICATION = gql`
+  mutation insertNotification(
+    $sender: String!
+    $receiver: String!
+    $blog_id: Int!
+    $comment_id: bigint!
+  ) {
+    insert_user_notifications(
+      objects: {
+        notification_by: $sender
+        notification_for: $receiver
+        type: "comment"
+        blog_id: $blog_id
+        comment_id: $comment_id
+      }
+    ) {
+      returning {
+        id
+        has_read
+        notification_by
+        notification_for
+        blog_id
+        comment
+      }
     }
   }
 `;

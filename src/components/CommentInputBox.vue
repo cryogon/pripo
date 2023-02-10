@@ -2,7 +2,7 @@
 import { ref } from "vue";
 import { useAuth0 } from "@auth0/auth0-vue";
 import { useMutation } from "@vue/apollo-composable";
-import { POST_COMMENT } from "@/graphql";
+import { POST_COMMENT, INSERT_NOTIFICATION } from "@/graphql";
 import { useEmitter } from "@/composables/EventEmitter";
 import type { Blog } from "@/types";
 
@@ -15,7 +15,7 @@ const { user } = useAuth0();
 const isPublic = ref(false);
 const focusedOnCommentBox = ref(false);
 
-function postComment(content: string, blogId: number, author: string): void {
+function postComment(content: string, blogId: number, author: string) {
   if (!content) {
     emitter.emit("alert", "Can't post empty comment");
     return;
@@ -26,9 +26,18 @@ function postComment(content: string, blogId: number, author: string): void {
     content,
     username: user.value.nickname,
     is_public: isPublic.value,
-    receiver: author,
   };
-  postComment(variables);
+  const commentId = postComment(variables).then(
+    (data) => data?.data.insert_comments.returning[0].id
+  );
+
+  const { mutate: sendNotification } = useMutation(INSERT_NOTIFICATION);
+  sendNotification({
+    sender: user.value.nickname,
+    receiver: author,
+    blog_id: blogId,
+    comment_id: commentId,
+  });
   emitter.emit("refetchComments");
   commentInp.value = "";
   focusedOnCommentBox.value = false;

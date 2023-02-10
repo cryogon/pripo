@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { useMutation } from "@vue/apollo-composable";
-import { ref } from "vue";
 import BellIcon from "./Icons/BellIcon.vue";
 import CheckIcon from "./Icons/CheckIcon.vue";
 import { MARK_NOTIFICATION_READ } from "@/graphql";
-import { getTimeDifference } from "@/helper";
+import { useTimeAgo } from "@vueuse/core";
+
 const props = defineProps<{
   user: string;
   desc: string;
@@ -14,7 +14,7 @@ const props = defineProps<{
   blog_id: number;
 }>();
 const date = new Date(props.created_at);
-const timeDifference = ref(getTimeDifference(date, new Date()));
+const timeDifference = useTimeAgo(date);
 
 function markRead(id: number) {
   const { mutate } = useMutation(MARK_NOTIFICATION_READ);

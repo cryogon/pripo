@@ -11,18 +11,6 @@ const notifications = ref<any[]>([]);
 store.notification.onResult((n) => {
   notifications.value = n.data.user_notifications || [];
 });
-// function redirectTo(address: string, notification: any) {
-//   switch (address) {
-//     case "comment":
-//       router.push(
-//         `/posts/${notification.blog.id}#c${notification.sender?.comments[0].id}`
-//       );
-//       break;
-//     case "reply":
-//       router.push(`/posts/${notification.blog.id}#c${notification.comment_id}`);
-//       break;
-//   }
-// }
 
 function markAllRead(username: string) {
   const { mutate } = useMutation(MARK_ALL_NOTIFICATION_READ);
@@ -36,8 +24,8 @@ function markAllRead(username: string) {
       <NotificationItem
         v-for="(notification, index) in notifications"
         :key="index"
-        :id="notification.sender?.comments[0].id"
-        :content="notification.sender?.comments[0].content"
+        :id="notification.comment.id"
+        :content="notification.comment.content"
         :desc="
           notification.type === 'comment'
             ? 'commented on your post'

@@ -10,8 +10,8 @@ import ShareIcon from "../components/Icons/ShareIcon.vue";
 import EditIcon from "../components/Icons/EditIcon.vue";
 import { useShare } from "@vueuse/core";
 import { useEmitter } from "@/composables/EventEmitter";
-import { getTimeDifference } from "@/helper";
 import LoadingScreen from "../components/LoadingScreen.vue";
+import { useTimeAgo } from "@vueuse/core";
 const emitter = useEmitter();
 const { user } = useAuth0();
 const params = router.currentRoute.value.params;
@@ -19,14 +19,7 @@ const blogId = params?.id as string;
 const { result, loading, error, onError, stop } = useQuery(GET_BLOG, {
   id: blogId,
 });
-//Will implement refetch when user click on notification
-// router.afterEach((to, from) => {
-//   if (to.name === "posts" && from.name === "posts") {
-//     console.log("Refetch");
-//     console.log(blogId);
-//     refetch({ id: to.params.id as string });
-//   }
-// });
+
 const isFav = ref(false);
 const { share, isSupported } = useShare();
 const blog = ref<any>();
@@ -148,7 +141,7 @@ function editBlog() {
             {{ blog.is_public ? blog.user.username : "Anonymous" }}</span
           >
           <span class="date-posted">
-            {{ getTimeDifference(new Date(blog.date_posted), new Date()) }}
+            {{ useTimeAgo(blog.date_posted).value }}
           </span>
         </div>
         <div class="blog-options">
