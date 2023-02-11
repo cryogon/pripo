@@ -1,15 +1,23 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { useFileSystemAccess } from "@vueuse/core";
+import { watch } from "vue";
+const { open, data, file, fileMIME } = useFileSystemAccess({});
+watch(data, () => {
+  fetch("http://localhost:5550/file", {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+      data: data.value,
+      name: file.value?.name,
+    }),
+  });
+});
+</script>
 <template>
   <main class="settings-container">
-    <section class="profile-section">
-      <h3 id="profile">Profile</h3>
-      <label for="username">Username: </label>
-      <span class="username" id="username">cryogon</span>
-      <button type="button" class="username-change-button">Change</button>
-      <hr />
-      <label for="name">Name:</label>
-      <input type="text" id="name" class="profile-name" />
-    </section>
+    <button @click="open()">Upload Image</button>
   </main>
 </template>
 <style scoped lang="scss">

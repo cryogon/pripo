@@ -4,7 +4,6 @@ import CheckIcon from "../components/Icons/CheckIcon.vue";
 import { GET_NOTIFICATIONS, MARK_NOTIFICATION_READ } from "@/graphql";
 import { useAuth0 } from "@auth0/auth0-vue";
 import { ref } from "vue";
-import router from "@/router";
 import LoadingScreen from "../components/LoadingScreen.vue";
 import { useTimeAgo } from "@vueuse/core";
 
@@ -26,16 +25,6 @@ function dateFormatter(notification: any) {
 }
 function markRead(id: number) {
   mutate({ id });
-}
-function redirectTo(type: string, notification: any) {
-  switch (type) {
-    case "comment":
-      router.push(`/posts/${notification.blog.id}#c${notification.comment.id}`);
-      break;
-    case "reply":
-      router.push(`/posts/${notification.blog.id}#c${notification.comment_id}`);
-      break;
-  }
 }
 
 function getFilteredComments(): any {
@@ -84,7 +73,6 @@ function getFilteredComments(): any {
           :key="index"
           class="notification-item"
           :class="{ read: notification.has_read }"
-          @click="redirectTo(notification.type, notification)"
         >
           <img
             :src="notification.sender.profile_picture"
@@ -92,17 +80,21 @@ function getFilteredComments(): any {
             class="user-avatar"
             referrerpolicy="no-referrer"
           />
-          <div class="notification-info">
-            <div class="user-info">
-              <span class="user"
-                >{{ notification.sender.username + " " }}
-              </span>
-              <span class="action">commented on your post</span>
+          <router-link
+            :to="`/posts/${notification.blog_id}#c${notification.comment.id}`"
+          >
+            <div class="notification-info">
+              <div class="user-info">
+                <span class="user"
+                  >{{ notification.sender.username + " " }}
+                </span>
+                <span class="action">commented on your post</span>
+              </div>
+              <div class="content">
+                {{ notification.comment.content }}
+              </div>
             </div>
-            <div class="content">
-              {{ notification.comment.content }}
-            </div>
-          </div>
+          </router-link>
           <div class="markread-and-date">
             <span
               class="check-icon-background"
@@ -157,6 +149,9 @@ main {
           width: 3rem;
           height: 3rem;
           border-radius: 50%;
+        }
+        a {
+          color: var(--text-color);
         }
         .notification-info {
           .user-info {

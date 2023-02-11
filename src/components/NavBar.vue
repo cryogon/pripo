@@ -104,7 +104,6 @@ function toggleNotification() {
 }
 </script>
 <template>
-  <!-- <Suspense> -->
   <header>
     <nav ref="navbar" :class="{ compact: compactNavbar }">
       <section class="left-section">
@@ -123,6 +122,7 @@ function toggleNotification() {
             />
             <ul class="mobile-tabs">
               <li><router-link to="/contact">Contact</router-link></li>
+              <li>on Alpha Stage for mobile</li>
             </ul>
           </div>
         </div>
@@ -185,7 +185,6 @@ function toggleNotification() {
       </div>
     </nav>
   </header>
-  <!-- </Suspense> -->
 </template>
 <style scoped lang="scss">
 header {

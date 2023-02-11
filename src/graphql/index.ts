@@ -607,3 +607,15 @@ export const INSERT_NOTIFICATION = gql`
     }
   }
 `;
+
+export const FOLLOW_USER = gql`
+  mutation addFollower($me: String!, $user: String!) {
+    insert_follow_system(objects: { follows: $user, user: $me }) {
+      returning {
+        id
+        follower
+        following
+      }
+    }
+  }
+`;
