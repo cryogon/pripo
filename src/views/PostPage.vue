@@ -16,6 +16,10 @@ const blogTags = ref("");
 const { user } = useAuth0();
 
 function pushPostToDB() {
+  if (!user.value?.nickname) {
+    emitter.emit("alert", "You need to login first");
+    return;
+  }
   if (postTitle.value == "") {
     emitter.emit("alert", "Title should not be empty");
     return;

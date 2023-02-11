@@ -19,94 +19,112 @@ emitter.on("confirm", (d) => {
 });
 </script>
 <template>
-  <div class="container" v-if="isVisible">
-    <div class="child">
-      Are you sure you want to perform this task. This task might be
-      irreversible.
-    </div>
-    <div class="buttons">
-      <button
-        class="child accept"
-        type="button"
-        @click="clickYep(mutate, variables)"
-      >
-        Yep
-      </button>
-      <button class="child deny" type="button" @click="isVisible = false">
-        Nah
-      </button>
-    </div>
-  </div>
+  <Transition name="fade">
+    <section class="background-blur" v-if="isVisible">
+      <div class="container">
+        <div class="child">
+          Are you sure you want to perform this task. This task might be
+          irreversible.
+        </div>
+        <div class="buttons">
+          <button
+            class="child accept"
+            type="button"
+            @click="clickYep(mutate, variables)"
+          >
+            Yep
+          </button>
+          <button class="child deny" type="button" @click="isVisible = false">
+            Nah
+          </button>
+        </div>
+      </div>
+    </section>
+  </Transition>
 </template>
 <style scoped lang="scss">
-.container {
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+.fade-enter-to,
+.fade-leave-from {
+  opacity: 1;
+}
+
+.background-blur {
+  background-color: rgb(0 0 0 / 0.1);
+  backdrop-filter: blur(0.1rem);
+  height: 100%;
+  width: 100%;
   position: fixed;
+  display: grid;
+  place-items: center;
+  padding: 2rem;
   z-index: 900;
-  pointer-events: visibleFill;
-  background: #0d1b2a;
-  padding: 0.7rem;
-  border-radius: 1rem;
-  top: 50%;
-  left: 50%;
-  translate: -50% -50%;
-  animation: fade 300ms linear ease-in-out;
-  width: 30rem;
-  height: 6rem;
-  & .buttons {
+  pointer-events: all;
+
+  .container {
     display: flex;
-    gap: 10px;
-    & button {
-      padding: 0.3rem 0.7rem;
-      border-radius: 8px;
-      outline-color: transparent;
-      transition: 100ms;
-      border: 0;
-      &.accept {
-        background: var(--accent-color);
-        border-bottom: 2px solid white;
-        &:hover {
-          border-bottom: 0;
+    flex-direction: column;
+    gap: 0.6rem;
+    background: #0d1b2a;
+    padding: 0.7rem;
+    border-radius: 1rem;
+    animation: fade 1s linear ease-in-out;
+    transition: 1s;
+    max-width: 30rem;
+    min-height: 6rem;
+    & .buttons {
+      display: flex;
+      gap: 10px;
+      & button {
+        padding: 0.3rem 0.7rem;
+        border-radius: 8px;
+        outline-color: transparent;
+        transition: 100ms;
+        border: 0;
+        &.accept {
+          background: var(--accent-color);
+          border-bottom: 2px solid white;
+          &:hover {
+            border-bottom: 0;
+          }
         }
-      }
-      &.deny {
-        background: white;
-        border-bottom: 2px solid rgb(88, 88, 88);
-        &:hover {
-          border-bottom: 0;
+        &.deny {
+          background: white;
+          border-bottom: 2px solid rgb(88, 88, 88);
+          &:hover {
+            border-bottom: 0;
+          }
         }
       }
     }
-    @keyframes fade {
-      from {
-        opacity: 0;
-      }
-      to {
-        opacity: 1;
-      }
-    }
+
+    // @keyframes test {
+    //   from {
+    //     width: 1rem;
+    //     height: 1rem;
+    //     border-radius: 50%;
+    //     opacity: 0;
+    //   }
+    //   50% {
+    //     width: 30rem;
+    //     height: 30rem;
+    //     border-radius: 0;
+    //     opacity: 1;
+    //   }
+    //   to {
+    //     width: 30rem;
+    //     height: 5rem;
+    //     border-radius: 0;
+    //     opacity: 1;
+    //   }
+    // }
   }
-  // @keyframes test {
-  //   from {
-  //     width: 1rem;
-  //     height: 1rem;
-  //     border-radius: 50%;
-  //     opacity: 0;
-  //   }
-  //   50% {
-  //     width: 30rem;
-  //     height: 30rem;
-  //     border-radius: 0;
-  //     opacity: 1;
-  //   }
-  //   to {
-  //     width: 30rem;
-  //     height: 5rem;
-  //     border-radius: 0;
-  //     opacity: 1;
-  //   }
-  // }
 }
 </style>

@@ -44,7 +44,22 @@ const pwaOptions: Partial<VitePWAOptions> = {
     ],
     theme_color: "#5f9ea0",
     background_color: "#161616",
-    display: "fullscreen",
+    shortcuts: [
+      {
+        name: "Publish",
+        url: "/publish",
+        description: "Thinking something alone! why not share it with world",
+        short_name: "Post",
+        icons: [],
+      },
+      {
+        name: "Notifications",
+        url: "/notifications",
+        description: "Check if you got something new",
+        short_name: "notify",
+        icons: [],
+      },
+    ],
     orientation: "portrait",
   },
 };

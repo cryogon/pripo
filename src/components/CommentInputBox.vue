@@ -30,14 +30,16 @@ function postComment(content: string, blogId: number, author: string) {
   const commentId = postComment(variables).then(
     (data) => data?.data.insert_comments.returning[0].id
   );
-
-  const { mutate: sendNotification } = useMutation(INSERT_NOTIFICATION);
-  sendNotification({
-    sender: user.value.nickname,
-    receiver: author,
-    blog_id: blogId,
-    comment_id: commentId,
-  });
+  //Means if sender and reciver is same person then don't send notification
+  if (user.value.nickname !== author) {
+    const { mutate: sendNotification } = useMutation(INSERT_NOTIFICATION);
+    sendNotification({
+      sender: user.value.nickname,
+      receiver: author,
+      blog_id: blogId,
+      comment_id: commentId,
+    });
+  }
   emitter.emit("refetchComments");
   commentInp.value = "";
   focusedOnCommentBox.value = false;
