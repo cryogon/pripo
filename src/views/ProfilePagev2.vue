@@ -44,12 +44,21 @@
           <a href="https://cryogon.netlify.app" class="website"
             >cryogon.netlify.app
           </a>
-          <a href="https://youtube.com/@cryogon" class="youtube">Youtube </a>
+          <!-- <a href="https://youtube.com/@cryogon" class="youtube">Youtube </a>
           <a href="https://www.instagram.com/cryogonjs/" class="instagram"
             >Instagram
-          </a>
+          </a> -->
         </div>
       </section>
+      <nav class="tab-navigation">
+        <ul>
+          <li class="tab-item active">About</li>
+          <li class="tab-item">Posts</li>
+          <li class="tab-item">Favourites</li>
+          <li class="tab-item">Followers</li>
+          <li class="tab-item">Followings</li>
+        </ul>
+      </nav>
       <section class="about-section card">
         <h4 class="heading">About</h4>
       </section>
@@ -107,14 +116,14 @@
     .basic-user-info {
       display: flex;
       flex-wrap: wrap;
-      padding-block: 0.6rem 1.5rem;
+      padding-block-end: 1.5rem;
       padding-inline: 2rem;
       justify-content: space-between;
       gap: 2rem;
       .left-section {
         display: flex;
         flex-direction: column;
-        padding-block-start: 2rem;
+        padding-block-start: 2.6rem;
         margin-inline-end: 5rem;
 
         .full-name {
@@ -132,6 +141,9 @@
         }
       }
       .right-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
         .analytics {
           display: flex;
           gap: 4rem;
@@ -150,6 +162,8 @@
           }
         }
         .options {
+          display: flex;
+          gap: 1.5rem;
           button {
             padding: 0.3rem 0.9rem;
             border-radius: 9px;
@@ -157,7 +171,6 @@
             outline-color: transparent;
             border: 0;
             border-bottom: 2px solid white;
-            margin-inline: 0.3rem;
             margin-block-start: 2rem;
             &:hover {
               border-bottom: 0;
@@ -192,6 +205,22 @@
             text-decoration: underline;
           }
         }
+      }
+    }
+    .tab-navigation {
+      padding: 0.5rem;
+      margin-block-start: 1rem;
+      border-radius: 12px;
+      background-color: #252525;
+      .tab-item {
+        &.active {
+          text-decoration: underline;
+        }
+      }
+      ul {
+        display: flex;
+        list-style: none;
+        gap: 1rem;
       }
     }
   }
