@@ -3,13 +3,15 @@ import PostCard from "@/components/PostCard.vue";
 import { useQuery } from "@vue/apollo-composable";
 import { GET_ALL_BLOGS } from "@/graphql";
 import LoadingScreen from "../components/LoadingScreen.vue";
+import { useOnline } from "@vueuse/core";
 const {
   result: blogs,
   onError,
   loading,
   fetchMore,
 } = useQuery(GET_ALL_BLOGS, { offset: 0, limit: 6 });
-const isOnline = navigator.onLine;
+const isOnline = useOnline();
+
 localStorage.setItem("currentTitle", "Pripo");
 onError((e) => {
   console.error(e);
