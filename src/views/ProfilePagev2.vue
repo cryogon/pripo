@@ -1,4 +1,20 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import LocationPin from "../components/Icons/LocationPin.vue";
+import HeartIcon from "../components/Icons/HeartIcon.vue";
+import LinkIcon from "../components/Icons/LinkIcon.vue";
+import { useElementBounding } from "@vueuse/core";
+import { ref, watch } from "vue";
+const nav = ref(null);
+const { y } = useElementBounding(nav);
+const navIsCompact = ref(false);
+watch(y, () => {
+  if (y.value === 80) {
+    navIsCompact.value = true;
+  } else {
+    navIsCompact.value = false;
+  }
+});
+</script>
 <template>
   <main class="container">
     <section class="user-info">
@@ -37,12 +53,19 @@
       <section class="user-detail-section card">
         <span class="date-joined">Member since January 2023</span>
         <div class="major-info">
-          <span class="location">India </span>
-          <span class="Interests">Gaming, Coding </span>
+          <span class="location">
+            <LocationPin />
+            India
+          </span>
+          <span class="interests">
+            <HeartIcon />
+            Gaming, Coding
+          </span>
         </div>
         <div class="social-media-links">
-          <a href="https://cryogon.netlify.app" class="website"
-            >cryogon.netlify.app
+          <a href="https://cryogon.netlify.app" class="website">
+            <LinkIcon />
+            cryogon.netlify.app
           </a>
           <!-- <a href="https://youtube.com/@cryogon" class="youtube">Youtube </a>
           <a href="https://www.instagram.com/cryogonjs/" class="instagram"
@@ -50,7 +73,11 @@
           </a> -->
         </div>
       </section>
-      <nav class="tab-navigation">
+      <nav
+        class="tab-navigation"
+        :class="{ 'is-compact': navIsCompact }"
+        ref="nav"
+      >
         <ul>
           <li class="tab-item active">About</li>
           <li class="tab-item">Posts</li>
@@ -82,7 +109,7 @@
   transition: 100ms;
   padding: 0 14vw;
   .card {
-    min-height: 4rem;
+    min-height: 8rem;
     margin-block-start: 1rem;
     background-color: #303030;
     border-radius: 12px;
@@ -194,12 +221,22 @@
       .major-info {
         display: flex;
         gap: 10px;
+        margin-top: 0.1rem;
+        .location,
+        .interests {
+          display: flex;
+          align-items: center;
+          gap: 5px;
+        }
       }
       .social-media-links {
         display: flex;
         margin-block-start: 0.1rem;
         flex-direction: column;
         a {
+          display: flex;
+          align-items: center;
+          gap: 5px;
           padding: 0;
           &:hover {
             text-decoration: underline;
@@ -211,8 +248,16 @@
       padding: 0.5rem;
       margin-block-start: 1rem;
       border-radius: 12px;
+      position: sticky;
+      top: 5rem;
       background-color: #252525;
+      transition: 200ms;
+      &.is-compact {
+        background-color: #161616;
+        border-radius: 0;
+      }
       .tab-item {
+        cursor: pointer;
         &.active {
           text-decoration: underline;
         }
