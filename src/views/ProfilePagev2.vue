@@ -3,16 +3,35 @@ import LocationPin from "../components/Icons/LocationPin.vue";
 import HeartIcon from "../components/Icons/HeartIcon.vue";
 import LinkIcon from "../components/Icons/LinkIcon.vue";
 import { useElementBounding } from "@vueuse/core";
-import { ref, watch } from "vue";
+import { ref, watch, onMounted } from "vue";
 const nav = ref(null);
 const { y } = useElementBounding(nav);
 const navIsCompact = ref(false);
+const tabs = ["About", "Posts", "Favourites", "Followers", "Followings"];
 watch(y, () => {
+  //Will use different Method later
   if (y.value === 80) {
     navIsCompact.value = true;
   } else {
     navIsCompact.value = false;
   }
+});
+const currentSection = ref<string | null>("About");
+onMounted(() => {
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        console.log(entry.intersectionRatio);
+        if (entry.intersectionRatio > 0) {
+          currentSection.value = entry.target.getAttribute("id");
+        }
+      });
+    },
+    { threshold: 0, rootMargin: "0% 0px -75% 0px" }
+  );
+  document.querySelectorAll(".section h4").forEach((section) => {
+    observer.observe(section);
+  });
 });
 </script>
 <template>
@@ -77,29 +96,53 @@ watch(y, () => {
         class="tab-navigation"
         :class="{ 'is-compact': navIsCompact }"
         ref="nav"
+        id="nav"
       >
         <ul>
-          <li class="tab-item active">About</li>
-          <li class="tab-item">Posts</li>
-          <li class="tab-item">Favourites</li>
-          <li class="tab-item">Followers</li>
-          <li class="tab-item">Followings</li>
+          <router-link
+            v-for="(tab, i) in tabs"
+            :key="i"
+            :to="`#${tab}`"
+            class="tab-item"
+            :class="{ active: tab === currentSection }"
+            >{{ tab }}</router-link
+          >
         </ul>
       </nav>
-      <section class="about-section card">
-        <h4 class="heading">About</h4>
+      <section
+        class="about-section card section"
+        ref="aboutSection"
+        id="aboutSection"
+      >
+        <h4 class="heading" id="About">About</h4>
       </section>
-      <section class="posts-section card">
-        <h4 class="heading">Posts</h4>
+      <section
+        class="posts-section card section"
+        ref="postsSection"
+        id="postsSection"
+      >
+        <h4 class="heading" id="Posts">Posts</h4>
       </section>
-      <section class="favourite-section card">
-        <h4 class="heading">Favourites</h4>
+      <section
+        class="favourite-section card section"
+        ref="favouritesSection"
+        id="favouritesSection"
+      >
+        <h4 class="heading" id="Favourites">Favourites</h4>
       </section>
-      <section class="follower-section card">
-        <h4 class="heading">Followers</h4>
+      <section
+        class="follower-section card section"
+        ref="followersSection"
+        id="followersSection"
+      >
+        <h4 class="heading" id="Followers">Followers</h4>
       </section>
-      <section class="following-section card">
-        <h4 class="heading">Following</h4>
+      <section
+        class="following-section card section"
+        ref="followingsSection"
+        id="followingsSection"
+      >
+        <h4 class="heading" id="Followings">Following</h4>
       </section>
     </div>
   </main>
@@ -109,7 +152,7 @@ watch(y, () => {
   transition: 100ms;
   padding: 0 14vw;
   .card {
-    min-height: 8rem;
+    min-height: 20rem;
     margin-block-start: 1rem;
     background-color: #303030;
     border-radius: 12px;
@@ -214,6 +257,7 @@ watch(y, () => {
       }
     }
     .user-detail-section {
+      min-height: auto;
       .date-joined {
         opacity: 0.6;
         font-size: 14px;
@@ -246,6 +290,7 @@ watch(y, () => {
     }
     .tab-navigation {
       padding: 0.5rem;
+      padding-inline-start: 1rem;
       margin-block-start: 1rem;
       border-radius: 12px;
       position: sticky;
@@ -253,13 +298,14 @@ watch(y, () => {
       background-color: #252525;
       transition: 200ms;
       &.is-compact {
-        background-color: #161616;
+        background-color: #202020;
         border-radius: 0;
       }
       .tab-item {
         cursor: pointer;
+        position: relative;
         &.active {
-          text-decoration: underline;
+          text-decoration: underline dotted;
         }
       }
       ul {
