@@ -16,16 +16,14 @@ watch(y, () => {
     navIsCompact.value = false;
   }
 });
+
 const currentSection = ref<string | null>("About");
 onMounted(() => {
   const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        console.log(entry.intersectionRatio);
-        if (entry.intersectionRatio > 0) {
-          currentSection.value = entry.target.getAttribute("id");
-        }
-      });
+    ([entry]) => {
+      if (entry.intersectionRatio > 0) {
+        currentSection.value = entry.target.getAttribute("id");
+      }
     },
     { threshold: 0, rootMargin: "0% 0px -75% 0px" }
   );
@@ -242,7 +240,11 @@ onMounted(() => {
             border: 0;
             border-bottom: 2px solid white;
             margin-block-start: 2rem;
+            transition: box-shadow 300ms;
             &:hover {
+              background-color: rgb(95, 145, 91);
+            }
+            &:active {
               border-bottom: 0;
             }
           }

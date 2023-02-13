@@ -1,23 +1,40 @@
 <script setup lang="ts">
-import { useFileSystemAccess } from "@vueuse/core";
-import { watch } from "vue";
-const { open, data, file, fileMIME } = useFileSystemAccess({});
-watch(data, () => {
-  fetch("http://localhost:5550/file", {
+import { ref, watch } from "vue";
+
+const imgUrl = ref();
+function handleImageUpload(e: any) {
+  if (e.target.files) {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onload = () => {
+      console.log("loaded");
+      const base64_data = window.btoa(reader.result as string);
+      console.log(base64_data);
+      imgUrl.value = base64_data;
+    };
+    reader.readAsBinaryString(file);
+  }
+}
+
+watch(imgUrl, () => {
+  fetch("http://localhost:5550/", {
     method: "POST",
-    headers: {
-      "content-type": "application/json",
-    },
-    body: JSON.stringify({
-      data: data.value,
-      name: file.value?.name,
-    }),
+    mode: "no-cors",
+    body: imgUrl.value,
   });
 });
 </script>
 <template>
   <main class="settings-container">
-    <button @click="open()">Upload Image</button>
+    <input
+      type="file"
+      name=""
+      id=""
+      @change="handleImageUpload"
+      accept="image/*"
+    />
+    <br />
+    <img :src="(imgUrl as string)" alt="dude" />
   </main>
 </template>
 <style scoped lang="scss">
