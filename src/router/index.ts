@@ -30,9 +30,9 @@ const router = createRouter({
       component: () => import("@/views/ProfilePage.vue"),
     },
     {
-      path: "/v2/users/:user",
+      path: "/v1/users/:user",
       name: "usersv2",
-      component: () => import("@/views/ProfilePagev2.vue"),
+      component: () => import("@/views/ProfilePagev1.vue"),
     },
     {
       path: "/notifications",

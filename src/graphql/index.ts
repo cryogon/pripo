@@ -225,7 +225,12 @@ export const GET_USER_BY_ID = gql`
       blogs(order_by: { id: asc }) {
         id
         title
-        content
+        favourites: favourites_aggregate {
+          aggregate {
+            count
+          }
+        }
+        date_posted
         is_public
       }
       follower_count: followers_aggregate {
@@ -267,7 +272,12 @@ export const GET_USER_BY_USERNAME = gql`
       blogs(order_by: { id: asc }) {
         id
         title
-        content
+        favourites: favourites_aggregate {
+          aggregate {
+            count
+          }
+        }
+        date_posted
         is_public
       }
       follower_count: followers_aggregate {
