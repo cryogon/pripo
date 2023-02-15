@@ -104,11 +104,11 @@ watch(files, () => {
     justify-content: space-between;
     background-color: #202020;
     display: flex;
-    padding: 1rem;
+    padding: 1rem 4rem;
     .settings {
       width: 80%;
       .option {
-        opacity: 0.6;
+        opacity: 0.8;
         display: block;
         margin-block-end: 0.2rem;
       }
@@ -125,7 +125,6 @@ watch(files, () => {
         }
       }
       .user-avatar {
-        margin-inline-start: 4rem;
         .drop-area {
           width: 9rem;
           height: 9rem;
@@ -171,7 +170,6 @@ watch(files, () => {
     }
     .mini-nav {
       display: flex;
-      width: 20%;
       flex-direction: column;
       .nav-item {
         &:hover {

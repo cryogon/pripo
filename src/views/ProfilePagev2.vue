@@ -3,11 +3,62 @@ import LocationPin from "../components/Icons/LocationPin.vue";
 import HeartIcon from "../components/Icons/HeartIcon.vue";
 import LinkIcon from "../components/Icons/LinkIcon.vue";
 import { useElementBounding } from "@vueuse/core";
-import { ref, watch, onMounted } from "vue";
+import { ref, watch, onMounted, computed } from "vue";
+import type { Blog, User } from "@/types";
+import router from "@/router";
+import { useAuth0 } from "@auth0/auth0-vue";
+import {
+  GET_USER_BY_ID,
+  GET_USER_BY_USERNAME,
+  FOLLOW_USER,
+  UNFOLLOW_USER,
+} from "@/graphql";
+import { useMutation, useQuery } from "@vue/apollo-composable";
+import { useOnline } from "@vueuse/core";
+
+const online = useOnline();
 const nav = ref(null);
+
+const userParam = router.currentRoute.value.params.user;
+const { user: u } = useAuth0();
+const {
+  result: user,
+  onResult,
+  onError,
+  loading,
+  refetch,
+} = !isNaN(+userParam)
+  ? useQuery(GET_USER_BY_ID, { id: userParam })
+  : useQuery(GET_USER_BY_USERNAME, { username: userParam });
+
+const userFound = ref(false);
+onResult((r) => {
+  if (r.data.users.length == 0) {
+    router.push("/404");
+  } else {
+    userFound.value = true;
+  }
+});
+onError(() => {
+  console.error("Some Problem Occured! Please Refetch");
+});
 const { y } = useElementBounding(nav);
 const navIsCompact = ref(false);
 const tabs = ["About", "Posts", "Favourites", "Followers", "Followings"];
+
+//For user to change even when page not refreshed
+//For instance, checking a user's profile and then checking your own profile
+router.afterEach((to, from) => {
+  if (to.name === "users" && from.name === "users")
+    refetch({ id: to.params.user, username: to.params.user });
+});
+
+const getFilteredBlogs = computed(() => {
+  if (user.value.users[0].username === u.value?.nickname) {
+    return user.value.users[0].blogs;
+  }
+  return user.value.users[0].blogs.filter((blog: Blog) => blog.is_public);
+});
 watch(y, () => {
   //Will use different Method later
   if (y.value === 80) {
@@ -17,27 +68,51 @@ watch(y, () => {
   }
 });
 
+function getFormattedDate(date: number) {
+  return Intl.DateTimeFormat(undefined, {
+    month: "long",
+    year: "numeric",
+  }).format(new Date(date));
+}
+
+function followUser(user: User) {
+  const { mutate } = useMutation(FOLLOW_USER);
+  mutate({ me: u.value.nickname, user: user.username });
+}
+function unfollowUser(user: User) {
+  const { mutate } = useMutation(UNFOLLOW_USER);
+  mutate({ me: u.value.nickname, user: user.username });
+}
+function isFollowed(user: any) {
+  for (let follower of user.follower_count.nodes || []) {
+    if (follower.user === u.value.nickname) {
+      return true;
+    }
+  }
+  return false;
+}
 const currentSection = ref<string | null>("About");
 onMounted(() => {
   const observer = new IntersectionObserver(
     ([entry]) => {
+      console.log("Observing " + entry);
       if (entry.intersectionRatio > 0) {
         currentSection.value = entry.target.getAttribute("id");
       }
     },
     { threshold: 0, rootMargin: "0% 0px -75% 0px" }
   );
-  document.querySelectorAll(".section h4").forEach((section) => {
+  document.querySelectorAll(".section .heading").forEach((section) => {
     observer.observe(section);
   });
 });
 </script>
 <template>
-  <main class="container">
+  <main class="container" v-if="user && userFound && !loading">
     <section class="user-info">
       <div class="cover-image"></div>
       <img
-        src="https://avatars.githubusercontent.com/u/75153974?v=4"
+        :src="user.users[0].profile_picture"
         alt="user-avatar"
         class="avatar"
       />
@@ -45,30 +120,59 @@ onMounted(() => {
     <div class="background">
       <section class="basic-user-info">
         <div class="left-section">
-          <span class="full-name">Jatin Thakur</span>
-          <span class="special-title">pripo!dev</span>
-          <span class="username">cryogon</span>
+          <span class="full-name">{{ user.users[0].name }}</span>
+          <span
+            class="special-title"
+            v-for="(title, index) in user.users[0].special_title"
+            :key="index"
+            >{{ title }}</span
+          >
+          <span class="username">{{ user.users[0].username }}</span>
         </div>
         <div class="right-section">
           <div class="analytics">
             <div class="followers">
               <span>Followers</span>
-              <span id="follower-count" class="count">999</span>
+              <span id="follower-count" class="count">
+                {{ user.users[0].follower_count.aggregate.count }}
+              </span>
             </div>
             <div class="followings">
               <span>Followings</span>
-              <span id="followings-count" class="count">999</span>
+              <span id="followings-count" class="count">
+                {{ user.users[0].following_count.aggregate.count }}
+              </span>
             </div>
           </div>
-          <div class="options">
-            <button type="button" class="follow-button">Follow</button>
+          <div
+            class="options"
+            v-if="u && u.nickname !== user.users[0].username"
+          >
+            <button
+              type="button"
+              class="follow-button"
+              @click="followUser(user.users[0])"
+              v-if="!isFollowed(user.users[0])"
+            >
+              Follow
+            </button>
+            <button
+              type="button"
+              class="unfollow-button"
+              @click="unfollowUser(user.users[0])"
+              v-else
+            >
+              Unfollow
+            </button>
             <button type="button" class="message-button">Message</button>
             <button type="button" class="report-button">Report</button>
           </div>
         </div>
       </section>
       <section class="user-detail-section card">
-        <span class="date-joined">Member since January 2023</span>
+        <span class="date-joined"
+          >Member since {{ getFormattedDate(user.users[0].created_at) }}</span
+        >
         <div class="major-info">
           <span class="location">
             <LocationPin />
@@ -144,6 +248,7 @@ onMounted(() => {
       </section>
     </div>
   </main>
+  <main v-if="!online">Your are currently Offline</main>
 </template>
 <style scoped lang="scss">
 .container {
@@ -251,6 +356,9 @@ onMounted(() => {
           .follow-button,
           .message-button {
             background-color: var(--accent-color);
+          }
+          .unfollow-button {
+            background-color: grey;
           }
           .report-button {
             background-color: #e75151;

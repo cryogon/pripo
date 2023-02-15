@@ -215,6 +215,7 @@ export const GET_USER_BY_ID = gql`
       name
       username
       profile_picture
+      special_title
       liked_blogs {
         blog {
           id
@@ -226,6 +227,24 @@ export const GET_USER_BY_ID = gql`
         title
         content
         is_public
+      }
+      follower_count: followers_aggregate {
+        aggregate {
+          count
+        }
+        nodes {
+          user
+        }
+      }
+      following_count: followings_aggregate {
+        aggregate {
+          count
+        }
+        nodes {
+          followers {
+            id
+          }
+        }
       }
       created_at
     }
@@ -238,6 +257,7 @@ export const GET_USER_BY_USERNAME = gql`
       name
       username
       profile_picture
+      special_title
       liked_blogs {
         blog {
           id
@@ -249,6 +269,24 @@ export const GET_USER_BY_USERNAME = gql`
         title
         content
         is_public
+      }
+      follower_count: followers_aggregate {
+        aggregate {
+          count
+        }
+        nodes {
+          user
+        }
+      }
+      following_count: followings_aggregate {
+        aggregate {
+          count
+        }
+        nodes {
+          followers {
+            id
+          }
+        }
       }
       created_at
     }
@@ -613,8 +651,36 @@ export const FOLLOW_USER = gql`
     insert_follow_system(objects: { follows: $user, user: $me }) {
       returning {
         id
-        follower
-        following
+        follows
+        user
+      }
+    }
+  }
+`;
+export const UNFOLLOW_USER = gql`
+  mutation removeFollower($me: String!, $user: String!) {
+    delete_follow_system(
+      where: { _and: [{ follows: { _eq: $user } }, { user: { _eq: $me } }] }
+    ) {
+      affected_rows
+    }
+  }
+`;
+export const GET_FOLLOWER_COUNT = gql`
+  query getFollowerCount($user: String) {
+    follow_system_aggregate(where: { follows: { _eq: $user } }) {
+      aggregate {
+        count
+      }
+    }
+  }
+`;
+
+export const GET_FOLLOWING_COUNT = gql`
+  query getFollowingCount($user: String!) {
+    follow_system_aggregate(where: { user: { _eq: $user } }) {
+      aggregate {
+        count
       }
     }
   }
