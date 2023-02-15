@@ -71,5 +71,8 @@ main {
       padding-inline-start: 3em;
     }
   }
+  @media (max-width: 700px) {
+    padding: 1rem 0.3rem;
+  }
 }
 </style>

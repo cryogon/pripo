@@ -124,11 +124,16 @@ onMounted(() => {
       background-color: var(--accent-color);
       padding: 0.3rem 1rem;
       border-radius: 2rem;
+      color: black;
       cursor: pointer;
       &.deactive {
         background-color: var(--deactive-input-box-background);
         cursor: default;
       }
+    }
+    @media screen and (max-width: 700px) {
+      flex-direction: column;
+      align-items: flex-start;
     }
     .post-public-toggle {
       display: flex;
@@ -139,6 +144,10 @@ onMounted(() => {
         opacity: 0.7;
       }
     }
+  }
+  @media screen and (max-width: 700px) {
+    margin-inline-start: 3rem;
+    margin-inline-end: 0;
   }
 }
 </style>

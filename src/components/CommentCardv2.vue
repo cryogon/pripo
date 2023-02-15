@@ -12,13 +12,14 @@ import {
   DELETE_COMMENT,
 } from "@/graphql";
 import { useClipboard, useTimeAgo } from "@vueuse/core";
+import OptionsIcon from "./Icons/OptionsIcon.vue";
 defineProps<{ comment: Comment }>();
 const { user } = useAuth0();
 const emitter = useEmitter();
 const isReplyInputInactive = ref(true);
 const commentReplyMode = ref<"reply" | "edit">("reply");
 const { copy, copied } = useClipboard();
-
+const isOptionToggleActive = ref(false);
 function toggle() {
   if (!user.value?.email) {
     emitter.emit("alert", "You need to login in order to reply");
@@ -91,6 +92,9 @@ function deleteComment(id: number) {
 function toggleReply() {
   isReplyInputInactive.value = true;
 }
+function toggleOption() {
+  isOptionToggleActive.value = !isOptionToggleActive.value;
+}
 function commentUrl(id: number) {
   return `${location.origin}/comments/${id}`;
 }
@@ -150,6 +154,33 @@ function commentUrl(id: number) {
         >permalink</span
       >
       <span class="copy options-item" v-else>copied</span>
+      <div class="drop-down-container">
+        <OptionsIcon class="drop-down options-item" @click="toggleOption" />
+        <ul class="drop-down-tray" :class="{ active: isOptionToggleActive }">
+          <li
+            class="options-item"
+            @click="editComment"
+            v-if="user?.uid === comment.user.id"
+          >
+            edit
+          </li>
+          <li
+            class="options-item"
+            @click="deleteComment(comment.id as number)"
+            v-if="user?.uid === comment.user.id"
+          >
+            delete
+          </li>
+          <li
+            class="options-item"
+            @click="copy(commentUrl(comment.id as number))"
+            v-if="!copied"
+          >
+            permalink
+          </li>
+          <li class="options-item" v-else-if="copied">copied</li>
+        </ul>
+      </div>
     </div>
     <ReplyInputBoxv2
       :is-reply-input-inactive="isReplyInputInactive"
@@ -169,6 +200,7 @@ function commentUrl(id: number) {
 </template>
 <style scoped lang="scss">
 .comment-item {
+  --threadline-top: 3rem;
   font-size: 14px;
   margin: 1rem 0.3rem;
   .user-info-container {
@@ -190,14 +222,18 @@ function commentUrl(id: number) {
         background-color: var(--color-text);
         position: absolute;
         left: 50%;
-        top: 3rem;
-        // z-index: -1;
+        top: var(--threadline-top);
       }
       .user-avatar,
       .anonymous-user {
         width: 3rem;
         height: 3rem;
         border-radius: 50%;
+        @media screen and (max-width: 700px) {
+          width: 2rem;
+          height: 2rem;
+          border-radius: 50%;
+        }
       }
       .user-avatar {
         cursor: pointer;
@@ -235,11 +271,52 @@ function commentUrl(id: number) {
       &.date {
         margin-inline-end: 0.6rem;
       }
+
+      &.drop-down {
+        width: 1rem;
+        height: 1.1rem;
+        stroke-width: 4;
+      }
       &:not(:first-child) {
         font-weight: bold;
         cursor: pointer;
         &:hover {
           text-decoration: underline;
+        }
+      }
+    }
+    @media screen and (max-width: 700px) {
+      padding-inline-start: 3rem;
+      .options-item {
+        font-weight: bold;
+        cursor: pointer;
+        &:hover {
+          text-decoration: underline;
+        }
+        &.date,
+        &.edit,
+        &.delete,
+        &.copy {
+          display: none;
+        }
+      }
+    }
+    .drop-down-container {
+      display: none;
+    }
+    @media screen and (max-width: 700px) {
+      .drop-down-container {
+        display: block;
+        .drop-down-tray {
+          display: none;
+          background-color: #000;
+          padding: 0.5rem;
+          position: absolute;
+          z-index: 9;
+          list-style: none;
+          &.active {
+            display: block;
+          }
         }
       }
     }
@@ -258,6 +335,9 @@ function commentUrl(id: number) {
         }
       }
     }
+  }
+  @media screen and (max-width: 700px) {
+    --threadline-top: 2rem;
   }
 }
 </style>

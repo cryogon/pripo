@@ -315,5 +315,8 @@ function editBlog() {
       cursor: pointer;
     }
   }
+  @media screen and (max-width: 700px) {
+    padding-inline: 1rem;
+  }
 }
 </style>
