@@ -290,7 +290,7 @@ onMounted(() => {
   transition: 100ms;
   padding: 0 14vw;
   .card {
-    min-height: 20rem;
+    min-height: 8rem;
     margin-block-start: 1rem;
     background-color: #303030;
     border-radius: 12px;
