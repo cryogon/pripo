@@ -708,7 +708,11 @@ export const UNFOLLOW_USER = gql`
     delete_follow_system(
       where: { _and: [{ follows: { _eq: $user } }, { user: { _eq: $me } }] }
     ) {
-      affected_rows
+      returning {
+        id
+        follows
+        user
+      }
     }
   }
 `;
