@@ -216,6 +216,12 @@ export const GET_USER_BY_ID = gql`
       username
       profile_picture
       special_title
+      created_at
+      location
+      interests
+      cover_picture
+      about
+      social_links
       liked_blogs {
         blog {
           id
@@ -264,7 +270,6 @@ export const GET_USER_BY_ID = gql`
           }
         }
       }
-      created_at
     }
   }
 `;
@@ -276,6 +281,12 @@ export const GET_USER_BY_USERNAME = gql`
       username
       profile_picture
       special_title
+      created_at
+      location
+      interests
+      cover_picture
+      about
+      social_links
       liked_blogs {
         blog {
           id
@@ -324,7 +335,6 @@ export const GET_USER_BY_USERNAME = gql`
           }
         }
       }
-      created_at
     }
   }
 `;

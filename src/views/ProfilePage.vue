@@ -176,19 +176,24 @@ onMounted(() => {
           >Member since {{ getFormattedDate(user.users[0].created_at) }}</span
         >
         <div class="major-info">
-          <span class="location">
+          <span class="location" v-if="user.users[0].location">
             <LocationPin />
-            India
+            {{ user.users[0].location }}
           </span>
-          <span class="interests">
+          <span class="interests" v-if="user.users[0].interests">
             <HeartIcon />
-            Gaming, Coding
+            user.users[0].interests
           </span>
         </div>
-        <div class="social-media-links">
-          <a href="https://cryogon.netlify.app" class="social-links">
+        <div class="social-media-links" v-if="user.users[0].social_links">
+          <a
+            href="https://cryogon.netlify.app"
+            class="social-links"
+            v-for="(link, index) in user.users[0].social_links"
+            :key="index"
+          >
             <LinkIcon />
-            cryogon.netlify.app
+            {{ link }}
           </a>
         </div>
       </section>
