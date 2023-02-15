@@ -180,10 +180,15 @@ watch(files, () => {
     }
   }
   @media (max-width: 700px) {
-    padding: 1rem 0.3rem;
+    padding: 0;
     .main {
       flex-direction: column-reverse;
       padding: 1rem 1rem;
+      .settings {
+        .profile-settings {
+          flex-direction: column;
+        }
+      }
       .mini-nav {
         flex-direction: row;
         gap: 1rem;
