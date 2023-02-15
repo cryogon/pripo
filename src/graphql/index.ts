@@ -215,19 +215,61 @@ export const GET_USER_BY_ID = gql`
       name
       username
       profile_picture
+      special_title
+      created_at
+      location
+      interests
+      cover_picture
+      about
+      social_links
       liked_blogs {
         blog {
           id
           title
+          favourites: favourites_aggregate {
+            aggregate {
+              count
+            }
+          }
+          date_posted
+          is_public
         }
       }
       blogs(order_by: { id: asc }) {
         id
         title
-        content
+        favourites: favourites_aggregate {
+          aggregate {
+            count
+          }
+        }
+        date_posted
         is_public
       }
-      created_at
+      followers: followers_aggregate {
+        aggregate {
+          count
+        }
+        nodes {
+          followings {
+            profile_picture
+            username
+            name
+          }
+        }
+      }
+      followings: followings_aggregate {
+        aggregate {
+          count
+        }
+        nodes {
+          followers {
+            profile_picture
+            username
+            name
+          }
+        }
+      }
     }
   }
 `;
@@ -238,19 +280,61 @@ export const GET_USER_BY_USERNAME = gql`
       name
       username
       profile_picture
+      special_title
+      created_at
+      location
+      interests
+      cover_picture
+      about
+      social_links
       liked_blogs {
         blog {
           id
           title
+          favourites: favourites_aggregate {
+            aggregate {
+              count
+            }
+          }
+          date_posted
+          is_public
         }
       }
       blogs(order_by: { id: asc }) {
         id
         title
-        content
+        favourites: favourites_aggregate {
+          aggregate {
+            count
+          }
+        }
+        date_posted
         is_public
       }
-      created_at
+      followers: followers_aggregate {
+        aggregate {
+          count
+        }
+        nodes {
+          followings {
+            profile_picture
+            username
+            name
+          }
+        }
+      }
+      followings: followings_aggregate {
+        aggregate {
+          count
+        }
+        nodes {
+          followers {
+            profile_picture
+            username
+            name
+          }
+        }
+      }
     }
   }
 `;
@@ -603,6 +687,50 @@ export const INSERT_NOTIFICATION = gql`
         notification_for
         blog_id
         comment
+      }
+    }
+  }
+`;
+
+export const FOLLOW_USER = gql`
+  mutation addFollower($me: String!, $user: String!) {
+    insert_follow_system(objects: { follows: $user, user: $me }) {
+      returning {
+        id
+        follows
+        user
+      }
+    }
+  }
+`;
+export const UNFOLLOW_USER = gql`
+  mutation removeFollower($me: String!, $user: String!) {
+    delete_follow_system(
+      where: { _and: [{ follows: { _eq: $user } }, { user: { _eq: $me } }] }
+    ) {
+      returning {
+        id
+        follows
+        user
+      }
+    }
+  }
+`;
+export const GET_FOLLOWER_COUNT = gql`
+  query getFollowerCount($user: String) {
+    follow_system_aggregate(where: { follows: { _eq: $user } }) {
+      aggregate {
+        count
+      }
+    }
+  }
+`;
+
+export const GET_FOLLOWING_COUNT = gql`
+  query getFollowingCount($user: String!) {
+    follow_system_aggregate(where: { user: { _eq: $user } }) {
+      aggregate {
+        count
       }
     }
   }

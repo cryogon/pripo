@@ -34,7 +34,7 @@ function showFormatedDate(date: Date | string | number) {
 <template>
   <div class="container">
     <h4 class="header">
-      <router-link :to="`/users/${user?.id}`" v-if="isPublic">
+      <router-link :to="`/users/${user?.username}`" v-if="isPublic">
         <img
           :src="user?.profile_picture"
           alt="userProfile"
