@@ -2,7 +2,7 @@
 import LocationPin from "../components/Icons/LocationPin.vue";
 import HeartIcon from "../components/Icons/HeartIcon.vue";
 import LinkIcon from "../components/Icons/LinkIcon.vue";
-import { useElementBounding } from "@vueuse/core";
+import { useElementBounding, useMediaQuery } from "@vueuse/core";
 import { ref, watch, onMounted, computed } from "vue";
 import type { Blog, User } from "@/types";
 import router from "@/router";
@@ -20,7 +20,8 @@ import FollowerItem from "../components/FollowerItem.vue";
 
 const online = useOnline();
 const nav = ref(null);
-
+const background = ref();
+const mobileMode = useMediaQuery("(max-width:700px)");
 const userParam = router.currentRoute.value.params.user;
 const { user: u } = useAuth0();
 const {
@@ -97,15 +98,18 @@ const currentSection = ref<string | null>("About");
 onMounted(() => {
   const observer = new IntersectionObserver(
     ([entry]) => {
-      console.log("Observing " + entry);
       if (entry.intersectionRatio > 0) {
         currentSection.value = entry.target.getAttribute("id");
       }
     },
     { threshold: 0, rootMargin: "0% 0px -75% 0px" }
   );
-  document.querySelectorAll(".section .heading").forEach((section) => {
-    observer.observe(section);
+  watch(background, () => {
+    background.value
+      .querySelectorAll(".section .heading")
+      .forEach((section: any) => {
+        observer.observe(section);
+      });
   });
 });
 </script>
@@ -119,7 +123,7 @@ onMounted(() => {
         class="avatar"
       />
     </section>
-    <div class="background">
+    <div class="background" ref="background">
       <section class="basic-user-info">
         <div class="left-section">
           <span class="full-name">{{ user.users[0].name }}</span>
@@ -199,6 +203,7 @@ onMounted(() => {
       </section>
       <nav
         class="tab-navigation"
+        v-if="!mobileMode"
         :class="{ 'is-compact': navIsCompact }"
         ref="nav"
         id="nav"
