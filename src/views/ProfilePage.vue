@@ -2,7 +2,7 @@
 import LocationPin from "../components/Icons/LocationPin.vue";
 import HeartIcon from "../components/Icons/HeartIcon.vue";
 import LinkIcon from "../components/Icons/LinkIcon.vue";
-import { useElementBounding, useMediaQuery } from "@vueuse/core";
+import { useElementBounding } from "@vueuse/core";
 import { ref, watch, onMounted, computed } from "vue";
 import type { Blog, User } from "@/types";
 import router from "@/router";
@@ -21,7 +21,6 @@ import FollowerItem from "../components/FollowerItem.vue";
 const online = useOnline();
 const nav = ref(null);
 const background = ref();
-const mobileMode = useMediaQuery("(max-width:700px)");
 const userParam = router.currentRoute.value.params.user;
 const { user: u } = useAuth0();
 const {
@@ -203,7 +202,6 @@ onMounted(() => {
       </section>
       <nav
         class="tab-navigation"
-        v-if="!mobileMode"
         :class="{ 'is-compact': navIsCompact }"
         ref="nav"
         id="nav"
@@ -472,6 +470,9 @@ onMounted(() => {
   }
   @media screen and (max-width: 700px) {
     padding: 0 0;
+    .tab-navigation {
+      display: none;
+    }
   }
 }
 </style>

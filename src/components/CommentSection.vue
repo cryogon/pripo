@@ -178,7 +178,7 @@ emitter.on("refetchComments", () => {
     .reply-container {
       overflow-y: hidden;
       .reply-main {
-        padding-inline-start: 3em;
+        padding-inline-start: min(3em, 3vw);
       }
       .continue-thread {
         font-size: 13px;
