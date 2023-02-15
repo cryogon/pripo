@@ -174,7 +174,22 @@ watch(files, () => {
       .nav-item {
         &:hover {
           cursor: pointer;
+          background-color: #303030;
         }
+      }
+    }
+  }
+  @media (max-width: 700px) {
+    padding: 1rem 0.3rem;
+    .main {
+      flex-direction: column-reverse;
+      padding: 1rem 1rem;
+      .mini-nav {
+        flex-direction: row;
+        gap: 1rem;
+        padding: 0.3rem;
+        background-color: #161616;
+        margin-bottom: 1rem;
       }
     }
   }

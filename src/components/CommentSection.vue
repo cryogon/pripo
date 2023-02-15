@@ -169,7 +169,6 @@ emitter.on("refetchComments", () => {
   margin-block-start: 2rem;
   .comment-container {
     background-color: var(--comment-section-background);
-    padding: 1rem 1.2rem;
     min-height: 10rem;
     .comment-main {
       background-color: var(--color-background);
@@ -178,7 +177,7 @@ emitter.on("refetchComments", () => {
     .reply-container {
       overflow-y: hidden;
       .reply-main {
-        padding-inline-start: 3em;
+        padding-inline-start: min(3em, 4vw);
       }
       .continue-thread {
         font-size: 13px;
@@ -188,6 +187,9 @@ emitter.on("refetchComments", () => {
         border-radius: 1rem;
         margin-inline-start: 4.2rem;
         cursor: pointer;
+        @media screen and (max-width: 700px) {
+          margin-inline-start: 2rem;
+        }
       }
     }
   }
