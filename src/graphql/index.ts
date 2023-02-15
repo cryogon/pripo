@@ -220,6 +220,13 @@ export const GET_USER_BY_ID = gql`
         blog {
           id
           title
+          favourites: favourites_aggregate {
+            aggregate {
+              count
+            }
+          }
+          date_posted
+          is_public
         }
       }
       blogs(order_by: { id: asc }) {
@@ -233,21 +240,27 @@ export const GET_USER_BY_ID = gql`
         date_posted
         is_public
       }
-      follower_count: followers_aggregate {
+      followers: followers_aggregate {
         aggregate {
           count
         }
         nodes {
-          user
+          followings {
+            profile_picture
+            username
+            name
+          }
         }
       }
-      following_count: followings_aggregate {
+      followings: followings_aggregate {
         aggregate {
           count
         }
         nodes {
           followers {
-            id
+            profile_picture
+            username
+            name
           }
         }
       }
@@ -267,6 +280,13 @@ export const GET_USER_BY_USERNAME = gql`
         blog {
           id
           title
+          favourites: favourites_aggregate {
+            aggregate {
+              count
+            }
+          }
+          date_posted
+          is_public
         }
       }
       blogs(order_by: { id: asc }) {
@@ -280,21 +300,27 @@ export const GET_USER_BY_USERNAME = gql`
         date_posted
         is_public
       }
-      follower_count: followers_aggregate {
+      followers: followers_aggregate {
         aggregate {
           count
         }
         nodes {
-          user
+          followings {
+            profile_picture
+            username
+            name
+          }
         }
       }
-      following_count: followings_aggregate {
+      followings: followings_aggregate {
         aggregate {
           count
         }
         nodes {
           followers {
-            id
+            profile_picture
+            username
+            name
           }
         }
       }

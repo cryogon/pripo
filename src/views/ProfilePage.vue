@@ -16,6 +16,7 @@ import {
 import { useMutation, useQuery } from "@vue/apollo-composable";
 import { useOnline } from "@vueuse/core";
 import PostItem from "../components/PostItem.vue";
+import FollowerItem from "../components/FollowerItem.vue";
 
 const online = useOnline();
 const nav = ref(null);
@@ -34,7 +35,6 @@ const {
 
 const userFound = ref(false);
 onResult((r) => {
-  console.log(r.data);
   if (r.data.users.length == 0) {
     router.push("/404");
   } else {
@@ -86,8 +86,8 @@ function unfollowUser(user: User) {
   mutate({ me: u.value.nickname, user: user.username });
 }
 function isFollowed(user: any) {
-  for (let follower of user.follower_count.nodes || []) {
-    if (follower.user === u.value.nickname) {
+  for (let follower of user.followers.nodes || []) {
+    if (follower.followings.username === u.value.nickname) {
       return true;
     }
   }
@@ -136,13 +136,13 @@ onMounted(() => {
             <div class="followers">
               <span>Followers</span>
               <span id="follower-count" class="count">
-                {{ user.users[0].follower_count.aggregate.count }}
+                {{ user.users[0].followers.aggregate.count }}
               </span>
             </div>
             <div class="followings">
               <span>Followings</span>
               <span id="followings-count" class="count">
-                {{ user.users[0].following_count.aggregate.count }}
+                {{ user.users[0].followings.aggregate.count }}
               </span>
             </div>
           </div>
@@ -186,14 +186,10 @@ onMounted(() => {
           </span>
         </div>
         <div class="social-media-links">
-          <a href="https://cryogon.netlify.app" class="website">
+          <a href="https://cryogon.netlify.app" class="social-links">
             <LinkIcon />
             cryogon.netlify.app
           </a>
-          <!-- <a href="https://youtube.com/@cryogon" class="youtube">Youtube </a>
-          <a href="https://www.instagram.com/cryogonjs/" class="instagram"
-            >Instagram
-          </a> -->
         </div>
       </section>
       <nav
@@ -242,6 +238,15 @@ onMounted(() => {
         id="favouritesSection"
       >
         <h4 class="heading" id="Favourites">Favourites</h4>
+        <PostItem
+          v-for="post in user.users[0].liked_blogs"
+          :key="post.blog[0].id"
+          :id="post.blog[0].id"
+          :title="post.blog[0].title"
+          :favorites="post.blog[0].favourites.aggregate.count"
+          :posted_at="post.blog[0].date_posted"
+          :visibility="post.blog[0].is_public"
+        />
       </section>
       <section
         class="follower-section card section"
@@ -249,6 +254,13 @@ onMounted(() => {
         id="followersSection"
       >
         <h4 class="heading" id="Followers">Followers</h4>
+        <FollowerItem
+          v-for="follower in user.users[0].followers.nodes"
+          :key="follower.followings.username"
+          :avatar="follower.followings.profile_picture"
+          :name="follower.followings.name"
+          :username="follower.followings.username"
+        />
       </section>
       <section
         class="following-section card section"
@@ -256,6 +268,13 @@ onMounted(() => {
         id="followingsSection"
       >
         <h4 class="heading" id="Followings">Following</h4>
+        <FollowerItem
+          v-for="follower in user.users[0].followings.nodes"
+          :key="follower.followers.username"
+          :avatar="follower.followers.profile_picture"
+          :name="follower.followers.name"
+          :username="follower.followers.username"
+        />
       </section>
     </div>
   </main>
@@ -274,6 +293,7 @@ onMounted(() => {
     .heading {
       font-weight: normal;
       text-decoration: underline;
+      margin-block-end: 1rem;
     }
   }
   .user-info {

@@ -10,7 +10,7 @@ defineProps<{
 }>();
 </script>
 <template>
-  <div class="post-item" :class="{ private: !visibility }">
+  <div class="post-item">
     <router-link :to="`/posts/${id}`">
       <div>
         <p class="title">{{ title }}</p>
@@ -43,9 +43,7 @@ defineProps<{
   transition: box-shadow 400ms;
   &:hover {
     cursor: pointer;
-    box-shadow: inset 0.2rem 0 var(--accent-color);
-  }
-  &.private {
+    // box-shadow: inset 0.2rem 0 var(--accent-color);
     background-color: #00000020;
   }
   .info {
