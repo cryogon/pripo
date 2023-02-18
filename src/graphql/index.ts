@@ -698,7 +698,16 @@ export const FOLLOW_USER = gql`
       returning {
         id
         follows
-        user
+        followers {
+          id
+          name
+          username
+        }
+        followings {
+          id
+          name
+          username
+        }
       }
     }
   }

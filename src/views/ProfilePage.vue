@@ -85,6 +85,17 @@ function unfollowUser(user: User) {
   const { mutate } = useMutation(UNFOLLOW_USER);
   mutate({ me: u.value.nickname, user: user.username });
 }
+
+// const isFollowed = computed(() => {
+//   for (let follower of user.value.users[0].followers.nodes || []) {
+//     if (follower.followings.username === u.value.nickname) {
+//       return true;
+//     }
+//   }
+//   return false;
+// });
+
+//To Update it in real time I have to look info GQL Query and return proper id of followed user from user table not follower table
 function isFollowed(user: any) {
   for (let follower of user.followers.nodes || []) {
     if (follower.followings.username === u.value.nickname) {

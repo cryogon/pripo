@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useFileDialog } from "@vueuse/core";
-import { watch } from "vue";
+import { watch, ref } from "vue";
 const { files, open } = useFileDialog();
 function onDragOver(event: any) {
   event.stopPropagation();
@@ -14,7 +14,17 @@ function onDrop(event: any) {
   const fileList = event.dataTransfer.files;
   console.log(fileList);
 }
+function openImage() {
+  open({ accept: "image/gif,image/jpeg,image/x-png" });
+}
+const img = ref<string | null | ArrayBuffer>();
 watch(files, () => {
+  const reader = new FileReader();
+  reader.onload = () => {
+    img.value = `"${reader.result}"`;
+    console.log(img.value);
+  };
+  files.value && reader.readAsDataURL(files.value[0]);
   console.log(files);
 });
 </script>
@@ -23,15 +33,15 @@ watch(files, () => {
     <section class="main">
       <section class="settings">
         <h2 class="heading" id="profile">Profile</h2>
-        <article class="profile-settings">
-          <div class="user-avatar">
+        <article class="profile-settings" id="profile">
+          <div class="user-avatar" :style="`--image-url:url(${img});`">
             <label for="drop-area" class="option">avatar</label>
             <div
               id="drop-area"
               class="drop-area"
               @dragover="onDragOver"
               @drop="onDrop"
-              @click="open()"
+              @click="openImage"
             ></div>
           </div>
           <div class="user-options">
@@ -89,10 +99,10 @@ watch(files, () => {
         </article>
       </section>
       <aside class="mini-nav">
-        <span class="nav-item">Profile</span>
-        <span class="nav-item">Notification</span>
-        <span class="nav-item">Appearence</span>
-        <span class="nav-item">Privacy</span>
+        <a class="nav-item" href="#profile">Profile</a>
+        <a class="nav-item" href="#notification">Notification</a>
+        <a class="nav-item" href="#apperence">Appearence</a>
+        <a class="nav-item" href="#privacy">Privacy</a>
       </aside>
     </section>
   </main>
@@ -130,11 +140,18 @@ watch(files, () => {
           height: 9rem;
           border-radius: 1rem;
           background-color: grey;
+          background-image: var(--image-url);
+          background-size: cover;
+          background-repeat: no-repeat;
         }
       }
       .profile-settings {
         display: flex;
         gap: 5rem;
+        :target {
+          color: red;
+          background-color: red;
+        }
         .user-options {
           .user-option-child {
             margin-block-end: 1rem;
