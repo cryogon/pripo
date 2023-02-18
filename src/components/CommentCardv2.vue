@@ -223,6 +223,9 @@ function commentUrl(id: number) {
         position: absolute;
         left: 50%;
         top: var(--threadline-top);
+        @media screen and (max-width: 700px) {
+          background-color: rgb(109, 109, 109);
+        }
       }
       .user-avatar,
       .anonymous-user {
