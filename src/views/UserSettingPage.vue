@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useFileDialog } from "@vueuse/core";
 import { watch, ref } from "vue";
+import PencilIcon from "@/components/Icons/PencilIcon.vue";
 const { files, open } = useFileDialog();
 function onDragOver(event: any) {
   event.stopPropagation();
@@ -42,7 +43,11 @@ watch(files, () => {
               @dragover="onDragOver"
               @drop="onDrop"
               @click="openImage"
-            ></div>
+            >
+              <i class="edit-icon" title="change profile">
+                <PencilIcon class="icon" />
+              </i>
+            </div>
           </div>
           <div class="user-options">
             <div class="user-option-child">
@@ -109,7 +114,7 @@ watch(files, () => {
 </template>
 <style scoped lang="scss">
 .settings-container {
-  padding: 1rem 20rem;
+  padding: 1rem min(17vw, 20rem);
   .main {
     justify-content: space-between;
     background-color: #202020;
@@ -143,6 +148,28 @@ watch(files, () => {
           background-image: var(--image-url);
           background-size: cover;
           background-repeat: no-repeat;
+          display: flex;
+          align-items: flex-end;
+          justify-content: flex-end;
+          .edit-icon {
+            padding: 0.3rem;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            background-color: #303030;
+            user-select: none;
+            position: relative;
+            cursor: pointer;
+            margin: 0.5rem;
+            .icon {
+              position: absolute;
+              width: 1.2rem;
+              height: 1.2rem;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+            }
+          }
         }
       }
       .profile-settings {
@@ -196,7 +223,10 @@ watch(files, () => {
       }
     }
   }
-  @media (max-width: 700px) {
+  @media screen and (max-width: 1200px) {
+    padding: 0 5rem;
+  }
+  @media (max-width: 900px) {
     padding: 0;
     .main {
       flex-direction: column-reverse;
