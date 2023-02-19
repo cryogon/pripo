@@ -49,7 +49,7 @@ console.log(u.value);
 const navIsCompact = ref(false);
 const tabs = ["About", "Posts", "Favourites", "Followers", "Followings"];
 //changing this will change cover image
-const coverImage = ref("/src/assets/cover/tiles-blur.png");
+const coverImage = ref("/cover/tiles-blur.png");
 //For user to change even when page not refreshed
 //For instance, checking a user's profile and then checking your own profile
 router.afterEach((to, from) => {
