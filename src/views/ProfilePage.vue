@@ -45,9 +45,11 @@ onError(() => {
   console.error("Some Problem Occured! Please Refetch");
 });
 const { y } = useElementBounding(nav);
+console.log(u.value);
 const navIsCompact = ref(false);
 const tabs = ["About", "Posts", "Favourites", "Followers", "Followings"];
-
+//changing this will change cover image
+const coverImage = ref("/src/assets/cover/tiles-blur.png");
 //For user to change even when page not refreshed
 //For instance, checking a user's profile and then checking your own profile
 router.afterEach((to, from) => {
@@ -85,15 +87,6 @@ function unfollowUser(user: User) {
   const { mutate } = useMutation(UNFOLLOW_USER);
   mutate({ me: u.value.nickname, user: user.username });
 }
-
-// const isFollowed = computed(() => {
-//   for (let follower of user.value.users[0].followers.nodes || []) {
-//     if (follower.followings.username === u.value.nickname) {
-//       return true;
-//     }
-//   }
-//   return false;
-// });
 
 function isMutual(user: any) {
   //!!u.value is shorthand for u.value !== "" && u.value !== null && u.value !== undefined
@@ -144,7 +137,7 @@ onMounted(() => {
 </script>
 <template>
   <main class="container" v-if="user && userFound && !loading">
-    <section class="user-info">
+    <section class="user-info" :style="`--cover-image:url(${coverImage})`">
       <div class="cover-image">
         <i class="edit-icon">
           <PencilIcon class="icon" />
@@ -359,12 +352,15 @@ onMounted(() => {
       display: flex;
       align-items: flex-end;
       justify-content: flex-end;
+      background-image: var(--cover-image);
+      background-repeat: no-repeat;
+      background-size: cover;
       .edit-icon {
         padding: 0.3rem;
         width: 2rem;
         height: 2rem;
         border-radius: 50%;
-        background-color: black;
+        background-color: #303030;
         user-select: none;
         position: relative;
         cursor: pointer;
@@ -533,7 +529,7 @@ onMounted(() => {
       }
     }
   }
-  @media screen and (max-width: 900px) {
+  @media screen and (max-width: 1000px) {
     padding: 0 4rem;
   }
   @media screen and (max-width: 700px) {
