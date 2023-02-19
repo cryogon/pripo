@@ -251,7 +251,7 @@ export const GET_USER_BY_ID = gql`
           count
         }
         nodes {
-          followings {
+          user: followings {
             profile_picture
             username
             name
@@ -263,7 +263,7 @@ export const GET_USER_BY_ID = gql`
           count
         }
         nodes {
-          followers {
+          user: followers {
             profile_picture
             username
             name
@@ -316,7 +316,7 @@ export const GET_USER_BY_USERNAME = gql`
           count
         }
         nodes {
-          followings {
+          user: followings {
             profile_picture
             username
             name
@@ -328,7 +328,7 @@ export const GET_USER_BY_USERNAME = gql`
           count
         }
         nodes {
-          followers {
+          user: followers {
             profile_picture
             username
             name
@@ -698,7 +698,16 @@ export const FOLLOW_USER = gql`
       returning {
         id
         follows
-        user
+        followers {
+          id
+          name
+          username
+        }
+        followings {
+          id
+          name
+          username
+        }
       }
     }
   }

@@ -17,6 +17,7 @@ import { useMutation, useQuery } from "@vue/apollo-composable";
 import { useOnline } from "@vueuse/core";
 import PostItem from "../components/PostItem.vue";
 import FollowerItem from "../components/FollowerItem.vue";
+import PencilIcon from "../components/Icons/PencilIcon.vue";
 
 const online = useOnline();
 const nav = ref(null);
@@ -32,7 +33,6 @@ const {
 } = !isNaN(+userParam)
   ? useQuery(GET_USER_BY_ID, { id: userParam })
   : useQuery(GET_USER_BY_USERNAME, { username: userParam });
-
 const userFound = ref(false);
 onResult((r) => {
   if (r.data.users.length == 0) {
@@ -45,9 +45,11 @@ onError(() => {
   console.error("Some Problem Occured! Please Refetch");
 });
 const { y } = useElementBounding(nav);
+console.log(u.value);
 const navIsCompact = ref(false);
 const tabs = ["About", "Posts", "Favourites", "Followers", "Followings"];
-
+//changing this will change cover image
+const coverImage = ref("/src/assets/cover/tiles-blur.png");
 //For user to change even when page not refreshed
 //For instance, checking a user's profile and then checking your own profile
 router.afterEach((to, from) => {
@@ -85,9 +87,30 @@ function unfollowUser(user: User) {
   const { mutate } = useMutation(UNFOLLOW_USER);
   mutate({ me: u.value.nickname, user: user.username });
 }
+
+function isMutual(user: any) {
+  //!!u.value is shorthand for u.value !== "" && u.value !== null && u.value !== undefined
+  if (
+    (!!u.value && user.username === u.value.nickname) ||
+    user.followings.nodes.length === 0
+  ) {
+    return false;
+  }
+  //Here I am basically checking that if users follower and following are same or not and also his following is equal to logged in user or not
+
+  return (user.followers.nodes || []).some((follower: any) => {
+    return (user.followings.nodes || []).some((following: any) => {
+      return (
+        follower.user.username == following.user.username &&
+        following.user.username === u.value.nickname
+      );
+    });
+  });
+}
+//To Update it in real time I have to look info GQL Query and return proper id of followed user from user table not follower table
 function isFollowed(user: any) {
   for (let follower of user.followers.nodes || []) {
-    if (follower.followings.username === u.value.nickname) {
+    if (follower.user.username === u.value.nickname) {
       return true;
     }
   }
@@ -114,8 +137,12 @@ onMounted(() => {
 </script>
 <template>
   <main class="container" v-if="user && userFound && !loading">
-    <section class="user-info">
-      <div class="cover-image"></div>
+    <section class="user-info" :style="`--cover-image:url(${coverImage})`">
+      <div class="cover-image">
+        <i class="edit-icon">
+          <PencilIcon class="icon" />
+        </i>
+      </div>
       <img
         :src="user.users[0].profile_picture"
         alt="user-avatar"
@@ -137,7 +164,12 @@ onMounted(() => {
         <div class="right-section">
           <div class="analytics">
             <div class="followers">
-              <span>Followers</span>
+              <span
+                :class="{
+                  mutual: isMutual(user.users[0]),
+                }"
+                >Followers</span
+              >
               <span id="follower-count" class="count">
                 {{ user.users[0].followers.aggregate.count }}
               </span>
@@ -264,10 +296,10 @@ onMounted(() => {
         <h4 class="heading" id="Followers">Followers</h4>
         <FollowerItem
           v-for="follower in user.users[0].followers.nodes"
-          :key="follower.followings.username"
-          :avatar="follower.followings.profile_picture"
-          :name="follower.followings.name"
-          :username="follower.followings.username"
+          :key="follower.user.username"
+          :avatar="follower.user.profile_picture"
+          :name="follower.user.name"
+          :username="follower.user.username"
         />
       </section>
       <section
@@ -275,13 +307,13 @@ onMounted(() => {
         ref="followingsSection"
         id="followingsSection"
       >
-        <h4 class="heading" id="Followings">Following</h4>
+        <h4 class="heading" id="Followings">Followings</h4>
         <FollowerItem
           v-for="follower in user.users[0].followings.nodes"
-          :key="follower.followers.username"
-          :avatar="follower.followers.profile_picture"
-          :name="follower.followers.name"
-          :username="follower.followers.username"
+          :key="follower.user.username"
+          :avatar="follower.user.profile_picture"
+          :name="follower.user.name"
+          :username="follower.user.username"
         />
       </section>
     </div>
@@ -292,6 +324,13 @@ onMounted(() => {
 .container {
   transition: 100ms;
   padding: 0 14vw;
+  .mutual {
+    background: linear-gradient(var(--mutual-color));
+    background-clip: text;
+    -webkit-background-clip: text;
+    -moz-background-clip: text;
+    color: transparent;
+  }
   .card {
     min-height: 8rem;
     margin-block-start: 1rem;
@@ -310,6 +349,31 @@ onMounted(() => {
       height: 18rem;
       width: 100%;
       background-color: grey;
+      display: flex;
+      align-items: flex-end;
+      justify-content: flex-end;
+      background-image: var(--cover-image);
+      background-repeat: no-repeat;
+      background-size: cover;
+      .edit-icon {
+        padding: 0.3rem;
+        width: 2rem;
+        height: 2rem;
+        border-radius: 50%;
+        background-color: #303030;
+        user-select: none;
+        position: relative;
+        cursor: pointer;
+        margin: 0.5rem;
+        .icon {
+          position: absolute;
+          width: 1.2rem;
+          height: 1.2rem;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+        }
+      }
     }
     .avatar {
       width: 9rem;
@@ -465,7 +529,7 @@ onMounted(() => {
       }
     }
   }
-  @media screen and (max-width: 900px) {
+  @media screen and (max-width: 1000px) {
     padding: 0 4rem;
   }
   @media screen and (max-width: 700px) {

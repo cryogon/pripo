@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useFileDialog } from "@vueuse/core";
-import { watch } from "vue";
+import { watch, ref } from "vue";
+import PencilIcon from "@/components/Icons/PencilIcon.vue";
 const { files, open } = useFileDialog();
 function onDragOver(event: any) {
   event.stopPropagation();
@@ -14,7 +15,17 @@ function onDrop(event: any) {
   const fileList = event.dataTransfer.files;
   console.log(fileList);
 }
+function openImage() {
+  open({ accept: "image/gif,image/jpeg,image/x-png" });
+}
+const img = ref<string | null | ArrayBuffer>();
 watch(files, () => {
+  const reader = new FileReader();
+  reader.onload = () => {
+    img.value = `"${reader.result}"`;
+    console.log(img.value);
+  };
+  files.value && reader.readAsDataURL(files.value[0]);
   console.log(files);
 });
 </script>
@@ -23,16 +34,20 @@ watch(files, () => {
     <section class="main">
       <section class="settings">
         <h2 class="heading" id="profile">Profile</h2>
-        <article class="profile-settings">
-          <div class="user-avatar">
+        <article class="profile-settings" id="profile">
+          <div class="user-avatar" :style="`--image-url:url(${img});`">
             <label for="drop-area" class="option">avatar</label>
             <div
               id="drop-area"
               class="drop-area"
               @dragover="onDragOver"
               @drop="onDrop"
-              @click="open()"
-            ></div>
+              @click="openImage"
+            >
+              <i class="edit-icon" title="change profile">
+                <PencilIcon class="icon" />
+              </i>
+            </div>
           </div>
           <div class="user-options">
             <div class="user-option-child">
@@ -89,17 +104,17 @@ watch(files, () => {
         </article>
       </section>
       <aside class="mini-nav">
-        <span class="nav-item">Profile</span>
-        <span class="nav-item">Notification</span>
-        <span class="nav-item">Appearence</span>
-        <span class="nav-item">Privacy</span>
+        <a class="nav-item" href="#profile">Profile</a>
+        <a class="nav-item" href="#notification">Notification</a>
+        <a class="nav-item" href="#apperence">Appearence</a>
+        <a class="nav-item" href="#privacy">Privacy</a>
       </aside>
     </section>
   </main>
 </template>
 <style scoped lang="scss">
 .settings-container {
-  padding: 1rem 20rem;
+  padding: 1rem min(17vw, 20rem);
   .main {
     justify-content: space-between;
     background-color: #202020;
@@ -130,11 +145,40 @@ watch(files, () => {
           height: 9rem;
           border-radius: 1rem;
           background-color: grey;
+          background-image: var(--image-url);
+          background-size: cover;
+          background-repeat: no-repeat;
+          display: flex;
+          align-items: flex-end;
+          justify-content: flex-end;
+          .edit-icon {
+            padding: 0.3rem;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            background-color: #303030;
+            user-select: none;
+            position: relative;
+            cursor: pointer;
+            margin: 0.5rem;
+            .icon {
+              position: absolute;
+              width: 1.2rem;
+              height: 1.2rem;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+            }
+          }
         }
       }
       .profile-settings {
         display: flex;
         gap: 5rem;
+        :target {
+          color: red;
+          background-color: red;
+        }
         .user-options {
           .user-option-child {
             margin-block-end: 1rem;
@@ -179,7 +223,10 @@ watch(files, () => {
       }
     }
   }
-  @media (max-width: 700px) {
+  @media screen and (max-width: 1200px) {
+    padding: 0 5rem;
+  }
+  @media (max-width: 900px) {
     padding: 0;
     .main {
       flex-direction: column-reverse;

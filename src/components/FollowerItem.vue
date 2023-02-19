@@ -11,7 +11,12 @@ function addThreeDots(str: string) {
 <template>
   <div class="follower-item">
     <router-link :to="`/users/${username}`">
-      <img :src="avatar" alt="user_avatar" class="user_item_avatar" />
+      <img
+        :src="avatar"
+        alt="user_avatar"
+        class="user_item_avatar"
+        referrerpolicy="no-referrer"
+      />
     </router-link>
     <div class="user-info">
       <div class="user-name">{{ addThreeDots(name) }}</div>
