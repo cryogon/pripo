@@ -95,12 +95,21 @@ function unfollowUser(user: User) {
 //   return false;
 // });
 
-function isMutual(followers: any, followings: any) {
-  return followers.some((user: any) => {
-    return followings.some((f: any) => {
+function isMutual(user: any) {
+  //!!u.value is shorthand for u.value !== "" && u.value !== null && u.value !== undefined
+  if (
+    (!!u.value && user.username === u.value.nickname) ||
+    user.followings.nodes.length === 0
+  ) {
+    return false;
+  }
+  //Here I am basically checking that if users follower and following are same or not and also his following is equal to logged in user or not
+
+  return (user.followers.nodes || []).some((follower: any) => {
+    return (user.followings.nodes || []).some((following: any) => {
       return (
-        user.user.username == f.user.username &&
-        f.user.username === u.value.nickname
+        follower.user.username == following.user.username &&
+        following.user.username === u.value.nickname
       );
     });
   });
@@ -164,10 +173,7 @@ onMounted(() => {
             <div class="followers">
               <span
                 :class="{
-                  mutual: isMutual(
-                    user.users[0].followers.nodes,
-                    user.users[0].followings.nodes
-                  ),
+                  mutual: isMutual(user.users[0]),
                 }"
                 >Followers</span
               >
@@ -326,7 +332,7 @@ onMounted(() => {
   transition: 100ms;
   padding: 0 14vw;
   .mutual {
-    background: linear-gradient(#48bfe3, #80ffdb);
+    background: linear-gradient(var(--mutual-color));
     background-clip: text;
     -webkit-background-clip: text;
     -moz-background-clip: text;

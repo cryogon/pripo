@@ -13,7 +13,7 @@ import { usePripoStore } from "@/stores";
 const store = usePripoStore();
 // import { setContext } from "@apollo/client/link/context";
 const isDropDownVisible = ref(false);
-const isDark = useDark();
+const isDark = useDark({ initialValue: "dark" });
 const toggleDark = useToggle(isDark);
 const navbar = ref();
 const compactNavbar = ref(false);
