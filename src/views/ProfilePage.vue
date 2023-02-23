@@ -2,7 +2,8 @@
 import LocationPin from "../components/Icons/LocationPin.vue";
 import HeartIcon from "../components/Icons/HeartIcon.vue";
 import LinkIcon from "../components/Icons/LinkIcon.vue";
-import { useElementBounding } from "@vueuse/core";
+import CheckIcon from "@/components/Icons/CheckIcon.vue";
+import { useElementBounding, useFileDialog } from "@vueuse/core";
 import { ref, watch, onMounted, computed } from "vue";
 import type { Blog, User } from "@/types";
 import router from "@/router";
@@ -18,12 +19,17 @@ import { useOnline } from "@vueuse/core";
 import PostItem from "../components/PostItem.vue";
 import FollowerItem from "../components/FollowerItem.vue";
 import PencilIcon from "../components/Icons/PencilIcon.vue";
-
+import axios from "axios";
+import { useEmitter } from "@/composables/EventEmitter";
+const { files, open, reset } = useFileDialog({
+  accept: "image/jpeg, image/gif, image/x-png",
+});
+const emitter = useEmitter();
 const online = useOnline();
 const nav = ref(null);
 const background = ref();
 const userParam = router.currentRoute.value.params.user;
-const { user: u } = useAuth0();
+const { user: u, getAccessTokenSilently } = useAuth0();
 const {
   result: user,
   onResult,
@@ -34,7 +40,31 @@ const {
   ? useQuery(GET_USER_BY_ID, { id: userParam })
   : useQuery(GET_USER_BY_USERNAME, { username: userParam });
 const userFound = ref(false);
+const { y } = useElementBounding(nav);
+const clickedOnFollowed = ref(false);
+const navIsCompact = ref(false);
+const tabs = ["About", "Posts", "Favourites", "Followers", "Followings"];
+
+//changing this will change cover image
+const coverImage = ref("");
+const currentSection = ref<string | null>("About");
+const getFilteredBlogs = computed(() => {
+  if (user.value.users[0].username === u.value?.nickname) {
+    return user.value.users[0].blogs;
+  }
+  return user.value.users[0].blogs.filter((blog: Blog) => blog.is_public);
+});
+
+//For user to change even when page not refreshed
+//For instance, checking a user's profile and then checking your own profile
+router.afterEach((to, from) => {
+  if (to.name === "users" && from.name === "users" && to.hash === "")
+    refetch({ id: to.params.user, username: to.params.user });
+});
 onResult((r) => {
+  if (user.value?.users[0].cover_picture)
+    coverImage.value = user.value?.users[0].cover_picture;
+  else coverImage.value = "";
   if (r.data.users.length == 0) {
     router.push("/404");
   } else {
@@ -43,33 +73,6 @@ onResult((r) => {
 });
 onError(() => {
   console.error("Some Problem Occured! Please Refetch");
-});
-const { y } = useElementBounding(nav);
-console.log(u.value);
-const navIsCompact = ref(false);
-const tabs = ["About", "Posts", "Favourites", "Followers", "Followings"];
-//changing this will change cover image
-const coverImage = ref("/cover/tiles-blur.png");
-//For user to change even when page not refreshed
-//For instance, checking a user's profile and then checking your own profile
-router.afterEach((to, from) => {
-  if (to.name === "users" && from.name === "users" && to.hash === "")
-    refetch({ id: to.params.user, username: to.params.user });
-});
-
-const getFilteredBlogs = computed(() => {
-  if (user.value.users[0].username === u.value?.nickname) {
-    return user.value.users[0].blogs;
-  }
-  return user.value.users[0].blogs.filter((blog: Blog) => blog.is_public);
-});
-watch(y, () => {
-  //Will use different Method later
-  if (y.value === 80) {
-    navIsCompact.value = true;
-  } else {
-    navIsCompact.value = false;
-  }
 });
 
 function getFormattedDate(date: number) {
@@ -82,10 +85,12 @@ function getFormattedDate(date: number) {
 function followUser(user: User) {
   const { mutate } = useMutation(FOLLOW_USER);
   mutate({ me: u.value.nickname, user: user.username });
+  clickedOnFollowed.value = true;
 }
 function unfollowUser(user: User) {
   const { mutate } = useMutation(UNFOLLOW_USER);
   mutate({ me: u.value.nickname, user: user.username });
+  clickedOnFollowed.value = false;
 }
 
 function isMutual(user: any) {
@@ -107,7 +112,7 @@ function isMutual(user: any) {
     });
   });
 }
-//To Update it in real time I have to look info GQL Query and return proper id of followed user from user table not follower table
+// To Update it in real time I have to look info GQL Query and return proper id of followed user from user table not follower table
 function isFollowed(user: any) {
   for (let follower of user.followers.nodes || []) {
     if (follower.user.username === u.value.nickname) {
@@ -116,7 +121,73 @@ function isFollowed(user: any) {
   }
   return false;
 }
-const currentSection = ref<string | null>("About");
+
+function isMe(user: User) {
+  return user.username === u.value.nickname;
+}
+
+async function uploadImage() {
+  const data = new FormData();
+  data.append("file", files.value?.item(0) as any);
+  data.append("upload_preset", "wdo2tdms");
+  const image = await fetch(
+    "https://api.cloudinary.com/v1_1/dmerejjkt/image/upload",
+    {
+      method: "POST",
+      body: data,
+    }
+  );
+  return image.url;
+}
+
+async function changeCoverPicture() {
+  const imageURL = await uploadImage();
+  getAccessTokenSilently().then((token) => {
+    const url = "https://pripo-api.vercel.app/cover/" + u.value.sub;
+    axios
+      .patch(
+        url,
+        {
+          user_metadata: {
+            cover_image: imageURL,
+          },
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+          },
+        }
+      )
+      .then(() => {
+        emitter.emit("alert", "Cover Page Updated Sucessfully");
+      })
+      .catch((err) => {
+        console.error(err);
+        emitter.emit("alert", "Cover Page failed to Update!!!");
+      });
+  });
+  reset();
+}
+//Watchers
+watch(y, () => {
+  //Will use different Method later
+  if (y.value === 80) {
+    navIsCompact.value = true;
+  } else {
+    navIsCompact.value = false;
+  }
+});
+
+watch(files, () => {
+  if (files.value?.length) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      coverImage.value = `"${reader.result}"`;
+    };
+    files.value && reader.readAsDataURL(files.value[0]);
+  }
+});
 onMounted(() => {
   const observer = new IntersectionObserver(
     ([entry]) => {
@@ -124,14 +195,14 @@ onMounted(() => {
         currentSection.value = entry.target.getAttribute("id");
       }
     },
-    { threshold: 0, rootMargin: "0% 0px -75% 0px" }
+    { threshold: 0, rootMargin: "0% 0px -80% 0px" }
   );
   watch(background, () => {
-    background.value
-      .querySelectorAll(".section .heading")
-      .forEach((section: any) => {
+    (background.value.querySelectorAll(".section .heading") || []).forEach(
+      (section: any) => {
         observer.observe(section);
-      });
+      }
+    );
   });
 });
 </script>
@@ -139,15 +210,22 @@ onMounted(() => {
   <main class="container" v-if="user && userFound && !loading">
     <section class="user-info" :style="`--cover-image:url(${coverImage})`">
       <div class="cover-image">
-        <i class="edit-icon">
-          <PencilIcon class="icon" />
+        <i
+          class="edit-icon"
+          v-if="isMe(user.users[0])"
+          :class="{ extended: files?.length }"
+        >
+          <PencilIcon class="icon" @click="open()" />
+          <div class="icon check" @click="changeCoverPicture">
+            <CheckIcon />
+          </div>
         </i>
       </div>
-      <img
-        :src="user.users[0].profile_picture"
+      <div
+        :style="`--user-avatar:url(${user.users[0].profile_picture})`"
         alt="user-avatar"
         class="avatar"
-      />
+      ></div>
     </section>
     <div class="background" ref="background">
       <section class="basic-user-info">
@@ -189,7 +267,7 @@ onMounted(() => {
               type="button"
               class="follow-button"
               @click="followUser(user.users[0])"
-              v-if="!isFollowed(user.users[0])"
+              v-if="!isFollowed(user.users[0]) && !clickedOnFollowed"
             >
               Follow
             </button>
@@ -323,7 +401,7 @@ onMounted(() => {
 <style scoped lang="scss">
 .container {
   transition: 100ms;
-  padding: 0 14vw;
+  padding: 0 min(14vw, 20rem);
   .mutual {
     background: linear-gradient(var(--mutual-color));
     background-clip: text;
@@ -365,7 +443,45 @@ onMounted(() => {
         position: relative;
         cursor: pointer;
         margin: 0.5rem;
+        &.extended {
+          border-radius: 0.7rem;
+          width: 4rem;
+          animation: slide 200ms linear;
+          .icon {
+            left: 1rem;
+            &.check {
+              display: flex;
+              place-items: center;
+              left: 3rem;
+              animation: fade 200ms linear;
+              @keyframes fade {
+                from {
+                  opacity: 0;
+                  left: 1rem;
+                }
+                to {
+                  opacity: 1;
+                  left: 3rem;
+                }
+              }
+            }
+          }
+          @keyframes slide {
+            from {
+              width: 2rem;
+              border-radius: 50%;
+            }
+            to {
+              width: 4rem;
+              border-radius: 0.7rem;
+            }
+          }
+        }
         .icon {
+          &.check {
+            display: none;
+            left: 0;
+          }
           position: absolute;
           width: 1.2rem;
           height: 1.2rem;
@@ -383,6 +499,12 @@ onMounted(() => {
       left: 2.5rem;
       border-radius: 2rem;
       position: absolute;
+      background-color: grey;
+      background-image: var(--user-avatar);
+      background-repeat: no-repeat;
+      background-size: cover;
+      image-rendering: optimizeSpeed;
+      image-orientation: from-image;
     }
   }
   .background {
@@ -519,7 +641,7 @@ onMounted(() => {
         cursor: pointer;
         position: relative;
         &.active {
-          text-decoration: underline dotted;
+          color: var(--color-text);
         }
       }
       ul {
