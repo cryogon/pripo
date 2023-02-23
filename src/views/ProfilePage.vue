@@ -62,7 +62,6 @@ router.afterEach((to, from) => {
     refetch({ id: to.params.user, username: to.params.user });
 });
 onResult((r) => {
-  console.log(r.data);
   if (user.value?.users[0].cover_picture)
     coverImage.value = user.value?.users[0].cover_picture;
   else coverImage.value = "";
@@ -156,7 +155,7 @@ async function changeCoverPicture() {
           url,
           {
             user_metadata: {
-              cover_image: imageURL,
+              cover_image: imageURL.url,
             },
           },
           {
