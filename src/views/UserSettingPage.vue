@@ -6,7 +6,7 @@ import { useAuth0 } from "@auth0/auth0-vue";
 import { useEmitter } from "@/composables/EventEmitter";
 import axios from "axios";
 const emitter = useEmitter();
-const { files, open } = useFileDialog();
+const { files, open, reset } = useFileDialog();
 function onDragOver(event: any) {
   event.stopPropagation();
   event.preventDefault();
@@ -50,9 +50,7 @@ async function uploadImage() {
 async function updateImage() {
   const imageURL = await uploadImage();
   getAccessTokenSilently().then((token) => {
-    console.log(token);
-    const url = "https://pripo-api.vercel.app/upload/" + user.value.sub;
-
+    const url = "https://pripo-api.vercel.app/avatar/" + user.value.sub;
     axios
       .post(
         url,
@@ -74,6 +72,7 @@ async function updateImage() {
         emitter.emit("alert", "Avatar failed to Update!!!");
       });
   });
+  reset();
 }
 function test() {
   emitter.emit("alert", "Avatar failed to Update!!!");
