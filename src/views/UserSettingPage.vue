@@ -74,9 +74,10 @@ async function updateImage() {
   });
   reset();
 }
-function test() {
-  emitter.emit("alert", "Avatar failed to Update!!!");
+function changeUsername() {
+  emitter.emit("alert", "Changing username is not allowed yet!");
 }
+// function changeFullName() {}
 </script>
 <template>
   <main class="settings-container">
@@ -115,7 +116,9 @@ function test() {
             <div class="user-option-child">
               <label for="username" class="option"> username </label>
               <span id="username">{{ user.nickname }}</span>
-              <button class="change-button" @click="test">Change</button>
+              <button class="change-button" @click="changeUsername">
+                Change
+              </button>
             </div>
             <div class="user-option-child social-links">
               <span class="option">social links</span>
@@ -153,7 +156,8 @@ function test() {
           </div>
         </article>
       </section>
-      <aside class="mini-nav">
+      <!-- Will enable this when all tabs are available. now only profile is available -->
+      <aside class="mini-nav" style="display: none">
         <a class="nav-item" href="#profile">Profile</a>
         <a class="nav-item" href="#notification">Notification</a>
         <a class="nav-item" href="#apperence">Appearence</a>
