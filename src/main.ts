@@ -46,7 +46,7 @@ app
       client_id: "gjxDd294BjPO9MUqimrzNj2iKaMzVVAr",
       redirect_uri: window.location.origin,
       cacheLocation: "localstorage",
-      audience: "https://hasura.io/",
+      audience: "https://pripo-api.vercel.app",
     })
   );
 app.mount("#app");

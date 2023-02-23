@@ -35,6 +35,9 @@ const {
   : useQuery(GET_USER_BY_USERNAME, { username: userParam });
 const userFound = ref(false);
 onResult((r) => {
+  if (user.value?.users[0].cover_picture)
+    coverImage.value = user.value?.users[0].cover_picture;
+  else coverImage.value = "";
   if (r.data.users.length == 0) {
     router.push("/404");
   } else {
@@ -45,7 +48,7 @@ onError(() => {
   console.error("Some Problem Occured! Please Refetch");
 });
 const { y } = useElementBounding(nav);
-console.log(u.value);
+
 const navIsCompact = ref(false);
 const tabs = ["About", "Posts", "Favourites", "Followers", "Followings"];
 //changing this will change cover image
@@ -143,11 +146,11 @@ onMounted(() => {
           <PencilIcon class="icon" />
         </i>
       </div>
-      <img
-        :src="user.users[0].profile_picture"
+      <div
+        :style="`--user-avatar:url(${user.users[0].profile_picture})`"
         alt="user-avatar"
         class="avatar"
-      />
+      ></div>
     </section>
     <div class="background" ref="background">
       <section class="basic-user-info">
@@ -323,7 +326,7 @@ onMounted(() => {
 <style scoped lang="scss">
 .container {
   transition: 100ms;
-  padding: 0 14vw;
+  padding: 0 min(14vw, 20rem);
   .mutual {
     background: linear-gradient(var(--mutual-color));
     background-clip: text;
@@ -383,6 +386,12 @@ onMounted(() => {
       left: 2.5rem;
       border-radius: 2rem;
       position: absolute;
+      background-color: grey;
+      background-image: var(--user-avatar);
+      background-repeat: no-repeat;
+      background-size: cover;
+      image-rendering: optimizeSpeed;
+      image-orientation: from-image;
     }
   }
   .background {

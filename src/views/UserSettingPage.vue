@@ -2,6 +2,10 @@
 import { useFileDialog } from "@vueuse/core";
 import { watch, ref } from "vue";
 import PencilIcon from "@/components/Icons/PencilIcon.vue";
+import { useAuth0 } from "@auth0/auth0-vue";
+import { useEmitter } from "@/composables/EventEmitter";
+import axios from "axios";
+const emitter = useEmitter();
 const { files, open } = useFileDialog();
 function onDragOver(event: any) {
   event.stopPropagation();
@@ -9,6 +13,7 @@ function onDragOver(event: any) {
   // Style the drag-and-drop as a "copy file" operation.
   event.dataTransfer.dropEffect = "copy";
 }
+const { getAccessTokenSilently, user } = useAuth0();
 function onDrop(event: any) {
   event.stopPropagation();
   event.preventDefault();
@@ -18,16 +23,61 @@ function onDrop(event: any) {
 function openImage() {
   open({ accept: "image/gif,image/jpeg,image/x-png" });
 }
-const img = ref<string | null | ArrayBuffer>();
+const img = ref<string | null>(`${user.value.picture}`);
 watch(files, () => {
   const reader = new FileReader();
   reader.onload = () => {
     img.value = `"${reader.result}"`;
-    console.log(img.value);
   };
   files.value && reader.readAsDataURL(files.value[0]);
   console.log(files);
 });
+
+async function uploadImage() {
+  const data = new FormData();
+  data.append("file", files.value?.item(0) as any);
+  data.append("upload_preset", "wdo2tdms");
+  const image = await fetch(
+    "https://api.cloudinary.com/v1_1/dmerejjkt/image/upload",
+    {
+      method: "POST",
+      body: data,
+    }
+  );
+  return image.url;
+}
+
+async function updateImage() {
+  const imageURL = await uploadImage();
+  getAccessTokenSilently().then((token) => {
+    console.log(token);
+    const url = "https://pripo-api.vercel.app/upload/" + user.value.sub;
+
+    axios
+      .post(
+        url,
+        {
+          avatar: imageURL,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+          },
+        }
+      )
+      .then(() => {
+        emitter.emit("alert", "Avatar Updated Sucessfully");
+      })
+      .catch((err) => {
+        console.error(err);
+        emitter.emit("alert", "Avatar failed to Update!!!");
+      });
+  });
+}
+function test() {
+  emitter.emit("alert", "Avatar failed to Update!!!");
+}
 </script>
 <template>
   <main class="settings-container">
@@ -48,6 +98,9 @@ watch(files, () => {
                 <PencilIcon class="icon" />
               </i>
             </div>
+            <button class="upload" v-if="files?.length" @click="updateImage">
+              Upload
+            </button>
           </div>
           <div class="user-options">
             <div class="user-option-child">
@@ -56,14 +109,14 @@ watch(files, () => {
                 type="text"
                 id="fullname"
                 class="input-option"
-                value="Jatin Thakur"
+                :value="user.name"
                 placeholder="Full Name"
               />
             </div>
             <div class="user-option-child">
               <label for="username" class="option"> username </label>
-              <span id="username">cryogon</span>
-              <button class="change-button">Change</button>
+              <span id="username">{{ user.nickname }}</span>
+              <button class="change-button" @click="test">Change</button>
             </div>
             <div class="user-option-child social-links">
               <span class="option">social links</span>
@@ -170,6 +223,16 @@ watch(files, () => {
               transform: translate(-50%, -50%);
             }
           }
+        }
+        .upload {
+          padding: 0.5rem 1rem;
+          background: linear-gradient(var(--tag-background));
+          outline-color: none;
+          border-radius: 0.5rem;
+          border: 0;
+          color: var(--tag-color);
+          margin-block-start: 1rem;
+          margin-inline-start: 25%;
         }
       }
       .profile-settings {

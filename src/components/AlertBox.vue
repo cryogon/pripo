@@ -2,10 +2,19 @@
 defineProps<{
   description: string;
 }>();
+function isFailed(error: string) {
+  return error.endsWith("!!!");
+}
 </script>
 <template>
-  <main class="alert-box" role="alert">
-    <span>{{ description }}</span>
+  <main
+    class="alert-box"
+    :class="{ failed: isFailed(description) }"
+    role="alert"
+  >
+    <span>{{
+      isFailed(description) ? description.replace("!!!", "") : description
+    }}</span>
   </main>
 </template>
 <style scoped lang="scss">
@@ -28,6 +37,9 @@ defineProps<{
     to {
       opacity: 1;
     }
+  }
+  &.failed {
+    background-color: rgb(227, 123, 123);
   }
 }
 </style>
