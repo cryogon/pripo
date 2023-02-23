@@ -21,6 +21,7 @@ import FollowerItem from "../components/FollowerItem.vue";
 import PencilIcon from "../components/Icons/PencilIcon.vue";
 import axios from "axios";
 import { useEmitter } from "@/composables/EventEmitter";
+import XIcon from "../components/Icons/XIcon.vue";
 const { files, open, reset } = useFileDialog({
   accept: "image/jpeg, image/gif, image/x-png",
 });
@@ -221,10 +222,9 @@ onMounted(() => {
           v-if="isMe(user.users[0])"
           :class="{ extended: files?.length }"
         >
-          <PencilIcon class="icon" @click="open()" />
-          <div class="icon check" @click="changeCoverPicture">
-            <CheckIcon />
-          </div>
+          <PencilIcon class="icon" @click="open()" v-show="!files?.length" />
+          <XIcon class="icon close" @click="reset" v-show="files?.length" />
+          <CheckIcon class="icon check" @click="changeCoverPicture" />
         </i>
       </div>
       <div
@@ -407,7 +407,7 @@ onMounted(() => {
 <style scoped lang="scss">
 .container {
   transition: 100ms;
-  padding: 0 min(14vw, 20rem);
+  padding: 0 min(15vw, 20rem);
   .mutual {
     background: linear-gradient(var(--mutual-color));
     background-clip: text;
@@ -455,11 +455,15 @@ onMounted(() => {
           animation: slide 200ms linear;
           .icon {
             left: 1rem;
+            &:hover {
+              background-color: var(--link-hover-background);
+            }
             &.check {
-              display: flex;
-              place-items: center;
+              display: block;
+              // place-items: center;
               left: 3rem;
               animation: fade 200ms linear;
+
               @keyframes fade {
                 from {
                   opacity: 0;
@@ -484,16 +488,20 @@ onMounted(() => {
           }
         }
         .icon {
-          &.check {
-            display: none;
-            left: 0;
-          }
           position: absolute;
           width: 1.2rem;
           height: 1.2rem;
           top: 50%;
           left: 50%;
           transform: translate(-50%, -50%);
+          &.check {
+            display: none;
+            left: 0;
+            padding: 0.1rem;
+          }
+          &.close {
+            padding: 0.2rem;
+          }
         }
       }
     }

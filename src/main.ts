@@ -7,29 +7,11 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import { DefaultApolloClient } from "@vue/apollo-composable";
 import { apolloClient } from "./vue-apollo";
 import { createAuth0 } from "@auth0/auth0-vue";
-import {
-  faBold,
-  faItalic,
-  faStrikethrough,
-  faHeading,
-  faParagraph,
-  faEllipsisVertical,
-  faChevronDown,
-} from "@fortawesome/free-solid-svg-icons";
+import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 
-import { faPaperPlane } from "@fortawesome/free-regular-svg-icons";
 import "./assets/main.css";
 
-library.add(
-  faBold,
-  faItalic,
-  faStrikethrough,
-  faHeading,
-  faParagraph,
-  faPaperPlane,
-  faEllipsisVertical,
-  faChevronDown
-);
+library.add(faChevronDown);
 const app = createApp({
   setup() {
     provide(DefaultApolloClient, apolloClient);
