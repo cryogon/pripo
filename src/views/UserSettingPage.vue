@@ -24,13 +24,17 @@ function openImage() {
   open({ accept: "image/gif,image/jpeg,image/x-png" });
 }
 const img = ref<string | null>(`${user.value.picture}`);
+
 watch(files, () => {
-  const reader = new FileReader();
-  reader.onload = () => {
-    img.value = `"${reader.result}"`;
-  };
-  files.value && reader.readAsDataURL(files.value[0]);
-  console.log(files);
+  if (files.value?.length) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      img.value = `"${reader.result}"`;
+    };
+    files.value && reader.readAsDataURL(files.value[0]);
+  } else {
+    img.value = user?.value.picture || "";
+  }
 });
 
 async function uploadImage() {
@@ -98,8 +102,19 @@ function changeUsername() {
                 <PencilIcon class="icon" />
               </i>
             </div>
-            <button class="upload" v-if="files?.length" @click="updateImage">
+            <button
+              class="upload avatar-options"
+              v-if="files?.length"
+              @click="updateImage"
+            >
               Upload
+            </button>
+            <button
+              class="cancel avatar-options"
+              v-if="files?.length"
+              @click="reset"
+            >
+              Cancel
             </button>
           </div>
           <div class="user-options">
@@ -225,15 +240,20 @@ function changeUsername() {
             }
           }
         }
-        .upload {
+        .avatar-options {
           padding: 0.5rem 1rem;
-          background: linear-gradient(var(--tag-background));
           outline-color: none;
           border-radius: 0.5rem;
           border: 0;
           color: var(--tag-color);
           margin-block-start: 1rem;
-          margin-inline-start: 25%;
+          &.upload {
+            background: linear-gradient(var(--tag-background));
+          }
+          &.cancel {
+            background: #dedede;
+            margin-inline-start: 0.3rem;
+          }
         }
       }
       .profile-settings {
