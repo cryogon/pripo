@@ -167,7 +167,6 @@ emitter.on("replied", () => {
             title="reply"
             @click="replyToggle"
           >
-            <!-- <fa-icon icon="reply" /> -->
             <ReplyIcon class="reply-icon" />
             <span class="reply-count"></span>
           </span>

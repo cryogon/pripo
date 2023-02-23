@@ -76,23 +76,7 @@ function pushPostToDB() {
     ></textarea>
 
     <!--Will work on this soon not working now-->
-    <div class="content-options" style="display: none">
-      <span class="boldIcon icon" @click="content.value += '[b][/b]'">
-        <fa-icon icon="bold"
-      /></span>
-      <span class="italicIcon icon" @click="content.value += '[i][i]>'">
-        <fa-icon icon="italic" />
-      </span>
-      <span class="headingIcon icon" @click="content.value += '[h][/h]'">
-        <fa-icon icon="heading" />
-      </span>
-      <span class="paragraphIcon icon" @click="content.value += '[p][/p]'">
-        <fa-icon icon="paragraph" />
-      </span>
-      <span class="post-button" @click="pushPostToDB">
-        <fa-icon :icon="['regular', 'paper-plane']" class="post-icon" />
-      </span>
-    </div>
+    <div class="content-options" style="display: none"></div>
     <div class="post-tags">
       <input
         type="text"
@@ -109,9 +93,7 @@ function pushPostToDB() {
         :value="isPostPublic"
         @change="isPostPublic = !isPostPublic"
       />
-      <span class="post-button" @click="pushPostToDB">
-        <fa-icon :icon="['regular', 'paper-plane']" class="post-icon" />Post
-      </span>
+      <span class="post-button" @click="pushPostToDB"> Post </span>
     </div>
   </div>
 </template>
