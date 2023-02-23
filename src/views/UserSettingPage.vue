@@ -259,10 +259,6 @@ function changeUsername() {
       .profile-settings {
         display: flex;
         gap: 5rem;
-        :target {
-          color: red;
-          background-color: red;
-        }
         .user-options {
           .user-option-child {
             margin-block-end: 1rem;
