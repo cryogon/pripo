@@ -127,46 +127,52 @@ function isMe(user: User) {
 }
 
 async function uploadImage() {
+  if (!files.value) {
+    return null;
+  }
   const data = new FormData();
-  data.append("file", files.value?.item(0) as any);
+  data.append("file", files.value[0]);
   data.append("upload_preset", "wdo2tdms");
-  const image = await fetch(
-    "https://api.cloudinary.com/v1_1/dmerejjkt/image/upload",
-    {
-      method: "POST",
-      body: data,
-    }
-  );
-  return image.url;
+
+  const image = await axios({
+    url: "https://api.cloudinary.com/v1_1/dmerejjkt/image/upload",
+    method: "POST",
+    data,
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return image.data;
 }
 
 async function changeCoverPicture() {
   const imageURL = await uploadImage();
-  getAccessTokenSilently().then((token) => {
-    const url = "https://pripo-api.vercel.app/cover/" + u.value.sub;
-    axios
-      .patch(
-        url,
-        {
-          user_metadata: {
-            cover_image: imageURL,
+  imageURL &&
+    getAccessTokenSilently().then((token) => {
+      const url = "https://pripo-api.vercel.app/cover/" + u.value.sub;
+      axios
+        .patch(
+          url,
+          {
+            user_metadata: {
+              cover_image: imageURL.url,
+            },
           },
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/json",
-          },
-        }
-      )
-      .then(() => {
-        emitter.emit("alert", "Cover Page Updated Sucessfully");
-      })
-      .catch((err) => {
-        console.error(err);
-        emitter.emit("alert", "Cover Page failed to Update!!!");
-      });
-  });
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              Accept: "application/json",
+            },
+          }
+        )
+        .then(() => {
+          emitter.emit("alert", "Cover Page Updated Sucessfully");
+        })
+        .catch((err) => {
+          console.error(err);
+          emitter.emit("alert", "Cover Page failed to Update!!!");
+        });
+    });
   reset();
 }
 //Watchers
