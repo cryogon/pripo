@@ -176,6 +176,7 @@ async function changeCoverPicture() {
     });
   reset();
 }
+
 //Watchers
 watch(y, () => {
   //Will use different Method later
@@ -193,6 +194,8 @@ watch(files, () => {
       coverImage.value = `"${reader.result}"`;
     };
     files.value && reader.readAsDataURL(files.value[0]);
+  } else {
+    coverImage.value = user.value?.users[0].cover_picture;
   }
 });
 onMounted(() => {
@@ -205,11 +208,12 @@ onMounted(() => {
     { threshold: 0, rootMargin: "0% 0px -80% 0px" }
   );
   watch(background, () => {
-    (background.value.querySelectorAll(".section .heading") || []).forEach(
-      (section: any) => {
-        observer.observe(section);
-      }
-    );
+    background.value &&
+      (background.value.querySelectorAll(".section .heading") || []).forEach(
+        (section: any) => {
+          observer.observe(section);
+        }
+      );
   });
 });
 </script>
