@@ -139,8 +139,7 @@ function test() {
                 type="text"
                 id="location"
                 class="input-option"
-                value="India"
-                placeholder="Current Location"
+                placeholder="current location"
               />
             </div>
             <div class="user-option-child">
@@ -149,8 +148,7 @@ function test() {
                 type="text"
                 id="interests"
                 class="input-option"
-                value="Gaming, Sleeping"
-                placeholder="Interests"
+                placeholder="interests"
               />
             </div>
           </div>

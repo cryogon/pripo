@@ -48,7 +48,7 @@ onError(() => {
   console.error("Some Problem Occured! Please Refetch");
 });
 const { y } = useElementBounding(nav);
-
+const clickedOnFollowed = ref(false);
 const navIsCompact = ref(false);
 const tabs = ["About", "Posts", "Favourites", "Followers", "Followings"];
 //changing this will change cover image
@@ -85,10 +85,12 @@ function getFormattedDate(date: number) {
 function followUser(user: User) {
   const { mutate } = useMutation(FOLLOW_USER);
   mutate({ me: u.value.nickname, user: user.username });
+  clickedOnFollowed.value = true;
 }
 function unfollowUser(user: User) {
   const { mutate } = useMutation(UNFOLLOW_USER);
   mutate({ me: u.value.nickname, user: user.username });
+  clickedOnFollowed.value = false;
 }
 
 function isMutual(user: any) {
@@ -110,7 +112,7 @@ function isMutual(user: any) {
     });
   });
 }
-//To Update it in real time I have to look info GQL Query and return proper id of followed user from user table not follower table
+// To Update it in real time I have to look info GQL Query and return proper id of followed user from user table not follower table
 function isFollowed(user: any) {
   for (let follower of user.followers.nodes || []) {
     if (follower.user.username === u.value.nickname) {
@@ -119,6 +121,7 @@ function isFollowed(user: any) {
   }
   return false;
 }
+
 const currentSection = ref<string | null>("About");
 onMounted(() => {
   const observer = new IntersectionObserver(
@@ -127,22 +130,26 @@ onMounted(() => {
         currentSection.value = entry.target.getAttribute("id");
       }
     },
-    { threshold: 0, rootMargin: "0% 0px -75% 0px" }
+    { threshold: 0, rootMargin: "0% 0px -80% 0px" }
   );
   watch(background, () => {
-    background.value
-      .querySelectorAll(".section .heading")
-      .forEach((section: any) => {
+    (background.value.querySelectorAll(".section .heading") || []).forEach(
+      (section: any) => {
         observer.observe(section);
-      });
+      }
+    );
   });
 });
+
+function isMe(user: User) {
+  return user.username === u.value.nickname;
+}
 </script>
 <template>
   <main class="container" v-if="user && userFound && !loading">
     <section class="user-info" :style="`--cover-image:url(${coverImage})`">
       <div class="cover-image">
-        <i class="edit-icon">
+        <i class="edit-icon" v-if="isMe(user.users[0])">
           <PencilIcon class="icon" />
         </i>
       </div>
@@ -192,7 +199,7 @@ onMounted(() => {
               type="button"
               class="follow-button"
               @click="followUser(user.users[0])"
-              v-if="!isFollowed(user.users[0])"
+              v-if="!isFollowed(user.users[0]) && !clickedOnFollowed"
             >
               Follow
             </button>
@@ -528,7 +535,7 @@ onMounted(() => {
         cursor: pointer;
         position: relative;
         &.active {
-          text-decoration: underline dotted;
+          color: var(--color-text);
         }
       }
       ul {

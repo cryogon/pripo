@@ -24,6 +24,14 @@ export interface User {
   username: string;
   profile_picture: string;
   email: string;
+  followers: {
+    aggregate: {
+      count: number;
+    };
+    nodes: {
+      user: User;
+    }[];
+  };
   liked_blogs: Blog[];
   liked_comments: Comment[];
   created_at: Date | string;
