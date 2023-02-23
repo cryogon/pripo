@@ -24,13 +24,17 @@ function openImage() {
   open({ accept: "image/gif,image/jpeg,image/x-png" });
 }
 const img = ref<string | null>(`${user.value.picture}`);
+
 watch(files, () => {
-  const reader = new FileReader();
-  reader.onload = () => {
-    img.value = `"${reader.result}"`;
-  };
-  files.value && reader.readAsDataURL(files.value[0]);
-  console.log(files);
+  if (files.value?.length) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      img.value = `"${reader.result}"`;
+    };
+    files.value && reader.readAsDataURL(files.value[0]);
+  } else {
+    img.value = user?.value.picture || "";
+  }
 });
 
 async function uploadImage() {
@@ -74,9 +78,10 @@ async function updateImage() {
   });
   reset();
 }
-function test() {
-  emitter.emit("alert", "Avatar failed to Update!!!");
+function changeUsername() {
+  emitter.emit("alert", "Changing username is not allowed yet!");
 }
+// function changeFullName() {}
 </script>
 <template>
   <main class="settings-container">
@@ -97,8 +102,19 @@ function test() {
                 <PencilIcon class="icon" />
               </i>
             </div>
-            <button class="upload" v-if="files?.length" @click="updateImage">
+            <button
+              class="upload avatar-options"
+              v-if="files?.length"
+              @click="updateImage"
+            >
               Upload
+            </button>
+            <button
+              class="cancel avatar-options"
+              v-if="files?.length"
+              @click="reset"
+            >
+              Cancel
             </button>
           </div>
           <div class="user-options">
@@ -115,7 +131,9 @@ function test() {
             <div class="user-option-child">
               <label for="username" class="option"> username </label>
               <span id="username">{{ user.nickname }}</span>
-              <button class="change-button" @click="test">Change</button>
+              <button class="change-button" @click="changeUsername">
+                Change
+              </button>
             </div>
             <div class="user-option-child social-links">
               <span class="option">social links</span>
@@ -153,7 +171,8 @@ function test() {
           </div>
         </article>
       </section>
-      <aside class="mini-nav">
+      <!-- Will enable this when all tabs are available. now only profile is available -->
+      <aside class="mini-nav" style="display: none">
         <a class="nav-item" href="#profile">Profile</a>
         <a class="nav-item" href="#notification">Notification</a>
         <a class="nav-item" href="#apperence">Appearence</a>
@@ -221,24 +240,25 @@ function test() {
             }
           }
         }
-        .upload {
+        .avatar-options {
           padding: 0.5rem 1rem;
-          background: linear-gradient(var(--tag-background));
           outline-color: none;
           border-radius: 0.5rem;
           border: 0;
           color: var(--tag-color);
           margin-block-start: 1rem;
-          margin-inline-start: 25%;
+          &.upload {
+            background: linear-gradient(var(--tag-background));
+          }
+          &.cancel {
+            background: #dedede;
+            margin-inline-start: 0.3rem;
+          }
         }
       }
       .profile-settings {
         display: flex;
         gap: 5rem;
-        :target {
-          color: red;
-          background-color: red;
-        }
         .user-options {
           .user-option-child {
             margin-block-end: 1rem;

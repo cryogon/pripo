@@ -49,6 +49,7 @@ const tabs = ["About", "Posts", "Favourites", "Followers", "Followings"];
 //changing this will change cover image
 const coverImage = ref("");
 const currentSection = ref<string | null>("About");
+const isCoverImageLoading = ref<boolean | null>(null);
 const getFilteredBlogs = computed(() => {
   if (user.value.users[0].username === u.value?.nickname) {
     return user.value.users[0].blogs;
@@ -147,8 +148,10 @@ async function uploadImage() {
 }
 
 async function changeCoverPicture() {
-  const imageURL = await uploadImage();
-  imageURL &&
+  isCoverImageLoading.value = true;
+  const image = await uploadImage();
+  isCoverImageLoading.value = false;
+  image &&
     getAccessTokenSilently().then((token) => {
       const url = "https://pripo-api.vercel.app/cover/" + u.value.sub;
       axios
@@ -156,7 +159,7 @@ async function changeCoverPicture() {
           url,
           {
             user_metadata: {
-              cover_image: imageURL.url,
+              cover_image: image.url,
             },
           },
           {
@@ -175,6 +178,11 @@ async function changeCoverPicture() {
         });
     });
   reset();
+}
+
+function clearImage() {
+  reset();
+  isCoverImageLoading.value = false;
 }
 
 //Watchers
@@ -224,11 +232,23 @@ onMounted(() => {
         <i
           class="edit-icon"
           v-if="isMe(user.users[0])"
-          :class="{ extended: files?.length }"
+          :class="{
+            extended: files?.length,
+            empty: !files?.length && isCoverImageLoading === false,
+          }"
         >
           <PencilIcon class="icon" @click="open()" v-show="!files?.length" />
-          <XIcon class="icon close" @click="reset" v-show="files?.length" />
-          <CheckIcon class="icon check" @click="changeCoverPicture" />
+          <XIcon
+            class="icon close"
+            @click="clearImage"
+            v-show="files?.length"
+          />
+          <CheckIcon
+            class="icon check"
+            @click="changeCoverPicture"
+            v-show="!isCoverImageLoading"
+          />
+          <div class="icon loading" v-show="isCoverImageLoading"></div>
         </i>
       </div>
       <div
@@ -453,10 +473,34 @@ onMounted(() => {
         position: relative;
         cursor: pointer;
         margin: 0.5rem;
+        &.empty {
+          animation: slide-back 350ms linear;
+          @keyframes slide-back {
+            from {
+              width: 4rem;
+              border-radius: 0.7rem;
+            }
+            to {
+              width: 2rem;
+              border-radius: 50%;
+            }
+          }
+          .icon {
+            animation: slide-center 350ms linear;
+            @keyframes slide-center {
+              from {
+                left: 1rem;
+              }
+              to {
+                left: 50%;
+              }
+            }
+          }
+        }
         &.extended {
           border-radius: 0.7rem;
           width: 4rem;
-          animation: slide 200ms linear;
+          animation: slide 350ms linear;
           .icon {
             left: 1rem;
             &:hover {
@@ -466,7 +510,7 @@ onMounted(() => {
               display: block;
               // place-items: center;
               left: 3rem;
-              animation: fade 200ms linear;
+              animation: fade 350ms linear;
 
               @keyframes fade {
                 from {
@@ -505,6 +549,27 @@ onMounted(() => {
           }
           &.close {
             padding: 0.2rem;
+          }
+          &.loading {
+            left: 3rem;
+            width: 1rem;
+            height: 1rem;
+            background-color: transparent;
+            outline: 2px solid white;
+            border-radius: 50%;
+            outline-offset: 1px;
+            outline-style: dotted;
+            animation: spin 2s infinite ease-out;
+            @keyframes spin {
+              from {
+                translate: -50% -50%;
+                transform: rotate(0turn);
+              }
+              to {
+                translate: -50% -50%;
+                transform: rotate(1turn);
+              }
+            }
           }
         }
       }
