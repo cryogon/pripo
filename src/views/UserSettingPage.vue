@@ -7,13 +7,35 @@ import { useEmitter } from "@/composables/EventEmitter";
 import axios from "axios";
 const emitter = useEmitter();
 const { files, open, reset } = useFileDialog();
+const isImageUploading = ref<boolean | null>(null);
+const { getAccessTokenSilently, user } = useAuth0();
+
+watch(files, () => {
+  if (files.value?.length) {
+    if (!files.value[0].type.includes("image")) {
+      emitter.emit("alert", "Only Image files are allowed");
+      reset();
+      return;
+    }
+    if (files.value[0].size / 1024 / 1024 >= 5) {
+      emitter.emit("alert", "Image Size should be less than 2MB");
+      reset();
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      img.value = `"${reader.result}"`;
+    };
+    files.value && reader.readAsDataURL(files.value[0]);
+  }
+});
+
 function onDragOver(event: any) {
   event.stopPropagation();
   event.preventDefault();
   // Style the drag-and-drop as a "copy file" operation.
   event.dataTransfer.dropEffect = "copy";
 }
-const { getAccessTokenSilently, user } = useAuth0();
 function onDrop(event: any) {
   event.stopPropagation();
   event.preventDefault();
@@ -25,58 +47,61 @@ function openImage() {
 }
 const img = ref<string | null>(`${user.value.picture}`);
 
-watch(files, () => {
-  if (files.value?.length) {
-    const reader = new FileReader();
-    reader.onload = () => {
-      img.value = `"${reader.result}"`;
-    };
-    files.value && reader.readAsDataURL(files.value[0]);
-  } else {
-    img.value = user?.value.picture || "";
-  }
-});
-
 async function uploadImage() {
   const data = new FormData();
   data.append("file", files.value?.item(0) as any);
   data.append("upload_preset", "wdo2tdms");
-  const image = await fetch(
-    "https://api.cloudinary.com/v1_1/dmerejjkt/image/upload",
-    {
-      method: "POST",
-      body: data,
-    }
-  );
-  return image.url;
+  const image = await axios({
+    url: "https://api.cloudinary.com/v1_1/dmerejjkt/image/upload",
+    method: "POST",
+    data,
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return image.data;
 }
 
-async function updateImage() {
-  const imageURL = await uploadImage();
-  getAccessTokenSilently().then((token) => {
-    const url = "https://pripo-api.vercel.app/avatar/" + user.value.sub;
-    axios
-      .post(
-        url,
-        {
-          avatar: imageURL,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/json",
-          },
-        }
-      )
-      .then(() => {
-        emitter.emit("alert", "Avatar Updated Sucessfully");
-      })
-      .catch((err) => {
-        console.error(err);
-        emitter.emit("alert", "Avatar failed to Update!!!");
+function updateImage() {
+  isImageUploading.value = true;
+  uploadImage()
+    .then((image) => {
+      getAccessTokenSilently().then((token) => {
+        const url = "https://pripo-api.vercel.app/avatar/" + user.value.sub;
+        axios
+          .post(
+            url,
+            {
+              avatar: image.url,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: "application/json",
+              },
+            }
+          )
+          .then(() => {
+            isImageUploading.value = false;
+            emitter.emit("alert", "Avatar Updated Sucessfully");
+          })
+          .catch((err) => {
+            console.error(err);
+            emitter.emit("alert", "Avatar failed to Update!!!");
+            img.value = user.value?.picture || "";
+          });
       });
-  });
+    })
+    .catch(() => {
+      emitter.emit("alert", "Avatar failed to Update!!!");
+      return;
+    });
   reset();
+  isImageUploading.value = null;
+}
+function clearImage() {
+  reset();
+  img.value = user.value?.picture || "";
 }
 function changeUsername() {
   emitter.emit("alert", "Changing username is not allowed yet!");
@@ -104,6 +129,10 @@ function changeUsername() {
             </div>
             <button
               class="upload avatar-options"
+              :class="{
+                uploading: isImageUploading,
+                done: isImageUploading === false,
+              }"
               v-if="files?.length"
               @click="updateImage"
             >
@@ -112,7 +141,7 @@ function changeUsername() {
             <button
               class="cancel avatar-options"
               v-if="files?.length"
-              @click="reset"
+              @click="clearImage"
             >
               Cancel
             </button>
@@ -209,6 +238,7 @@ function changeUsername() {
         }
       }
       .user-avatar {
+        width: 30%;
         .drop-area {
           width: 9rem;
           height: 9rem;
@@ -249,6 +279,32 @@ function changeUsername() {
           margin-block-start: 1rem;
           &.upload {
             background: linear-gradient(var(--tag-background));
+            width: 4.5rem;
+            will-change: color, width, border-radius;
+            &.done {
+              background: linear-gradient(rgb(19, 174, 19), lightgreen);
+            }
+            &.uploading {
+              color: transparent;
+              transition-property: padding, margin, width, border-radius;
+              transition-duration: 300ms;
+              transition-timing-function: linear;
+              height: 2rem;
+              width: 2rem;
+              border-radius: 50%;
+              margin-inline: 1rem;
+              padding: 0 0;
+              animation: loading 500ms infinite;
+              animation-delay: 300ms;
+              @keyframes loading {
+                from {
+                  transform: rotate(0);
+                }
+                to {
+                  transform: rotate(1turn);
+                }
+              }
+            }
           }
           &.cancel {
             background: #dedede;

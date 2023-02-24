@@ -197,6 +197,17 @@ watch(y, () => {
 
 watch(files, () => {
   if (files.value?.length) {
+    if (!files.value[0].type.includes("image")) {
+      emitter.emit("alert", "Only Image files are allowed");
+      reset();
+      return;
+    }
+    if (files.value[0].size / 1024 / 1024 >= 5) {
+      emitter.emit("alert", "Image Size should be less than 5MB");
+      reset();
+      return;
+    }
+
     const reader = new FileReader();
     reader.onload = () => {
       coverImage.value = `"${reader.result}"`;
