@@ -7,23 +7,8 @@ import { useEmitter } from "@/composables/EventEmitter";
 import axios from "axios";
 const emitter = useEmitter();
 const { files, open, reset } = useFileDialog();
-function onDragOver(event: any) {
-  event.stopPropagation();
-  event.preventDefault();
-  // Style the drag-and-drop as a "copy file" operation.
-  event.dataTransfer.dropEffect = "copy";
-}
+const isImageUploading = ref<boolean | null>(null);
 const { getAccessTokenSilently, user } = useAuth0();
-function onDrop(event: any) {
-  event.stopPropagation();
-  event.preventDefault();
-  const fileList = event.dataTransfer.files;
-  console.log(fileList);
-}
-function openImage() {
-  open({ accept: "image/gif,image/jpeg,image/x-png" });
-}
-const img = ref<string | null>(`${user.value.picture}`);
 
 watch(files, () => {
   if (files.value?.length) {
@@ -34,6 +19,23 @@ watch(files, () => {
     files.value && reader.readAsDataURL(files.value[0]);
   }
 });
+
+function onDragOver(event: any) {
+  event.stopPropagation();
+  event.preventDefault();
+  // Style the drag-and-drop as a "copy file" operation.
+  event.dataTransfer.dropEffect = "copy";
+}
+function onDrop(event: any) {
+  event.stopPropagation();
+  event.preventDefault();
+  const fileList = event.dataTransfer.files;
+  console.log(fileList);
+}
+function openImage() {
+  open({ accept: "image/gif,image/jpeg,image/x-png" });
+}
+const img = ref<string | null>(`${user.value.picture}`);
 
 async function uploadImage() {
   const data = new FormData();
@@ -51,6 +53,7 @@ async function uploadImage() {
 }
 
 function updateImage() {
+  isImageUploading.value = true;
   uploadImage()
     .then((image) => {
       getAccessTokenSilently().then((token) => {
@@ -69,6 +72,7 @@ function updateImage() {
             }
           )
           .then(() => {
+            isImageUploading.value = false;
             emitter.emit("alert", "Avatar Updated Sucessfully");
           })
           .catch((err) => {
@@ -83,6 +87,11 @@ function updateImage() {
       return;
     });
   reset();
+  isImageUploading.value = null;
+}
+function clearImage() {
+  reset();
+  img.value = user.value?.picture || "";
 }
 function changeUsername() {
   emitter.emit("alert", "Changing username is not allowed yet!");
@@ -110,6 +119,10 @@ function changeUsername() {
             </div>
             <button
               class="upload avatar-options"
+              :class="{
+                uploading: isImageUploading,
+                done: isImageUploading === false,
+              }"
               v-if="files?.length"
               @click="updateImage"
             >
@@ -118,7 +131,7 @@ function changeUsername() {
             <button
               class="cancel avatar-options"
               v-if="files?.length"
-              @click="reset"
+              @click="clearImage"
             >
               Cancel
             </button>
@@ -215,6 +228,7 @@ function changeUsername() {
         }
       }
       .user-avatar {
+        width: 30%;
         .drop-area {
           width: 9rem;
           height: 9rem;
@@ -255,6 +269,32 @@ function changeUsername() {
           margin-block-start: 1rem;
           &.upload {
             background: linear-gradient(var(--tag-background));
+            width: 4.5rem;
+            will-change: color, width, border-radius;
+            &.done {
+              background: linear-gradient(rgb(19, 174, 19), lightgreen);
+            }
+            &.uploading {
+              color: transparent;
+              transition-property: padding, margin, width, border-radius;
+              transition-duration: 300ms;
+              transition-timing-function: linear;
+              height: 2rem;
+              width: 2rem;
+              border-radius: 50%;
+              margin-inline: 1rem;
+              padding: 0 0;
+              animation: loading 500ms infinite;
+              animation-delay: 300ms;
+              @keyframes loading {
+                from {
+                  transform: rotate(0);
+                }
+                to {
+                  transform: rotate(1turn);
+                }
+              }
+            }
           }
           &.cancel {
             background: #dedede;
