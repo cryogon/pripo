@@ -32,8 +32,6 @@ watch(files, () => {
       img.value = `"${reader.result}"`;
     };
     files.value && reader.readAsDataURL(files.value[0]);
-  } else {
-    img.value = user?.value.picture || "";
   }
 });
 
@@ -41,41 +39,49 @@ async function uploadImage() {
   const data = new FormData();
   data.append("file", files.value?.item(0) as any);
   data.append("upload_preset", "wdo2tdms");
-  const image = await fetch(
-    "https://api.cloudinary.com/v1_1/dmerejjkt/image/upload",
-    {
-      method: "POST",
-      body: data,
-    }
-  );
-  return image.url;
+  const image = await axios({
+    url: "https://api.cloudinary.com/v1_1/dmerejjkt/image/upload",
+    method: "POST",
+    data,
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return image.data;
 }
 
-async function updateImage() {
-  const imageURL = await uploadImage();
-  getAccessTokenSilently().then((token) => {
-    const url = "https://pripo-api.vercel.app/avatar/" + user.value.sub;
-    axios
-      .post(
-        url,
-        {
-          avatar: imageURL,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/json",
-          },
-        }
-      )
-      .then(() => {
-        emitter.emit("alert", "Avatar Updated Sucessfully");
-      })
-      .catch((err) => {
-        console.error(err);
-        emitter.emit("alert", "Avatar failed to Update!!!");
+function updateImage() {
+  uploadImage()
+    .then((image) => {
+      getAccessTokenSilently().then((token) => {
+        const url = "https://pripo-api.vercel.app/avatar/" + user.value.sub;
+        axios
+          .post(
+            url,
+            {
+              avatar: image.url,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: "application/json",
+              },
+            }
+          )
+          .then(() => {
+            emitter.emit("alert", "Avatar Updated Sucessfully");
+          })
+          .catch((err) => {
+            console.error(err);
+            emitter.emit("alert", "Avatar failed to Update!!!");
+            img.value = user.value?.picture || "";
+          });
       });
-  });
+    })
+    .catch(() => {
+      emitter.emit("alert", "Avatar failed to Update!!!");
+      return;
+    });
   reset();
 }
 function changeUsername() {
