@@ -12,6 +12,16 @@ const { getAccessTokenSilently, user } = useAuth0();
 
 watch(files, () => {
   if (files.value?.length) {
+    if (files.value[0].type.includes("video")) {
+      emitter.emit("alert", "Video is not supported");
+      reset();
+      return;
+    }
+    if (files.value[0].size / 1024 / 1024 >= 5) {
+      emitter.emit("alert", "Image Size should be less than 2MB");
+      reset();
+      return;
+    }
     const reader = new FileReader();
     reader.onload = () => {
       img.value = `"${reader.result}"`;
