@@ -4,14 +4,14 @@ import { useQuery } from "@vue/apollo-composable";
 import SearchPostItem from "../components/SearchPostItem.vue";
 import SearchUserItem from "../components/SearchUserItem.vue";
 import { GET_FILTERED_POSTS, FILTER_BY_TAGS } from "@/graphql";
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import LoadingScreen from "../components/LoadingScreen.vue";
 import { useOnline } from "@vueuse/core";
 const results = ref();
 const filter = ref("posts");
 const params = router.currentRoute.value.query;
 const online = useOnline();
-const { onResult, loading } =
+const { onResult, loading, refetch } =
   params.f === "tags"
     ? useQuery(FILTER_BY_TAGS, {
         tags: params.q,
@@ -20,6 +20,15 @@ const { onResult, loading } =
         query: `%${params.q}%`,
       });
 
+//Refeching on route change
+watch(router.currentRoute, (currValue, oldValue) => {
+  if (
+    currValue.query?.q !== oldValue.query?.q &&
+    currValue.query?.f !== oldValue.query?.f
+  ) {
+    refetch({ query: `%${currValue.query.q}%`, tags: params.q });
+  }
+});
 function changeFilter(_filter: string) {
   filter.value = _filter;
   router.replace({

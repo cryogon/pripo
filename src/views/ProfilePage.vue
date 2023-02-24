@@ -454,8 +454,9 @@ onMounted(() => {
   .user-info {
     position: relative;
     .cover-image {
-      height: 18rem;
       width: 100%;
+      height: 18rem;
+      // aspect-ratio: ;
       background-color: grey;
       display: flex;
       align-items: flex-end;
