@@ -12,8 +12,8 @@ const { getAccessTokenSilently, user } = useAuth0();
 
 watch(files, () => {
   if (files.value?.length) {
-    if (files.value[0].type.includes("video")) {
-      emitter.emit("alert", "Video is not supported");
+    if (!files.value[0].type.includes("image")) {
+      emitter.emit("alert", "Only Image files are allowed");
       reset();
       return;
     }
