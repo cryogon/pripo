@@ -137,7 +137,7 @@ async function uploadImage() {
   data.append("upload_preset", "wdo2tdms");
 
   const image = await axios({
-    url: "https://api.cloudinary.com/v1_1/dmerejjkt/image/upload",
+    url: import.meta.env.VITE_IMG_UPLOAD_PATH,
     method: "POST",
     data,
     headers: {
@@ -361,7 +361,7 @@ onMounted(() => {
           <router-link
             v-for="(tab, i) in tabs"
             :key="i"
-            :to="`#${tab}`"
+            :to="`#${tab.toLowerCase()}`"
             class="tab-item"
             :class="{ active: tab === currentSection }"
             >{{ tab }}</router-link
@@ -373,14 +373,14 @@ onMounted(() => {
         ref="aboutSection"
         id="aboutSection"
       >
-        <h4 class="heading" id="About">About</h4>
+        <h4 class="heading" id="about">About</h4>
       </section>
       <section
         class="posts-section card section"
         ref="postsSection"
         id="postsSection"
       >
-        <h4 class="heading" id="Posts">Posts</h4>
+        <h4 class="heading" id="posts">Posts</h4>
         <PostItem
           v-for="post in getFilteredBlogs"
           :key="post.id"
@@ -396,7 +396,7 @@ onMounted(() => {
         ref="favouritesSection"
         id="favouritesSection"
       >
-        <h4 class="heading" id="Favourites">Favourites</h4>
+        <h4 class="heading" id="favourites">Favourites</h4>
         <PostItem
           v-for="post in user.users[0].liked_blogs"
           :key="post.blog[0].id"
@@ -412,7 +412,7 @@ onMounted(() => {
         ref="followersSection"
         id="followersSection"
       >
-        <h4 class="heading" id="Followers">Followers</h4>
+        <h4 class="heading" id="followers">Followers</h4>
         <FollowerItem
           v-for="follower in user.users[0].followers.nodes"
           :key="follower.user.username"
@@ -426,7 +426,7 @@ onMounted(() => {
         ref="followingsSection"
         id="followingsSection"
       >
-        <h4 class="heading" id="Followings">Followings</h4>
+        <h4 class="heading" id="followings">Followings</h4>
         <FollowerItem
           v-for="follower in user.users[0].followings.nodes"
           :key="follower.user.username"
@@ -467,7 +467,7 @@ onMounted(() => {
     .cover-image {
       width: 100%;
       height: 18rem;
-      // aspect-ratio: ;
+      background-position: 50%;
       background-color: grey;
       display: flex;
       align-items: flex-end;

@@ -37,6 +37,9 @@ const router = createRouter({
     {
       path: "/notifications",
       name: "notification",
+      meta: {
+        requiresAuth: true,
+      },
       component: () => import("@/views/NotificationPage.vue"),
     },
     {
@@ -57,6 +60,9 @@ const router = createRouter({
     {
       path: "/settings",
       name: "settings",
+      meta: {
+        requiresAuth: true,
+      },
       component: () => import("@/views/UserSettingPage.vue"),
     },
     {
@@ -90,9 +96,14 @@ const router = createRouter({
   },
 });
 
-router.afterEach(() => {
+router.afterEach((to) => {
   router.isReady().then(() => {
     document.title = localStorage.getItem("currentTitle") || "Pripo";
+    if (to.meta.requiresAuth) {
+      if (!localStorage.getItem("token")) {
+        router.back();
+      }
+    }
   });
 });
 export default router;
