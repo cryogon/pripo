@@ -137,7 +137,7 @@ async function uploadImage() {
   data.append("upload_preset", "wdo2tdms");
 
   const image = await axios({
-    url: "https://api.cloudinary.com/v1_1/dmerejjkt/image/upload",
+    url: import.meta.env.VITE_IMG_UPLOAD_PATH,
     method: "POST",
     data,
     headers: {
@@ -467,7 +467,7 @@ onMounted(() => {
     .cover-image {
       width: 100%;
       height: 18rem;
-      // aspect-ratio: ;
+      background-position: 50%;
       background-color: grey;
       display: flex;
       align-items: flex-end;

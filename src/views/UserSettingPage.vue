@@ -7,7 +7,7 @@ import { useEmitter } from "@/composables/EventEmitter";
 import axios from "axios";
 const emitter = useEmitter();
 const { files, open, reset } = useFileDialog();
-const isImageUploading = ref<boolean | null>(null);
+const isImageUploading = ref<boolean | null>(false);
 const { getAccessTokenSilently, user } = useAuth0();
 
 watch(files, () => {
@@ -51,8 +51,9 @@ async function uploadImage() {
   const data = new FormData();
   data.append("file", files.value?.item(0) as any);
   data.append("upload_preset", "wdo2tdms");
+  console.log(import.meta.env.VITE_IMG_UPLOAD_PATH);
   const image = await axios({
-    url: "https://api.cloudinary.com/v1_1/dmerejjkt/image/upload",
+    url: import.meta.env.VITE_IMG_UPLOAD_PATH,
     method: "POST",
     data,
     headers: {
@@ -84,6 +85,7 @@ function updateImage() {
           .then(() => {
             isImageUploading.value = false;
             emitter.emit("alert", "Avatar Updated Sucessfully");
+            reset();
           })
           .catch((err) => {
             console.error(err);
@@ -92,12 +94,12 @@ function updateImage() {
           });
       });
     })
-    .catch(() => {
+    .catch((err) => {
+      console.error(err);
       emitter.emit("alert", "Avatar failed to Update!!!");
+      reset();
       return;
     });
-  reset();
-  isImageUploading.value = null;
 }
 function clearImage() {
   reset();
@@ -131,7 +133,6 @@ function changeUsername() {
               class="upload avatar-options"
               :class="{
                 uploading: isImageUploading,
-                done: isImageUploading === false,
               }"
               v-if="files?.length"
               @click="updateImage"
