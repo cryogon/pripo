@@ -62,7 +62,10 @@ async function uploadImage() {
   });
   return image.data;
 }
-
+//TODO: Must Be removed when depoloyed to production
+function test() {
+  console.log(import.meta.env.VITE_IMG_UPLOAD_PATH);
+}
 function updateImage() {
   isImageUploading.value = true;
   uploadImage()
@@ -108,6 +111,14 @@ function clearImage() {
 function changeUsername() {
   emitter.emit("alert", "Changing username is not allowed yet!");
 }
+
+//TODO: Must Be removed when depoloyed to production
+document.addEventListener("keydown", (e) => {
+  e.preventDefault();
+  if (e.ctrlKey && e.key == "k") {
+    test();
+  }
+});
 // function changeFullName() {}
 </script>
 <template>
