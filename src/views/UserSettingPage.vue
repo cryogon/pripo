@@ -10,6 +10,15 @@ const { files, open, reset } = useFileDialog();
 const isImageUploading = ref<boolean | null>(false);
 const { getAccessTokenSilently, user } = useAuth0();
 
+const fullNameChangeStatus = ref("idle");
+const locationChangeStatus = ref("idle");
+const interestsChangeStatus = ref("idle");
+const aboutChangeStatus = ref("idle");
+let fullNameTimeout: any;
+let locationTimeout: any;
+let interestsTimeout: any;
+let aboutTimeout: any;
+
 watch(files, () => {
   if (files.value?.length) {
     if (!files.value[0].type.includes("image")) {
@@ -108,7 +117,32 @@ function clearImage() {
 function changeUsername() {
   emitter.emit("alert", "Changing username is not allowed yet!");
 }
-// function changeFullName() {}
+function changeFullName() {
+  fullNameChangeStatus.value = "updating";
+  clearTimeout(fullNameTimeout);
+  fullNameTimeout = setTimeout(() => {
+    fullNameChangeStatus.value = "updated";
+
+    //TODO:Logic To Change Full Name - Too Lazy Now implement tommorow
+    console.log("Dude");
+    setTimeout(() => {
+      fullNameChangeStatus.value = "idle";
+    }, 1000);
+  }, 3000);
+}
+function changeLocation() {
+  locationChangeStatus.value = "updating";
+  clearTimeout(locationTimeout);
+  locationTimeout = setTimeout(() => {
+    locationChangeStatus.value = "updated";
+
+    //TODO:Logic To Change Location - Too Lazy Now implement tommorow
+    console.log("Dude");
+    setTimeout(() => {
+      locationChangeStatus.value = "idle";
+    }, 1000);
+  }, 3000);
+}
 </script>
 <template>
   <main class="settings-container">
@@ -153,10 +187,17 @@ function changeUsername() {
               <input
                 type="text"
                 id="fullname"
-                class="input-option"
+                class="input-option fullname__input"
                 :value="user.name"
+                @input="changeFullName"
                 placeholder="Full Name"
               />
+              <span
+                :class="{
+                  'user-options__updating': fullNameChangeStatus === 'updating',
+                  'user-options__updated': fullNameChangeStatus === 'updated',
+                }"
+              ></span>
             </div>
             <div class="user-option-child">
               <label for="username" class="option"> username </label>
@@ -179,6 +220,12 @@ function changeUsername() {
                 class="input-option about-area"
                 placeholder="about"
               ></textarea>
+              <span
+                :class="{
+                  'user-options__updating': aboutChangeStatus === 'updating',
+                  'user-options__updated': aboutChangeStatus === 'updated',
+                }"
+              ></span>
             </div>
             <div class="user-option-child">
               <label for="location" class="option">location</label>
@@ -186,8 +233,15 @@ function changeUsername() {
                 type="text"
                 id="location"
                 class="input-option"
+                @input="changeLocation"
                 placeholder="current location"
               />
+              <span
+                :class="{
+                  'user-options__updating': locationChangeStatus === 'updating',
+                  'user-options__updated': locationChangeStatus === 'updated',
+                }"
+              ></span>
             </div>
             <div class="user-option-child">
               <label for="Interests" class="option">interests</label>
@@ -197,6 +251,13 @@ function changeUsername() {
                 class="input-option"
                 placeholder="interests"
               />
+              <span
+                :class="{
+                  'user-options__updating':
+                    interestsChangeStatus === 'updating',
+                  'user-options__updated': interestsChangeStatus === 'updated',
+                }"
+              ></span>
             </div>
           </div>
         </article>
@@ -319,6 +380,43 @@ function changeUsername() {
         .user-options {
           .user-option-child {
             margin-block-end: 1rem;
+            position: relative;
+            .user-options__updated {
+              position: absolute;
+              right: -2rem;
+              top: 55%;
+              width: 1rem;
+              transition: 1s;
+              background-color: rgb(99, 250, 99);
+              height: 1rem;
+              clip-path: polygon(
+                14% 50%,
+                33% 81%,
+                100% 0,
+                100% 18%,
+                32% 100%,
+                0% 50%
+              );
+            }
+            .user-options__updating {
+              outline: 3px dotted var(--color-text);
+              border-radius: 50%;
+              align-items: center;
+              position: absolute;
+              right: -2rem;
+              top: 55%;
+              width: 1rem;
+              height: 1rem;
+              animation: rotate 1s ease-out infinite;
+              @keyframes rotate {
+                0% {
+                  transform: rotate(0deg);
+                }
+                100% {
+                  transform: rotate(360deg);
+                }
+              }
+            }
             &.social-links {
               display: flex;
               flex-direction: column;
@@ -331,6 +429,7 @@ function changeUsername() {
               border: 0;
               color: var(--text-color);
               background-color: #303030;
+              position: relative;
               &.about-area {
                 min-height: 5rem;
                 resize: vertical;
