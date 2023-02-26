@@ -710,6 +710,15 @@ export const FOLLOW_USER = gql`
         }
       }
     }
+    insert_user_notifications(
+      objects: { notification_by: $me, notification_for: $user, type: "follow" }
+    ) {
+      returning {
+        id
+        notification_by
+        notification_for
+      }
+    }
   }
 `;
 export const UNFOLLOW_USER = gql`
@@ -722,6 +731,16 @@ export const UNFOLLOW_USER = gql`
         follows
         user
       }
+    }
+    delete_user_notifications(
+      where: {
+        _and: [
+          { notification_by: { _eq: $me } }
+          { notification_for: { _eq: $user } }
+        ]
+      }
+    ) {
+      affected_rows
     }
   }
 `;
