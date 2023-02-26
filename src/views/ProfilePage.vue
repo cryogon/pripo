@@ -336,7 +336,7 @@ onMounted(() => {
           </span>
           <span class="interests" v-if="user.users[0].interests">
             <HeartIcon />
-            user.users[0].interests
+            {{ user.users[0].interests }}
           </span>
         </div>
         <div class="social-media-links" v-if="user.users[0].social_links">

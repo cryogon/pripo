@@ -5,10 +5,20 @@ import PencilIcon from "@/components/Icons/PencilIcon.vue";
 import { useAuth0 } from "@auth0/auth0-vue";
 import { useEmitter } from "@/composables/EventEmitter";
 import axios from "axios";
+import { useMutation } from "@vue/apollo-composable";
+import { UPDATE_LOCATION, UPDATE_INTERESTS } from "@/graphql";
 const emitter = useEmitter();
 const { files, open, reset } = useFileDialog();
 const isImageUploading = ref<boolean | null>(false);
 const { getAccessTokenSilently, user } = useAuth0();
+const fullNameChangeStatus = ref("idle");
+const locationChangeStatus = ref("idle");
+const interestsChangeStatus = ref("idle");
+const aboutChangeStatus = ref("idle");
+let fullNameTimeout: any;
+let locationTimeout: any;
+let interestsTimeout: any;
+let aboutTimeout: any;
 
 watch(files, () => {
   if (files.value?.length) {
@@ -62,10 +72,7 @@ async function uploadImage() {
   });
   return image.data;
 }
-//TODO: Must Be removed when depoloyed to production
-function test() {
-  console.log(import.meta.env.VITE_IMG_UPLOAD_PATH);
-}
+
 function updateImage() {
   isImageUploading.value = true;
   uploadImage()
@@ -111,15 +118,91 @@ function clearImage() {
 function changeUsername() {
   emitter.emit("alert", "Changing username is not allowed yet!");
 }
+function changeFullName(e: any) {
+  fullNameChangeStatus.value = "updating";
+  clearTimeout(fullNameTimeout);
+  fullNameTimeout = setTimeout(async () => {
+    fullNameChangeStatus.value = "updated";
+    const token = await getAccessTokenSilently().catch((err) => {
+      console.error(err.message);
+    });
+    const url = "https://pripo-api.vercel.app/user/" + user.value.sub;
+    if (e.target && e.target.value.length > 0) {
+      axios
+        .patch(
+          url,
+          {
+            fullname: e.target.target,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              Accept: "application/json",
+            },
+          }
+        )
+        .catch((err) => {
+          console.error(err.message);
+        });
+      setTimeout(() => {
+        fullNameChangeStatus.value = "idle";
+      }, 1000);
+    } else {
+      emitter.emit("alert", "Full Name length should be greater than 1");
+    }
+  }, 3000);
+}
 
-//TODO: Must Be removed when depoloyed to production
-document.addEventListener("keydown", (e) => {
-  e.preventDefault();
-  if (e.ctrlKey && e.key == "k") {
-    test();
-  }
-});
-// function changeFullName() {}
+function changeLocation(e: any) {
+  locationChangeStatus.value = "updating";
+  clearTimeout(locationTimeout);
+  locationTimeout = setTimeout(() => {
+    const { mutate } = useMutation(UPDATE_LOCATION);
+    if (e.target && e.target.value.length > 2) {
+      mutate({
+        user: user.value.nickname,
+        loc: e.target.value,
+      })
+        .then(() => {
+          locationChangeStatus.value = "updated";
+          setTimeout(() => {
+            locationChangeStatus.value = "idle";
+          }, 1000);
+          // emitter.emit("alert", "Location Updated Sucessfully");
+          reset();
+        })
+        .catch((err) => {
+          console.error(err);
+          // emitter.emit("alert", "Location failed to Update!!!");
+        });
+    }
+  }, 3000);
+}
+function changeInterests(e: any) {
+  interestsChangeStatus.value = "updating";
+  clearTimeout(interestsTimeout);
+  interestsTimeout = setTimeout(() => {
+    const { mutate } = useMutation(UPDATE_INTERESTS);
+    if (e.target && e.target.value.length > 0) {
+      mutate({
+        user: user.value.nickname,
+        interests: e.target.value,
+      })
+        .then(() => {
+          interestsChangeStatus.value = "updated";
+          setTimeout(() => {
+            interestsChangeStatus.value = "idle";
+          }, 1000);
+          // emitter.emit("alert", "Interests Updated Sucessfully");
+          reset();
+        })
+        .catch((err) => {
+          console.error(err);
+          // emitter.emit("alert", "Interests failed to Update!!!");
+        });
+    }
+  }, 3000);
+}
 </script>
 <template>
   <main class="settings-container">
@@ -164,10 +247,17 @@ document.addEventListener("keydown", (e) => {
               <input
                 type="text"
                 id="fullname"
-                class="input-option"
+                class="input-option fullname__input"
                 :value="user.name"
+                @input="changeFullName"
                 placeholder="Full Name"
               />
+              <span
+                :class="{
+                  'user-options__updating': fullNameChangeStatus === 'updating',
+                  'user-options__updated': fullNameChangeStatus === 'updated',
+                }"
+              ></span>
             </div>
             <div class="user-option-child">
               <label for="username" class="option"> username </label>
@@ -190,6 +280,12 @@ document.addEventListener("keydown", (e) => {
                 class="input-option about-area"
                 placeholder="about"
               ></textarea>
+              <span
+                :class="{
+                  'user-options__updating': aboutChangeStatus === 'updating',
+                  'user-options__updated': aboutChangeStatus === 'updated',
+                }"
+              ></span>
             </div>
             <div class="user-option-child">
               <label for="location" class="option">location</label>
@@ -197,17 +293,32 @@ document.addEventListener("keydown", (e) => {
                 type="text"
                 id="location"
                 class="input-option"
+                @input="changeLocation"
                 placeholder="current location"
               />
+              <span
+                :class="{
+                  'user-options__updating': locationChangeStatus === 'updating',
+                  'user-options__updated': locationChangeStatus === 'updated',
+                }"
+              ></span>
             </div>
             <div class="user-option-child">
               <label for="Interests" class="option">interests</label>
               <input
                 type="text"
                 id="interests"
+                @input="changeInterests"
                 class="input-option"
                 placeholder="interests"
               />
+              <span
+                :class="{
+                  'user-options__updating':
+                    interestsChangeStatus === 'updating',
+                  'user-options__updated': interestsChangeStatus === 'updated',
+                }"
+              ></span>
             </div>
           </div>
         </article>
@@ -330,6 +441,43 @@ document.addEventListener("keydown", (e) => {
         .user-options {
           .user-option-child {
             margin-block-end: 1rem;
+            position: relative;
+            .user-options__updated {
+              position: absolute;
+              right: -2rem;
+              top: 55%;
+              width: 1rem;
+              transition: 1s;
+              background-color: rgb(99, 250, 99);
+              height: 1rem;
+              clip-path: polygon(
+                14% 50%,
+                33% 81%,
+                100% 0,
+                100% 18%,
+                32% 100%,
+                0% 50%
+              );
+            }
+            .user-options__updating {
+              outline: 3px dotted var(--color-text);
+              border-radius: 50%;
+              align-items: center;
+              position: absolute;
+              right: -2rem;
+              top: 55%;
+              width: 1rem;
+              height: 1rem;
+              animation: rotate 1s ease-out infinite;
+              @keyframes rotate {
+                0% {
+                  transform: rotate(0deg);
+                }
+                100% {
+                  transform: rotate(360deg);
+                }
+              }
+            }
             &.social-links {
               display: flex;
               flex-direction: column;
@@ -342,6 +490,7 @@ document.addEventListener("keydown", (e) => {
               border: 0;
               color: var(--text-color);
               background-color: #303030;
+              position: relative;
               &.about-area {
                 min-height: 5rem;
                 resize: vertical;

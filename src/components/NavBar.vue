@@ -173,9 +173,13 @@ function toggleNotification() {
             <router-link class="hover-item" to="/publish" role="button"
               >Post</router-link
             >
-            <span class="hover-item" @click="toggleDark()" role="button">{{
-              isDark ? "Dark" : "Light"
-            }}</span>
+            <span
+              class="hover-item"
+              @click="toggleDark()"
+              role="button"
+              v-if="false"
+              >{{ isDark ? "Dark" : "Light" }}</span
+            >
             <router-link class="hover-item" to="/settings" role="button"
               >Settings</router-link
             >
