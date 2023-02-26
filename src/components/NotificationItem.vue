@@ -5,38 +5,63 @@ import CheckIcon from "./Icons/CheckIcon.vue";
 import { MARK_NOTIFICATION_READ } from "@/graphql";
 import { useTimeAgo } from "@vueuse/core";
 
-const props = defineProps<{
-  user: string;
-  desc: string;
-  content: string;
+defineProps<{
+  user: {
+    username: string;
+    profile_picture: string;
+  };
+  type: string;
+  comment?: {
+    content: string;
+    id: number;
+  };
   id: number;
   created_at: string;
-  blog_id: number;
+  blog_id?: number;
 }>();
-const date = new Date(props.created_at);
-const timeDifference = useTimeAgo(date);
 
 function markRead(id: number) {
   const { mutate } = useMutation(MARK_NOTIFICATION_READ);
   mutate({ id });
 }
+function getDesc(type: string) {
+  switch (type) {
+    case "comment":
+      return "ommented on your post";
+    case "reply":
+      return "replied to you comment";
+    case "follow":
+      return "followed you";
+    default:
+      return "Notification";
+  }
+}
 </script>
 <template>
   <div class="link container">
-    <BellIcon class="bell" />
+    <BellIcon class="bell" v-if="blog_id" />
+    <img :src="user.profile_picture" alt="" class="avatar" v-else />
     <div class="info">
-      <router-link :to="`/posts/${blog_id}#c${id}`" class="user-info">
-        <span class="user">{{ user + " " }}</span>
-        <span class="description"> {{ desc }}</span>
-        <p class="content">
+      <router-link
+        v-if="blog_id"
+        :to="`/posts/${blog_id}#c${comment?.id}`"
+        class="user-info"
+      >
+        <span class="user">{{ user.username + " " }}</span>
+        <span class="description"> {{ getDesc(type) }}</span>
+        <p class="content" v-if="comment">
           {{
-            content.length < 20
-              ? content.substring(0, 20)
-              : content.substring(0, 20) + "..."
+            comment.content.length < 20
+              ? comment.content.substring(0, 20)
+              : comment.content.substring(0, 20) + "..."
           }}
         </p>
       </router-link>
-      <span class="time">{{ timeDifference }}</span>
+      <router-link v-else :to="`/users/${user.username}`" class="user-info">
+        <span class="user">{{ user.username + " " }}</span>
+        <span class="description"> {{ getDesc(type) }}</span>
+      </router-link>
+      <span class="time">{{ useTimeAgo(created_at).value }}</span>
     </div>
     <div class="check">
       <CheckIcon class="mark-read" @click="markRead(id)" />
@@ -60,6 +85,11 @@ function markRead(id: number) {
     height: 2rem;
     align-self: flex-start;
   }
+  .avatar {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+  }
   .info {
     padding-top: 0.4rem;
     .user-info {
@@ -70,6 +100,8 @@ function markRead(id: number) {
       margin-inline-start: 9rem;
       opacity: 0.6;
       position: absolute;
+      right: 5px;
+      bottom: 5px;
     }
     .user {
       font-weight: bolder;
@@ -81,6 +113,7 @@ function markRead(id: number) {
   .check {
     display: none;
     margin-block-start: 0.3rem;
+    margin-inline-start: auto;
     height: 1.4rem;
     padding: 0.2rem 0.5rem;
     &:hover {

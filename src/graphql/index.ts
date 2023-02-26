@@ -509,6 +509,7 @@ export const LISTEN_NOTIFICATION = gql`
         id
       }
       sender {
+        profile_picture
         username
       }
       comment {
@@ -731,16 +732,6 @@ export const UNFOLLOW_USER = gql`
         follows
         user
       }
-    }
-    delete_user_notifications(
-      where: {
-        _and: [
-          { notification_by: { _eq: $me } }
-          { notification_for: { _eq: $user } }
-        ]
-      }
-    ) {
-      affected_rows
     }
   }
 `;
