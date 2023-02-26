@@ -1,47 +1,24 @@
 import { fileURLToPath, URL } from "node:url";
+import fs from "node:fs";
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import vueJsx from "@vitejs/plugin-vue-jsx";
 import type { VitePWAOptions } from "vite-plugin-pwa";
 import { VitePWA } from "vite-plugin-pwa";
+const { icons } = JSON.parse(fs.readFileSync("./icons.json", "utf-8"));
 const pwaOptions: Partial<VitePWAOptions> = {
   mode: "development",
   base: "/",
   includeAssets: [
     "icon.svg",
-    "manifest-icon-192.maskable.png",
-    "manifest-icon-512.maskable.png",
+    "ios/192.png",
+    "ios/512.png",
     "icons/apple-icon-180.png",
   ],
   manifest: {
     name: "pripo",
     start_url: "/?home=true",
-    icons: [
-      {
-        src: "manifest-icon-192.maskable.png",
-        sizes: "192x192",
-        type: "image/png",
-        purpose: "any",
-      },
-      {
-        src: "manifest-icon-192.maskable.png",
-        sizes: "192x192",
-        type: "image/png",
-        purpose: "maskable",
-      },
-      {
-        src: "manifest-icon-512.maskable.png",
-        sizes: "512x512",
-        type: "image/png",
-        purpose: "any",
-      },
-      {
-        src: "manifest-icon-512.maskable.png",
-        sizes: "512x512",
-        type: "image/png",
-        purpose: "maskable",
-      },
-    ],
+    icons,
     theme_color: "#5f9ea0",
     background_color: "#161616",
     shortcuts: [
