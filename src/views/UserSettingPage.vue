@@ -19,7 +19,6 @@ let fullNameTimeout: any;
 let locationTimeout: any;
 let interestsTimeout: any;
 let aboutTimeout: any;
-
 watch(files, () => {
   if (files.value?.length) {
     if (!files.value[0].type.includes("image")) {
@@ -122,7 +121,6 @@ function changeFullName(e: any) {
   fullNameChangeStatus.value = "updating";
   clearTimeout(fullNameTimeout);
   fullNameTimeout = setTimeout(() => {
-    fullNameChangeStatus.value = "updated";
     getAccessTokenSilently()
       .then((token) => {
         const url = "https://pripo-api.vercel.app/user/" + user.value.sub;
@@ -131,7 +129,7 @@ function changeFullName(e: any) {
             .patch(
               url,
               {
-                fullname: e.target.target,
+                fullname: e.target.value,
               },
               {
                 headers: {
@@ -141,6 +139,7 @@ function changeFullName(e: any) {
               }
             )
             .then(() => {
+              fullNameChangeStatus.value = "updated";
               setTimeout(() => {
                 fullNameChangeStatus.value = "idle";
               }, 1000);

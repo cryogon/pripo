@@ -171,6 +171,7 @@ async function changeCoverPicture() {
         )
         .then(() => {
           emitter.emit("alert", "Cover Page Updated Sucessfully");
+          coverImage.value = image.url;
         })
         .catch((err) => {
           console.error(err);
