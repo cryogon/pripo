@@ -5,11 +5,12 @@ import PencilIcon from "@/components/Icons/PencilIcon.vue";
 import { useAuth0 } from "@auth0/auth0-vue";
 import { useEmitter } from "@/composables/EventEmitter";
 import axios from "axios";
+import { useMutation } from "@vue/apollo-composable";
+import { UPDATE_LOCATION } from "@/graphql";
 const emitter = useEmitter();
 const { files, open, reset } = useFileDialog();
 const isImageUploading = ref<boolean | null>(false);
 const { getAccessTokenSilently, user } = useAuth0();
-
 const fullNameChangeStatus = ref("idle");
 const locationChangeStatus = ref("idle");
 const interestsChangeStatus = ref("idle");
@@ -117,30 +118,64 @@ function clearImage() {
 function changeUsername() {
   emitter.emit("alert", "Changing username is not allowed yet!");
 }
-function changeFullName() {
+function changeFullName(e: any) {
   fullNameChangeStatus.value = "updating";
   clearTimeout(fullNameTimeout);
-  fullNameTimeout = setTimeout(() => {
+  fullNameTimeout = setTimeout(async () => {
     fullNameChangeStatus.value = "updated";
-
-    //TODO:Logic To Change Full Name - Too Lazy Now implement tommorow
-    console.log("Dude");
-    setTimeout(() => {
-      fullNameChangeStatus.value = "idle";
-    }, 1000);
+    const token = await getAccessTokenSilently().catch((err) => {
+      console.error(err.message);
+    });
+    const url = "https://pripo-api.vercel.app/user/" + user.value.sub;
+    if (e.target && e.target.value.length > 0) {
+      axios
+        .patch(
+          url,
+          {
+            fullname: e.target.target,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              Accept: "application/json",
+            },
+          }
+        )
+        .catch((err) => {
+          console.error(err.message);
+        });
+      setTimeout(() => {
+        fullNameChangeStatus.value = "idle";
+      }, 1000);
+    } else {
+      emitter.emit("alert", "Full Name length should be greater than 1");
+    }
   }, 3000);
 }
-function changeLocation() {
+
+function changeLocation(e: any) {
   locationChangeStatus.value = "updating";
   clearTimeout(locationTimeout);
   locationTimeout = setTimeout(() => {
-    locationChangeStatus.value = "updated";
-
-    //TODO:Logic To Change Location - Too Lazy Now implement tommorow
-    console.log("Dude");
-    setTimeout(() => {
-      locationChangeStatus.value = "idle";
-    }, 1000);
+    const { mutate } = useMutation(UPDATE_LOCATION);
+    if (e.target && e.target.value.length > 2) {
+      mutate({
+        user: user.value.nickname,
+        loc: e.target.value,
+      })
+        .then(() => {
+          locationChangeStatus.value = "updated";
+          setTimeout(() => {
+            locationChangeStatus.value = "idle";
+          }, 1000);
+          // emitter.emit("alert", "Location Updated Sucessfully");
+          reset();
+        })
+        .catch((err) => {
+          console.error(err);
+          // emitter.emit("alert", "Location failed to Update!!!");
+        });
+    }
   }, 3000);
 }
 </script>
