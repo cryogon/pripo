@@ -25,15 +25,11 @@ function markAllRead(username: string) {
         v-for="(notification, index) in notifications"
         :key="index"
         :id="notification.id"
-        :content="notification.comment.content"
-        :desc="
-          notification.type === 'comment'
-            ? 'commented on your post'
-            : 'replied to your comment'
-        "
-        :user="notification.sender?.username"
+        :comment="notification?.comment"
+        :type="notification.type"
+        :user="notification.sender"
         :created_at="notification.created_at"
-        :blog_id="notification.blog.id"
+        :blog_id="notification?.blog && notification.blog?.id"
       />
     </div>
     <div class="options-group">
