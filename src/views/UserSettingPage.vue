@@ -121,35 +121,40 @@ function changeUsername() {
 function changeFullName(e: any) {
   fullNameChangeStatus.value = "updating";
   clearTimeout(fullNameTimeout);
-  fullNameTimeout = setTimeout(async () => {
+  fullNameTimeout = setTimeout(() => {
     fullNameChangeStatus.value = "updated";
-    const token = await getAccessTokenSilently().catch((err) => {
-      console.error(err.message);
-    });
-    const url = "https://pripo-api.vercel.app/user/" + user.value.sub;
-    if (e.target && e.target.value.length > 0) {
-      axios
-        .patch(
-          url,
-          {
-            fullname: e.target.target,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              Accept: "application/json",
-            },
-          }
-        )
-        .catch((err) => {
-          console.error(err.message);
-        });
-      setTimeout(() => {
-        fullNameChangeStatus.value = "idle";
-      }, 1000);
-    } else {
-      emitter.emit("alert", "Full Name length should be greater than 1");
-    }
+    getAccessTokenSilently()
+      .then((token) => {
+        const url = "https://pripo-api.vercel.app/user/" + user.value.sub;
+        if (e.target && e.target.value.length > 0) {
+          axios
+            .patch(
+              url,
+              {
+                fullname: e.target.target,
+              },
+              {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                  Accept: "application/json",
+                },
+              }
+            )
+            .then(() => {
+              setTimeout(() => {
+                fullNameChangeStatus.value = "idle";
+              }, 1000);
+            })
+            .catch((err) => {
+              console.error(err.message);
+            });
+        } else {
+          emitter.emit("alert", "Full Name length should be greater than 1");
+        }
+      })
+      .catch((err) => {
+        console.error(err.message);
+      });
   }, 3000);
 }
 
