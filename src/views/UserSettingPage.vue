@@ -6,7 +6,7 @@ import { useAuth0 } from "@auth0/auth0-vue";
 import { useEmitter } from "@/composables/EventEmitter";
 import axios from "axios";
 import { useMutation } from "@vue/apollo-composable";
-import { UPDATE_LOCATION } from "@/graphql";
+import { UPDATE_LOCATION, UPDATE_INTERESTS } from "@/graphql";
 const emitter = useEmitter();
 const { files, open, reset } = useFileDialog();
 const isImageUploading = ref<boolean | null>(false);
@@ -178,6 +178,31 @@ function changeLocation(e: any) {
     }
   }, 3000);
 }
+function changeInterests(e: any) {
+  interestsChangeStatus.value = "updating";
+  clearTimeout(interestsTimeout);
+  interestsTimeout = setTimeout(() => {
+    const { mutate } = useMutation(UPDATE_INTERESTS);
+    if (e.target && e.target.value.length > 0) {
+      mutate({
+        user: user.value.nickname,
+        interests: e.target.value,
+      })
+        .then(() => {
+          interestsChangeStatus.value = "updated";
+          setTimeout(() => {
+            interestsChangeStatus.value = "idle";
+          }, 1000);
+          // emitter.emit("alert", "Interests Updated Sucessfully");
+          reset();
+        })
+        .catch((err) => {
+          console.error(err);
+          // emitter.emit("alert", "Interests failed to Update!!!");
+        });
+    }
+  }, 3000);
+}
 </script>
 <template>
   <main class="settings-container">
@@ -283,6 +308,7 @@ function changeLocation(e: any) {
               <input
                 type="text"
                 id="interests"
+                @input="changeInterests"
                 class="input-option"
                 placeholder="interests"
               />

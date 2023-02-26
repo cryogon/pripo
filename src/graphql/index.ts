@@ -759,3 +759,18 @@ export const UPDATE_LOCATION = gql`
     }
   }
 `;
+
+export const UPDATE_INTERESTS = gql`
+  mutation setInterests($interests: String!, $user: String!) {
+    update_users(
+      _set: { interests: $interests }
+      where: { username: { _eq: $user } }
+    ) {
+      returning {
+        id
+        username
+        interests
+      }
+    }
+  }
+`;
