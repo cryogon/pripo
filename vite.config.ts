@@ -9,12 +9,7 @@ const { icons } = JSON.parse(fs.readFileSync("./icons.json", "utf-8"));
 const pwaOptions: Partial<VitePWAOptions> = {
   mode: "development",
   base: "/",
-  includeAssets: [
-    "icon.svg",
-    "ios/192.png",
-    "ios/512.png",
-    "icons/apple-icon-180.png",
-  ],
+  includeAssets: ["icon.svg", "ios/192.png", "ios/512.png", "ios/180.png"],
   manifest: {
     name: "pripo",
     start_url: "/?home=true",

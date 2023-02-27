@@ -13,6 +13,7 @@ import {
   GET_USER_BY_USERNAME,
   FOLLOW_USER,
   UNFOLLOW_USER,
+  UPDATE_ABOUT,
 } from "@/graphql";
 import { useMutation, useQuery } from "@vue/apollo-composable";
 import { useOnline } from "@vueuse/core";
@@ -22,6 +23,9 @@ import PencilIcon from "../components/Icons/PencilIcon.vue";
 import axios from "axios";
 import { useEmitter } from "@/composables/EventEmitter";
 import XIcon from "../components/Icons/XIcon.vue";
+import DOMpurify from "dompurify";
+import MarkDownIt from "markdown-it";
+
 const { files, open, reset } = useFileDialog({
   accept: "image/jpeg, image/gif, image/x-png",
 });
@@ -45,7 +49,18 @@ const { y } = useElementBounding(nav);
 const clickedOnFollowed = ref(false);
 const navIsCompact = ref(false);
 const tabs = ["About", "Posts", "Favourites", "Followers", "Followings"];
+const md = MarkDownIt({
+  html: true,
+  linkify: true,
+  typographer: true,
+});
 
+//For About Input
+const aboutContent = ref({
+  newValue: "",
+  oldValue: "",
+});
+const isAboutEditable = ref(false);
 //changing this will change cover image
 const coverImage = ref("");
 const currentSection = ref<string | null>("About");
@@ -64,6 +79,8 @@ router.afterEach((to, from) => {
     refetch({ id: to.params.user, username: to.params.user });
 });
 onResult((r) => {
+  aboutContent.value.newValue = user.value?.users[0].about || "";
+
   if (user.value?.users[0].cover_picture)
     coverImage.value = user.value?.users[0].cover_picture;
   else coverImage.value = "";
@@ -77,11 +94,36 @@ onError(() => {
   console.error("Some Problem Occured! Please Refetch");
 });
 
+function sanitizeHTML(html: string) {
+  return DOMpurify.sanitize(html);
+}
+
 function getFormattedDate(date: number) {
   return Intl.DateTimeFormat(undefined, {
     month: "long",
     year: "numeric",
   }).format(new Date(date));
+}
+
+function toggleAboutEditable() {
+  isAboutEditable.value = !isAboutEditable.value;
+  aboutContent.value.oldValue = aboutContent.value.newValue;
+}
+
+function changeAbout(content: string) {
+  if (!aboutContent.value.newValue.length) {
+    return emitter.emit("alert", "About Can't be empty!!!");
+  }
+  if (aboutContent.value.oldValue === aboutContent.value.newValue) {
+    return emitter.emit(
+      "alert",
+      "About Value should not be same as old value!!!"
+    );
+  }
+
+  const { mutate } = useMutation(UPDATE_ABOUT);
+  mutate({ user: u.value.nickname, content: JSON.stringify(content) });
+  isAboutEditable.value = false;
 }
 
 function followUser(user: User) {
@@ -375,6 +417,52 @@ onMounted(() => {
         id="aboutSection"
       >
         <h4 class="heading" id="about">About</h4>
+        <div
+          class="about-section__content"
+          v-html="sanitizeHTML(md.render(aboutContent.newValue))"
+          v-if="!isAboutEditable"
+        ></div>
+        <textarea
+          name="about-input"
+          class="about-section__input"
+          placeholder="Edit Text Area (MD Supported)"
+          v-model="aboutContent.newValue"
+          v-else
+        ></textarea>
+        <div class="about-section__option" v-if="isMe(user.users[0])">
+          <PencilIcon
+            class="edit-icon"
+            @click="toggleAboutEditable"
+            v-if="!isAboutEditable"
+          />
+          <div class="icon-container" v-else>
+            <XIcon class="x-icon" @click="toggleAboutEditable" />
+            <CheckIcon
+              class="check-icon"
+              @click="changeAbout(aboutContent.newValue)"
+              :class="{
+                disabled:
+                  !aboutContent.newValue.length &&
+                  aboutContent.oldValue === aboutContent.newValue,
+              }"
+              :disabled="
+                !aboutContent.newValue.length &&
+                aboutContent.oldValue === aboutContent.newValue
+              "
+            />
+          </div>
+        </div>
+      </section>
+      <section
+        class="about-section card section"
+        ref="aboutSection"
+        v-if="isAboutEditable"
+      >
+        <h4 class="heading" id="about">Live Preview</h4>
+        <div
+          class="about-section__preview"
+          v-html="sanitizeHTML(md.render(aboutContent.newValue))"
+        ></div>
       </section>
       <section
         class="posts-section card section"
@@ -451,12 +539,70 @@ onMounted(() => {
     -moz-background-clip: text;
     color: transparent;
   }
+
   .card {
     min-height: 8rem;
     margin-block-start: 1rem;
     background-color: #303030;
     border-radius: 12px;
     padding: 0.3rem 1rem;
+    &.about-section {
+      display: flex;
+      flex-direction: column;
+      padding-block-end: 0;
+      .about-section__content {
+        margin-block-start: auto;
+        min-height: 3rem;
+      }
+      .about-section__input {
+        min-height: 6rem;
+        background-color: #202020;
+        color: var(--color-text);
+      }
+      .about-section__option {
+        place-self: flex-end;
+        .edit-icon {
+          padding: 0.4rem;
+          width: 2rem;
+          height: 2rem;
+          border-radius: 0.6rem;
+          background-color: #202020;
+          user-select: none;
+          position: relative;
+          margin-block-start: 0.3rem;
+          cursor: pointer;
+        }
+        .icon-container {
+          user-select: none;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          background-color: #202020;
+          border-radius: 0.4rem;
+          padding: 0.3rem;
+          background-color: rgb(204, 75, 75);
+          box-shadow: inset -1.5rem 0 var(--accent-color);
+          margin-block-start: 0.3rem;
+          &:has(.x-icon:hover) {
+            background-color: rgb(87, 67, 67);
+          }
+          &:has(.check-icon:not(.disabled):hover) {
+            box-shadow: inset -1.5rem 0 rgb(107, 208, 107);
+          }
+          &:has(.check-icon:is(.disabled)) {
+            box-shadow: inset -1.5rem 0 grey;
+          }
+          .check-icon:not(.disabled) {
+            cursor: pointer;
+          }
+          .x-icon {
+            cursor: pointer;
+            height: 1rem;
+            width: 1rem;
+          }
+        }
+      }
+    }
     .heading {
       font-weight: normal;
       text-decoration: underline;

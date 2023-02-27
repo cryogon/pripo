@@ -14,11 +14,10 @@ const { getAccessTokenSilently, user } = useAuth0();
 const fullNameChangeStatus = ref("idle");
 const locationChangeStatus = ref("idle");
 const interestsChangeStatus = ref("idle");
-const aboutChangeStatus = ref("idle");
 let fullNameTimeout: any;
 let locationTimeout: any;
 let interestsTimeout: any;
-let aboutTimeout: any;
+
 watch(files, () => {
   if (files.value?.length) {
     if (!files.value[0].type.includes("image")) {
@@ -277,20 +276,7 @@ function changeInterests(e: any) {
               <input type="text" class="input-option" placeholder="link3" />
               <input type="text" class="input-option" placeholder="link4" />
             </div>
-            <div class="user-option-child">
-              <label for="about" class="option">about</label>
-              <textarea
-                id="about"
-                class="input-option about-area"
-                placeholder="about"
-              ></textarea>
-              <span
-                :class="{
-                  'user-options__updating': aboutChangeStatus === 'updating',
-                  'user-options__updated': aboutChangeStatus === 'updated',
-                }"
-              ></span>
-            </div>
+
             <div class="user-option-child">
               <label for="location" class="option">location</label>
               <input
@@ -495,10 +481,6 @@ function changeInterests(e: any) {
               color: var(--text-color);
               background-color: #303030;
               position: relative;
-              &.about-area {
-                min-height: 5rem;
-                resize: vertical;
-              }
             }
             .change-button {
               padding: 0.5rem;

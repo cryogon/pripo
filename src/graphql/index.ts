@@ -784,3 +784,18 @@ export const UPDATE_INTERESTS = gql`
     }
   }
 `;
+
+export const UPDATE_ABOUT = gql`
+  mutation updateAbout($user: String!, $content: String!) {
+    update_users(
+      _set: { about: $content }
+      where: { username: { _eq: $user } }
+    ) {
+      returning {
+        id
+        username
+        about
+      }
+    }
+  }
+`;
