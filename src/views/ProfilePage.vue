@@ -429,7 +429,7 @@ onMounted(() => {
           v-model="aboutContent.newValue"
           v-else
         ></textarea>
-        <div class="about-section__option">
+        <div class="about-section__option" v-if="isMe(user.user[0])">
           <PencilIcon
             class="edit-icon"
             @click="toggleAboutEditable"
