@@ -18,7 +18,7 @@ const aboutChangeStatus = ref("idle");
 let fullNameTimeout: any;
 let locationTimeout: any;
 let interestsTimeout: any;
-let aboutTimeout: any;
+
 watch(files, () => {
   if (files.value?.length) {
     if (!files.value[0].type.includes("image")) {
