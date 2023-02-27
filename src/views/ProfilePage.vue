@@ -79,7 +79,7 @@ router.afterEach((to, from) => {
     refetch({ id: to.params.user, username: to.params.user });
 });
 onResult((r) => {
-  aboutContent.value.newValue = user.value?.users[0].about;
+  aboutContent.value.newValue = user.value?.users[0].about || "";
 
   if (user.value?.users[0].cover_picture)
     coverImage.value = user.value?.users[0].cover_picture;
@@ -429,7 +429,7 @@ onMounted(() => {
           v-model="aboutContent.newValue"
           v-else
         ></textarea>
-        <div class="about-section__option" v-if="isMe(user.user[0])">
+        <div class="about-section__option" v-if="isMe(user.users[0])">
           <PencilIcon
             class="edit-icon"
             @click="toggleAboutEditable"
