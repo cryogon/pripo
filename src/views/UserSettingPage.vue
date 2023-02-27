@@ -193,7 +193,11 @@ function changeLocation(e: any) {
         })
         .catch((err) => {
           console.error(err);
-          // emitter.emit("alert", "Location failed to Update!!!");
+          locationChangeStatus.value = "failed";
+          setTimeout(() => {
+            locationChangeStatus.value = "idle";
+          }, 1000);
+          emitter.emit("alert", "Location failed to Update!!!");
         });
     }
   }, 3000);
@@ -218,6 +222,10 @@ function changeInterests(e: any) {
         })
         .catch((err) => {
           console.error(err);
+          interestsChangeStatus.value = "failed";
+          setTimeout(() => {
+            interestsChangeStatus.value = "idle";
+          }, 1000);
           emitter.emit("alert", "Interests failed to Update!!!");
         });
     }
@@ -245,7 +253,10 @@ function setLinks(event: any, pos: number) {
       })
       .catch((err) => {
         emitter.emit("alert", "Links Failed to update!!!");
-        linksChangeStatus.value[pos] = "idle";
+        linksChangeStatus.value[pos] = "failed";
+        setTimeout(() => {
+          linksChangeStatus.value[pos] = "idle";
+        }, 1000);
         console.error(err);
       });
   }, 3000);
