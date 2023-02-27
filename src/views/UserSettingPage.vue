@@ -5,8 +5,13 @@ import PencilIcon from "@/components/Icons/PencilIcon.vue";
 import { useAuth0 } from "@auth0/auth0-vue";
 import { useEmitter } from "@/composables/EventEmitter";
 import axios from "axios";
-import { useMutation } from "@vue/apollo-composable";
-import { UPDATE_LOCATION, UPDATE_INTERESTS } from "@/graphql";
+import { useMutation, useQuery } from "@vue/apollo-composable";
+import {
+  UPDATE_LOCATION,
+  UPDATE_INTERESTS,
+  SET_LINKS,
+  GET_USER_BY_USERNAME,
+} from "@/graphql";
 const emitter = useEmitter();
 const { files, open, reset } = useFileDialog();
 const isImageUploading = ref<boolean | null>(false);
@@ -14,9 +19,21 @@ const { getAccessTokenSilently, user } = useAuth0();
 const fullNameChangeStatus = ref("idle");
 const locationChangeStatus = ref("idle");
 const interestsChangeStatus = ref("idle");
+const linksChangeStatus = ref(Array.from({ length: 4 }).fill("idle"));
+const dbUser = ref();
+const { onResult } = useQuery(GET_USER_BY_USERNAME, {
+  username: user.value.nickname,
+});
 let fullNameTimeout: any;
 let locationTimeout: any;
 let interestsTimeout: any;
+let linkTimeout: any;
+let links = ref<{ url: string }[]>([]);
+
+onResult((r) => {
+  dbUser.value = r.data.users[0];
+  links.value = (r.data.users[0].social_links || []).map((link: any) => link);
+});
 
 watch(files, () => {
   if (files.value?.length) {
@@ -201,9 +218,36 @@ function changeInterests(e: any) {
         })
         .catch((err) => {
           console.error(err);
-          // emitter.emit("alert", "Interests failed to Update!!!");
+          emitter.emit("alert", "Interests failed to Update!!!");
         });
     }
+  }, 3000);
+}
+function setLinks(event: any, pos: number) {
+  clearTimeout(linkTimeout);
+  linksChangeStatus.value[pos] = "updating";
+  linkTimeout = setTimeout(() => {
+    console.log(links.value);
+    links.value[pos] = { url: event.target.value };
+    const re = /\bhttps?:\S+\b/;
+    const link = links.value[pos].url.match(re);
+    const { mutate } = useMutation(SET_LINKS);
+    if (!link) {
+      return emitter.emit("alert", "Enter a valid URL!!!");
+    }
+    console.log(links.value);
+    mutate({ link: links.value, user: user.value.nickname })
+      .then(() => {
+        linksChangeStatus.value[pos] = "updated";
+        setTimeout(() => {
+          linksChangeStatus.value[pos] = "idle";
+        }, 1000);
+      })
+      .catch((err) => {
+        emitter.emit("alert", "Links Failed to update!!!");
+        linksChangeStatus.value[pos] = "idle";
+        console.error(err);
+      });
   }, 3000);
 }
 </script>
@@ -271,10 +315,27 @@ function changeInterests(e: any) {
             </div>
             <div class="user-option-child social-links">
               <span class="option">social links</span>
-              <input type="text" class="input-option" placeholder="link1" />
-              <input type="text" class="input-option" placeholder="link2" />
-              <input type="text" class="input-option" placeholder="link3" />
-              <input type="text" class="input-option" placeholder="link4" />
+              <div
+                v-for="val in [0, 1, 2, 3]"
+                :key="val"
+                class="link-container"
+              >
+                <input
+                  class="input-option"
+                  type="text"
+                  :value="dbUser?.social_links[val]?.url || ''"
+                  :placeholder="'link' + (val + 1)"
+                  @input="setLinks($event, val)"
+                />
+                <span
+                  :class="{
+                    'user-options__updating link':
+                      linksChangeStatus[val] === 'updating',
+                    'user-options__updated link':
+                      linksChangeStatus[val] === 'updated',
+                  }"
+                ></span>
+              </div>
             </div>
 
             <div class="user-option-child">
@@ -283,6 +344,7 @@ function changeInterests(e: any) {
                 type="text"
                 id="location"
                 class="input-option"
+                :value="dbUser?.location || ''"
                 @input="changeLocation"
                 placeholder="current location"
               />
@@ -299,6 +361,7 @@ function changeInterests(e: any) {
                 type="text"
                 id="interests"
                 @input="changeInterests"
+                :value="dbUser?.interests || ''"
                 class="input-option"
                 placeholder="interests"
               />
@@ -448,6 +511,10 @@ function changeInterests(e: any) {
                 32% 100%,
                 0% 50%
               );
+              &.link {
+                top: 30%;
+                right: -3rem;
+              }
             }
             .user-options__updating {
               outline: 3px dotted var(--color-text);
@@ -459,6 +526,10 @@ function changeInterests(e: any) {
               width: 1rem;
               height: 1rem;
               animation: rotate 1s ease-out infinite;
+              &.link {
+                top: 30%;
+                right: -3rem;
+              }
               @keyframes rotate {
                 0% {
                   transform: rotate(0deg);
@@ -472,6 +543,9 @@ function changeInterests(e: any) {
               display: flex;
               flex-direction: column;
               gap: 0.3rem;
+              .link-container {
+                position: relative;
+              }
             }
             .input-option {
               padding: 0.5rem;
