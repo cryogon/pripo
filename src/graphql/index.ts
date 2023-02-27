@@ -799,3 +799,18 @@ export const UPDATE_ABOUT = gql`
     }
   }
 `;
+
+export const SET_LINKS = gql`
+  mutation setLinks($link: jsonb!, $user: String!) {
+    update_users(
+      _set: { social_links: $link }
+      where: { username: { _eq: $user } }
+    ) {
+      returning {
+        id
+        username
+        social_links
+      }
+    }
+  }
+`;

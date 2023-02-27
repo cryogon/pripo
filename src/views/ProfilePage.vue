@@ -79,7 +79,7 @@ router.afterEach((to, from) => {
     refetch({ id: to.params.user, username: to.params.user });
 });
 onResult((r) => {
-  aboutContent.value.newValue = user.value?.users[0].about || "";
+  aboutContent.value.newValue = JSON.parse(user.value?.users[0].about) || "";
 
   if (user.value?.users[0].cover_picture)
     coverImage.value = user.value?.users[0].cover_picture;
@@ -384,13 +384,13 @@ onMounted(() => {
         </div>
         <div class="social-media-links" v-if="user.users[0].social_links">
           <a
-            href="https://cryogon.netlify.app"
+            :href="link?.url"
             class="social-links"
             v-for="(link, index) in user.users[0].social_links"
             :key="index"
           >
             <LinkIcon />
-            {{ link }}
+            {{ link?.url }}
           </a>
         </div>
       </section>
@@ -555,9 +555,13 @@ onMounted(() => {
         min-height: 3rem;
       }
       .about-section__input {
+        all: unset;
         min-height: 6rem;
+        padding: 0.2rem;
         background-color: #202020;
-        color: var(--color-text);
+        &:focus {
+          outline: 1px solid white;
+        }
       }
       .about-section__option {
         place-self: flex-end;
