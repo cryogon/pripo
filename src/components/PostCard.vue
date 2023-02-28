@@ -85,6 +85,9 @@ function showFormatedDate(date: Date | string | number) {
   </div>
 </template>
 <style scoped lang="scss">
+a {
+  padding: 0;
+}
 .container {
   .header {
     display: inline-flex;
@@ -112,9 +115,6 @@ function showFormatedDate(date: Date | string | number) {
     cursor: pointer;
     padding: 0;
     position: relative;
-  }
-  .tag:hover {
-    background-color: var(--link-hover-background);
   }
   .tag:not(:last-child):after {
     content: ", ";

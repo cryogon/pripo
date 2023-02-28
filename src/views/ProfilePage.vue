@@ -63,7 +63,7 @@ const aboutContent = ref({
 const isAboutEditable = ref(false);
 //changing this will change cover image
 const coverImage = ref("");
-const currentSection = ref<string | null>("About");
+const currentSection = ref<string | null>("about");
 const isCoverImageLoading = ref<boolean | null>(null);
 const getFilteredBlogs = computed(() => {
   if (user.value.users[0].username === u.value?.nickname) {
@@ -121,9 +121,15 @@ function changeAbout(content: string) {
     );
   }
 
-  const { mutate } = useMutation(UPDATE_ABOUT);
+  const { mutate, onError } = useMutation(UPDATE_ABOUT);
   mutate({ user: u.value.nickname, content: JSON.stringify(content) });
   isAboutEditable.value = false;
+  onError(() => {
+    emitter.emit(
+      "alert",
+      "Failed To changes about please refresh page and try again!"
+    );
+  });
 }
 
 function followUser(user: User) {
@@ -201,7 +207,7 @@ async function changeCoverPicture() {
           url,
           {
             user_metadata: {
-              cover_image: image.url,
+              cover_image: image.secure_url,
             },
           },
           {
@@ -213,7 +219,7 @@ async function changeCoverPicture() {
         )
         .then(() => {
           emitter.emit("alert", "Cover Page Updated Sucessfully");
-          coverImage.value = image.url;
+          coverImage.value = image.secure_url;
         })
         .catch((err) => {
           console.error(err);
@@ -230,8 +236,8 @@ function clearImage() {
 
 //Watchers
 watch(y, () => {
-  //Will use different Method later
-  if (y.value === 80) {
+  //TODO:Will use different Method later
+  if (y.value <= 80) {
     navIsCompact.value = true;
   } else {
     navIsCompact.value = false;
@@ -271,7 +277,7 @@ onMounted(() => {
   );
   watch(background, () => {
     background.value &&
-      (background.value.querySelectorAll(".section .heading") || []).forEach(
+      (background.value.querySelectorAll(".section > .heading") || []).forEach(
         (section: any) => {
           observer.observe(section);
         }
@@ -406,7 +412,7 @@ onMounted(() => {
             :key="i"
             :to="`#${tab.toLowerCase()}`"
             class="tab-item"
-            :class="{ active: tab === currentSection }"
+            :class="{ active: tab.toLowerCase() === currentSection }"
             >{{ tab }}</router-link
           >
         </ul>
@@ -558,6 +564,7 @@ onMounted(() => {
         all: unset;
         min-height: 6rem;
         padding: 0.2rem;
+        border-radius: 0.3rem;
         background-color: #202020;
         &:focus {
           outline: 1px solid white;
@@ -876,7 +883,7 @@ onMounted(() => {
       border-radius: 12px;
       position: sticky;
       z-index: 1;
-      top: 5rem;
+      top: 4.9rem;
       background-color: #252525;
       transition: 200ms;
       &.is-compact {

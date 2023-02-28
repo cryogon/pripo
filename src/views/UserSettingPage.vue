@@ -98,7 +98,7 @@ function updateImage() {
           .post(
             url,
             {
-              avatar: image.url,
+              avatar: image.secure_url,
             },
             {
               headers: {
@@ -235,12 +235,15 @@ function setLinks(event: any, pos: number) {
   clearTimeout(linkTimeout);
   linksChangeStatus.value[pos] = "updating";
   linkTimeout = setTimeout(() => {
-    console.log(links.value);
     links.value[pos] = { url: event.target.value };
     const re = /\bhttps?:\S+\b/;
     const link = links.value[pos].url.match(re);
     const { mutate } = useMutation(SET_LINKS);
     if (!link) {
+      linksChangeStatus.value[pos] = "failed";
+      setTimeout(() => {
+        linksChangeStatus.value[pos] = "idle";
+      }, 1000);
       return emitter.emit("alert", "Enter a valid URL!!!");
     }
     console.log(links.value);
