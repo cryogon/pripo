@@ -32,7 +32,8 @@ let links = ref<{ url: string }[]>([]);
 
 onResult((r) => {
   dbUser.value = r.data.users[0];
-  links.value = (r.data.users[0].social_links || []).map((link: any) => link);
+  console.log(dbUser.value);
+  // links.value = (r.data.users[0].social_links || []).map((link: any) => link);
 });
 
 watch(files, () => {
@@ -75,8 +76,7 @@ const img = ref<string | null>(`${user.value.picture}`);
 async function uploadImage() {
   const data = new FormData();
   data.append("file", files.value?.item(0) as any);
-  data.append("upload_preset", "wdo2tdms");
-  console.log(import.meta.env.VITE_IMG_UPLOAD_PATH);
+  data.append("upload_preset", import.meta.env.VITE_IMG_PRESET);
   const image = await axios({
     url: import.meta.env.VITE_IMG_UPLOAD_PATH,
     method: "POST",
@@ -142,7 +142,7 @@ function changeFullName(e: any) {
         const url = "https://pripo-api.vercel.app/user/" + user.value.sub;
         if (e.target && e.target.value.length > 0) {
           axios
-            .patch(
+            .post(
               url,
               {
                 fullname: e.target.value,
@@ -337,7 +337,10 @@ function setLinks(event: any, pos: number) {
                 <input
                   class="input-option"
                   type="text"
-                  :value="dbUser?.social_links[val]?.url || ''"
+                  :value="
+                    (dbUser?.social_links && dbUser?.social_links[val])?.url ||
+                    ''
+                  "
                   :placeholder="'link' + (val + 1)"
                   @input="setLinks($event, val)"
                 />

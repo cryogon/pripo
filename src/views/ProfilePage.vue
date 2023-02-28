@@ -182,7 +182,7 @@ async function uploadImage() {
   }
   const data = new FormData();
   data.append("file", files.value[0]);
-  data.append("upload_preset", "wdo2tdms");
+  data.append("upload_preset", import.meta.env.VITE_IMG_PRESET);
 
   const image = await axios({
     url: import.meta.env.VITE_IMG_UPLOAD_PATH,
@@ -203,7 +203,7 @@ async function changeCoverPicture() {
     getAccessTokenSilently().then((token) => {
       const url = "https://pripo-api.vercel.app/cover/" + u.value.sub;
       axios
-        .patch(
+        .post(
           url,
           {
             user_metadata: {
