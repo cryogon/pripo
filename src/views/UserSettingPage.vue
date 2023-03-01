@@ -32,8 +32,7 @@ let links = ref<{ url: string }[]>([]);
 
 onResult((r) => {
   dbUser.value = r.data.users[0];
-  console.log(dbUser.value);
-  // links.value = (r.data.users[0].social_links || []).map((link: any) => link);
+  links.value = (r.data.users[0].social_links || []).map((link: any) => link);
 });
 
 watch(files, () => {
@@ -56,18 +55,6 @@ watch(files, () => {
   }
 });
 
-function onDragOver(event: any) {
-  event.stopPropagation();
-  event.preventDefault();
-  // Style the drag-and-drop as a "copy file" operation.
-  event.dataTransfer.dropEffect = "copy";
-}
-function onDrop(event: any) {
-  event.stopPropagation();
-  event.preventDefault();
-  const fileList = event.dataTransfer.files;
-  console.log(fileList);
-}
 function openImage() {
   open({ accept: "image/gif,image/jpeg,image/x-png" });
 }
@@ -246,7 +233,6 @@ function setLinks(event: any, pos: number) {
       }, 1000);
       return emitter.emit("alert", "Enter a valid URL!!!");
     }
-    console.log(links.value);
     mutate({ link: links.value, user: user.value.nickname })
       .then(() => {
         linksChangeStatus.value[pos] = "updated";
@@ -273,13 +259,7 @@ function setLinks(event: any, pos: number) {
         <article class="profile-settings" id="profile">
           <div class="user-avatar" :style="`--image-url:url(${img});`">
             <label for="drop-area" class="option">avatar</label>
-            <div
-              id="drop-area"
-              class="drop-area"
-              @dragover="onDragOver"
-              @drop="onDrop"
-              @click="openImage"
-            >
+            <div id="drop-area" class="drop-area" @click="openImage">
               <i class="edit-icon" title="change profile">
                 <PencilIcon class="icon" />
               </i>
