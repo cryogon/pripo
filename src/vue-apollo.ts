@@ -75,6 +75,13 @@ const cache = new InMemoryCache({
         },
       },
     },
+    users: {
+      fields: {
+        followers: {
+          merge: false,
+        },
+      },
+    },
   },
 });
 export const apolloClient = new ApolloClient({

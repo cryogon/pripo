@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { User } from "@/types";
 import { useAuth0 } from "@auth0/auth0-vue";
-import { ref } from "vue";
 import { useMutation } from "@vue/apollo-composable";
 import { FOLLOW_USER, UNFOLLOW_USER, GET_FILTERED_POSTS } from "@/graphql";
 import router from "@/router";
@@ -10,7 +9,6 @@ defineProps<{
   user: User | any;
 }>();
 const { user: u } = useAuth0();
-const followed = ref(false);
 function isFollowed(user: any) {
   for (let follower of user.followers || []) {
     if (follower.user.username === u.value.nickname) {
@@ -62,12 +60,48 @@ function followUser(user: User) {
     },
   });
   mutate({ me: u.value.nickname, user: user.username });
-  followed.value = true;
 }
 function unfollowUser(user: User) {
-  const { mutate } = useMutation(UNFOLLOW_USER);
+  const { mutate } = useMutation(UNFOLLOW_USER, {
+    update(cache, { data: unfollow }) {
+      let data = cache.readQuery({
+        query: GET_FILTERED_POSTS,
+        variables: {
+          query: `%${query.q}%`,
+        },
+      }) as any;
+      data = {
+        blogs: data.blogs,
+        users: [
+          ...data.users.map((user: any) => {
+            if (
+              user.followers.some((f: any) => {
+                return (
+                  f.user.username ==
+                    unfollow.delete_follow_system.returning[0].user &&
+                  user.username ==
+                    unfollow.delete_follow_system.returning[0].follows
+                );
+              })
+            ) {
+              return {
+                ...user,
+                followers: user.followers.filter(
+                  (s: any) =>
+                    s.user.username !==
+                    unfollow.delete_follow_system.returning[0].user
+                ),
+              };
+            } else {
+              return user;
+            }
+          }),
+        ],
+      };
+      cache.writeQuery({ query: GET_FILTERED_POSTS, data });
+    },
+  });
   mutate({ me: u.value.nickname, user: user.username });
-  followed.value = false;
 }
 </script>
 <template>
