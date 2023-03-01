@@ -709,11 +709,13 @@ export const FOLLOW_USER = gql`
           id
           name
           username
+          profile_picture
         }
         followings {
           id
           name
           username
+          profile_picture
         }
       }
     }
