@@ -556,9 +556,11 @@ onMounted(() => {
       display: flex;
       flex-direction: column;
       padding-block-end: 0;
+      overflow-x: hidden;
       .about-section__content {
         margin-block-start: auto;
         min-height: 3rem;
+        flex-wrap: wrap;
       }
       .about-section__input {
         all: unset;
