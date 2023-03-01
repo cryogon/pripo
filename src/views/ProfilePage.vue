@@ -46,7 +46,6 @@ const {
   : useQuery(GET_USER_BY_USERNAME, { username: userParam });
 const userFound = ref(false);
 const { y } = useElementBounding(nav);
-const clickedOnFollowed = ref(false);
 const navIsCompact = ref(false);
 const tabs = ["About", "Posts", "Favourites", "Followers", "Followings"];
 const md = MarkDownIt({
@@ -133,14 +132,58 @@ function changeAbout(content: string) {
 }
 
 function followUser(user: User) {
-  const { mutate } = useMutation(FOLLOW_USER);
+  const { mutate } = useMutation(FOLLOW_USER, {
+    update(cache, { data: follow }) {
+      let data = cache.readQuery({
+        query: GET_USER_BY_USERNAME,
+        variables: {
+          username: userParam,
+        },
+      }) as any;
+      let u = structuredClone(data.users);
+      let follower = {
+        __typename: follow.insert_follow_system.returning[0].__typename,
+        user: {
+          __typename: "users",
+          name: follow.insert_follow_system.returning[0].followings.name,
+          username:
+            follow.insert_follow_system.returning[0].followings.username,
+          profile_picture:
+            follow.insert_follow_system.returning[0].followings.profile_picture,
+        },
+      };
+      u[0].followers.aggregate.count += 1;
+      u[0].followers.nodes.push(follower);
+      data = {
+        users: u[0],
+      };
+      cache.writeQuery({ query: GET_USER_BY_USERNAME, data });
+    },
+  });
   mutate({ me: u.value.nickname, user: user.username });
-  clickedOnFollowed.value = true;
 }
 function unfollowUser(user: User) {
-  const { mutate } = useMutation(UNFOLLOW_USER);
+  const { mutate } = useMutation(UNFOLLOW_USER, {
+    update(cache, { data: unfollow }) {
+      let data = cache.readQuery({
+        query: GET_USER_BY_USERNAME,
+        variables: {
+          username: userParam,
+        },
+      }) as any;
+      let u = structuredClone(data.users);
+      u[0].followers.aggregate.count -= 1;
+      u[0].followers.nodes = u[0].followers.nodes.filter(
+        (f: { user: User }) =>
+          f.user.username !== unfollow.delete_follow_system.returning[0].user
+      );
+      data = {
+        users: u[0],
+      };
+      cache.writeQuery({ query: GET_USER_BY_USERNAME, data });
+    },
+  });
   mutate({ me: u.value.nickname, user: user.username });
-  clickedOnFollowed.value = false;
 }
 
 function isMutual(user: any) {
@@ -357,7 +400,7 @@ onMounted(() => {
               type="button"
               class="follow-button"
               @click="followUser(user.users[0])"
-              v-if="!isFollowed(user.users[0]) && !clickedOnFollowed"
+              v-if="!isFollowed(user.users[0])"
             >
               Follow
             </button>
@@ -556,9 +599,11 @@ onMounted(() => {
       display: flex;
       flex-direction: column;
       padding-block-end: 0;
+      overflow-x: hidden;
       .about-section__content {
         margin-block-start: auto;
         min-height: 3rem;
+        flex-wrap: wrap;
       }
       .about-section__input {
         all: unset;

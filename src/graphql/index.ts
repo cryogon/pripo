@@ -621,6 +621,12 @@ export const GET_FILTERED_POSTS = gql`
       name
       username
       profile_picture
+      location
+      followers {
+        user: followings {
+          username
+        }
+      }
     }
   }
 `;
@@ -703,11 +709,13 @@ export const FOLLOW_USER = gql`
           id
           name
           username
+          profile_picture
         }
         followings {
           id
           name
           username
+          profile_picture
         }
       }
     }

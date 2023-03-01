@@ -1,13 +1,107 @@
 <script setup lang="ts">
-import { useEmitter } from "@/composables/EventEmitter";
 import type { User } from "@/types";
-
+import { useAuth0 } from "@auth0/auth0-vue";
+import { useMutation } from "@vue/apollo-composable";
+import { FOLLOW_USER, UNFOLLOW_USER, GET_FILTERED_POSTS } from "@/graphql";
+import router from "@/router";
+const query = router.currentRoute.value.query;
 defineProps<{
   user: User | any;
 }>();
-const emitter = useEmitter();
-function warning() {
-  emitter.emit("alert", "This feature is not available yet");
+const { user: u } = useAuth0();
+function isFollowed(user: any) {
+  for (let follower of user.followers || []) {
+    if (follower.user.username === u.value.nickname) {
+      return true;
+    }
+  }
+  return false;
+}
+function isMe(user: User) {
+  return user.username === u.value.nickname;
+}
+
+//TODO:Update Cache after following
+function followUser(user: User) {
+  const { mutate } = useMutation(FOLLOW_USER, {
+    update(cache, { data: follow }) {
+      let data = cache.readQuery({
+        query: GET_FILTERED_POSTS,
+        variables: {
+          query: `%${query.q}%`,
+        },
+      }) as any;
+      let u = structuredClone(
+        data.users.filter(
+          (user: any) =>
+            user.id === follow.insert_follow_system.returning[0].followers.id
+        )
+      );
+      let follower = {
+        __typename: follow.insert_follow_system.returning[0].__typename,
+        user: {
+          __typename: "users",
+          username:
+            follow.insert_follow_system.returning[0].followings.username,
+        },
+      };
+      u[0].followers.push(follower);
+      data = {
+        blogs: data.blogs,
+        users: [
+          ...data.users.filter(
+            (user: any) =>
+              user.id != follow.insert_follow_system.returning[0].followers.id
+          ),
+          u[0],
+        ],
+      };
+      cache.writeQuery({ query: GET_FILTERED_POSTS, data });
+    },
+  });
+  mutate({ me: u.value.nickname, user: user.username });
+}
+function unfollowUser(user: User) {
+  const { mutate } = useMutation(UNFOLLOW_USER, {
+    update(cache, { data: unfollow }) {
+      let data = cache.readQuery({
+        query: GET_FILTERED_POSTS,
+        variables: {
+          query: `%${query.q}%`,
+        },
+      }) as any;
+      data = {
+        blogs: data.blogs,
+        users: [
+          ...data.users.map((user: any) => {
+            if (
+              user.followers.some((f: any) => {
+                return (
+                  f.user.username ==
+                    unfollow.delete_follow_system.returning[0].user &&
+                  user.username ==
+                    unfollow.delete_follow_system.returning[0].follows
+                );
+              })
+            ) {
+              return {
+                ...user,
+                followers: user.followers.filter(
+                  (s: any) =>
+                    s.user.username !==
+                    unfollow.delete_follow_system.returning[0].user
+                ),
+              };
+            } else {
+              return user;
+            }
+          }),
+        ],
+      };
+      cache.writeQuery({ query: GET_FILTERED_POSTS, data });
+    },
+  });
+  mutate({ me: u.value.nickname, user: user.username });
 }
 </script>
 <template>
@@ -22,12 +116,20 @@ function warning() {
     </router-link>
     <router-link :to="`users/${user.username}`">
       <div class="user-info">
-        <span class="name">{{ user.name }}</span>
+        <span>
+          <span class="name">{{ user.name }}</span>
+          <span class="location">{{ user.location }}</span>
+        </span>
         <span class="username">{{ "@" + user.username }}</span>
       </div>
     </router-link>
-    <div class="options">
-      <button class="follow" @click="warning">Follow</button>
+    <div class="options" v-if="!isMe(user)">
+      <button class="follow" @click="followUser(user)" v-if="!isFollowed(user)">
+        Follow
+      </button>
+      <button class="unfollow" @click="unfollowUser(user)" v-else>
+        Unfollow
+      </button>
     </div>
   </div>
 </template>
@@ -59,6 +161,11 @@ function warning() {
       .name {
         font-weight: 600;
       }
+      .location {
+        margin-inline-start: 0.5rem;
+        font-size: 14px;
+        opacity: 0.8;
+      }
       .username {
         color: var(--accent-color);
         font-size: 14px;
@@ -67,7 +174,7 @@ function warning() {
   }
   .options {
     margin-inline-start: auto;
-    .follow {
+    button {
       margin: 0.4rem;
       padding: 0.4rem 1.4rem;
       border-radius: 2rem;
@@ -76,6 +183,12 @@ function warning() {
       outline: none;
       border: none;
       color: var(--text-color);
+      &.follow {
+        background-color: var(--accent-color);
+      }
+      &.unfollow {
+        background-color: grey;
+      }
     }
   }
 }
