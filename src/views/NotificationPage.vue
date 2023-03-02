@@ -36,6 +36,18 @@ function getFilteredComments(): any {
   }
   return notifications.value.filter((n: any) => n.has_read === false);
 }
+function getDesc(type: string) {
+  switch (type) {
+    case "comment":
+      return "ommented on your post";
+    case "reply":
+      return "replied to you comment";
+    case "follow":
+      return "followed you";
+    default:
+      return "Notification";
+  }
+}
 </script>
 <template>
   <main v-if="notifications && !loading">
@@ -81,6 +93,7 @@ function getFilteredComments(): any {
             referrerpolicy="no-referrer"
           />
           <router-link
+            v-if="notification.blog_id"
             :to="`/posts/${notification.blog_id}#c${notification.comment.id}`"
           >
             <div class="notification-info">
@@ -94,6 +107,14 @@ function getFilteredComments(): any {
                 {{ notification.comment.content }}
               </div>
             </div>
+          </router-link>
+          <router-link
+            v-else
+            :to="`/users/${notification.sender.username}`"
+            class="user-info"
+          >
+            <span class="user">{{ notification.sender.username + " " }}</span>
+            <span class="description"> {{ getDesc(notification.type) }}</span>
           </router-link>
           <div class="markread-and-date">
             <span
