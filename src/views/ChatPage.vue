@@ -1,4 +1,13 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { GET_USER_BY_USERNAME } from "@/graphql";
+import { useAuth0 } from "@auth0/auth0-vue";
+import { useQuery } from "@vue/apollo-composable";
+
+const { user } = useAuth0();
+// const { onResult } = useQuery(GET_USER_BY_USERNAME, {
+//   username: user.value?.nickname || "",
+// });
+</script>
 <template>
   <main>
     <section class="container">
