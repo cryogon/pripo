@@ -19,11 +19,13 @@ onError(() => {
 });
 const builder = ref(new CommentBuilder());
 const comments = ref();
-watch(result, () => {
-  builder.value.clear();
-  builder.value.addMultiple(result.value.comments);
-  comments.value = builder.value.root?.children;
-});
+if (props.blog.comments_allowed && props.blog.comments) {
+  watch(result, () => {
+    builder.value.clear();
+    builder.value.addMultiple(result.value.comments);
+    comments.value = builder.value.root?.children;
+  });
+}
 
 /**
  *
@@ -38,7 +40,10 @@ emitter.on("refetchComments", () => {
 
 <template>
   <section class="comment-section">
-    <div class="comment-container">
+    <div class="disabled-comments" v-if="!blog.comments_allowed">
+      <h4>Comments are Disabled by author</h4>
+    </div>
+    <div class="comment-container" v-else>
       <CommentInputBox :blog="blog" />
       <div class="comment-main" v-for="comment in comments" :key="comment.id">
         <CommentCardv2 :comment="comment" />
@@ -167,6 +172,9 @@ emitter.on("refetchComments", () => {
 <style scoped lang="scss">
 .comment-section {
   margin-block-start: 2rem;
+  .disabled-comments {
+    padding-block-start: 2rem;
+  }
   .comment-container {
     background-color: var(--comment-section-background);
     min-height: 10rem;

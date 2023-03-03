@@ -12,7 +12,7 @@ const {
 } = useQuery(GET_ALL_BLOGS, { offset: 0, limit: 6 });
 const isOnline = useOnline();
 
-localStorage.setItem("currentTitle", "Pripo");
+document.title = "Pripo";
 onError((e) => {
   console.error(e);
   console.error("Some Error Occured! Try to refetch");

@@ -15,6 +15,7 @@ export interface Blog {
     user_id: number;
   }[];
   shares: number;
+  comments_allowed: boolean;
   comments?: Comment[];
 }
 

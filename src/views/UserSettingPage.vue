@@ -30,6 +30,8 @@ let interestsTimeout: any;
 let linkTimeout: any;
 let links = ref<{ url: string }[]>([]);
 
+localStorage.setItem("currentTitle", "Settings");
+
 onResult((r) => {
   dbUser.value = r.data.users[0];
   links.value = (r.data.users[0].social_links || []).map((link: any) => link);

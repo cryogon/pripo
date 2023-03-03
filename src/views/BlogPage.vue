@@ -26,6 +26,7 @@ const blog = ref<any>();
 //Variables For Editing Blogs
 const blogEditable = ref(false);
 const isPostPublic = ref(false);
+const isCommentDisabled = ref(false);
 const blogContent = ref<HTMLParagraphElement>();
 const blogTitle = ref<HTMLHeadingElement>();
 const blogTags = ref();
@@ -42,6 +43,7 @@ watch(result, () => {
   document.title = result.value.blogs[0].title + " - Pripo";
   blog.value = result.value.blogs[0];
   isPostPublic.value = blog.value.is_public;
+  isCommentDisabled.value = !blog.value.comments_allowed;
   blogTags.value = blog.value.tags.join(" ");
   if (
     blog.value.favourites.filter((u: any) => u.user_id === user.value?.uid)
@@ -116,6 +118,7 @@ function editBlog() {
     blogId: blog.value.id,
     title: blogTitle.value?.innerText,
     content: JSON.stringify(blogContent.value?.innerText),
+    commentAllowed: !isCommentDisabled.value,
     isPublic: isPostPublic.value,
     tags: blogTags.value.split(" ").map((c: any) => c.toLowerCase()),
   });
@@ -188,6 +191,13 @@ function editBlog() {
             :checked="isPostPublic"
             @change="isPostPublic = !isPostPublic"
           />
+          <label for="isPostPublic">Disable Comments </label>
+          <input
+            type="checkbox"
+            id="isPostPublic"
+            :checked="isCommentDisabled"
+            @change="isCommentDisabled = !isCommentDisabled"
+          />
           <button
             type="submit"
             class="post-button input-active-area"
@@ -219,6 +229,7 @@ function editBlog() {
       gap: 10px;
       height: 2rem;
       font-family: monospace;
+      flex-wrap: wrap;
       font-size: 16px;
       align-items: center;
       margin-block: 2rem;
@@ -232,18 +243,18 @@ function editBlog() {
       input {
         accent-color: aquamarine;
       }
-      .post-button {
-        margin-inline-start: auto;
-        border-radius: 1rem;
-        padding: 0.35rem 1.2rem;
-        align-self: flex-start;
-        background: var(--accent-color);
-        color: var(--text-color);
-        font-size: 14px;
-        transition: 150ms;
-        height: 3rem;
-        width: 5rem;
-      }
+    }
+    .post-button {
+      margin-inline-start: auto;
+      border-radius: 1rem;
+      padding: 0.35rem 1.2rem;
+      align-self: flex-start;
+      background: var(--accent-color);
+      color: var(--text-color);
+      font-size: 14px;
+      transition: 150ms;
+      height: 3rem;
+      width: 5rem;
     }
   }
 

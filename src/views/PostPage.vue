@@ -5,12 +5,15 @@ import { useAuth0 } from "@auth0/auth0-vue";
 import { useMutation } from "@vue/apollo-composable";
 import { INSERT_BLOG } from "@/graphql";
 import { useEmitter } from "@/composables/EventEmitter";
-localStorage.setItem("currentTitle", "Post");
+
+document.title = "Post ● Pripo";
+
 const emitter = useEmitter();
 const postTitle = ref("");
 const postContent = ref("");
 const content = ref();
 const isPostPublic = ref(false);
+const isCommentDisabled = ref(false);
 const blogTags = ref("");
 
 const { user } = useAuth0();
@@ -39,6 +42,7 @@ function pushPostToDB() {
     title: postTitle.value,
     content: JSON.stringify(postContent.value),
     isPublic: isPostPublic.value,
+    commentAllowed: !isCommentDisabled.value,
     tags: blogTags.value?.split(" ").map((c) => c.toLowerCase()),
     username: user.value.nickname,
     likes: 0,
@@ -85,14 +89,31 @@ function pushPostToDB() {
         v-model="blogTags"
       />
     </div>
-    <div class="is-post-public">
-      <label for="is-post-public" class="is-post-public-label">Public: </label>
-      <input
-        type="checkbox"
-        id="is-post-public"
-        :value="isPostPublic"
-        @change="isPostPublic = !isPostPublic"
-      />
+    <div class="bottom-bar">
+      <div class="bottom-bar__options">
+        <div class="is-post-public">
+          <input
+            type="checkbox"
+            id="is-post-public"
+            :value="isPostPublic"
+            @change="isPostPublic = !isPostPublic"
+          />
+          <label for="is-post-public" class="bottom-bar__options-item">
+            Public
+          </label>
+        </div>
+        <div class="disable-comments">
+          <input
+            type="checkbox"
+            id="disable-comments"
+            :value="isCommentDisabled"
+            @change="isCommentDisabled = !isCommentDisabled"
+          />
+          <label for="disable-comments" class="bottom-bar__options-item">
+            Disable Comment
+          </label>
+        </div>
+      </div>
       <span class="post-button" @click="pushPostToDB"> Post </span>
     </div>
   </div>
@@ -109,14 +130,14 @@ function pushPostToDB() {
   .blog-title,
   .content-options,
   .tags,
-  .is-post-public {
+  .bottom-bar {
     background-color: var(--card-background);
     color: var(--text-color);
     padding-inline-start: 1rem;
     border: none;
     outline: none;
   }
-  .is-post-public-label {
+  .bottom-bar__options-item {
     opacity: 0.6;
   }
   .blog-title {
@@ -167,7 +188,7 @@ function pushPostToDB() {
     height: 2rem;
     width: 100%;
   }
-  .is-post-public {
+  .bottom-bar {
     display: flex;
     gap: 10px;
     // height: 2rem;
@@ -186,6 +207,7 @@ function pushPostToDB() {
       margin-inline: auto 0.3rem;
       margin-block: 0.3rem;
       cursor: pointer;
+
       &:active {
         background-color: rgb(58, 230, 173);
       }

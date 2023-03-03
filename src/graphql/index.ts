@@ -5,6 +5,7 @@ export const INSERT_BLOG = gql`
     $title: String!
     $content: String!
     $isPublic: Boolean!
+    $commentAllowed: Boolean!
     $tags: jsonb!
     $username: String!
     $likes: Int!
@@ -20,6 +21,7 @@ export const INSERT_BLOG = gql`
           username: $username
           likes: $likes
           shares: $shares
+          comments_allowed: $commentAllowed
         }
       ]
     ) {
@@ -79,6 +81,7 @@ export const GET_BLOG = gql`
       is_public
       likes
       tags
+      comments_allowed
       favourites {
         user_id
       }
@@ -462,6 +465,7 @@ export const EDIT_BLOG = gql`
     $blogId: Int!
     $title: String!
     $content: String!
+    $commentAllowed: Boolean!
     $isPublic: Boolean!
     $tags: jsonb!
   ) {
@@ -470,6 +474,7 @@ export const EDIT_BLOG = gql`
         title: $title
         content: $content
         is_public: $isPublic
+        comments_allowed: $commentAllowed
         tags: $tags
       }
       where: { id: { _eq: $blogId } }
@@ -478,6 +483,7 @@ export const EDIT_BLOG = gql`
         id
         title
         content
+        comments_allowed
         is_public
         tags
       }

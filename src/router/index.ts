@@ -72,6 +72,11 @@ const router = createRouter({
       component: () => import("@/components/LoadingScreen.vue"),
     },
     {
+      path: "/chat",
+      name: "chat",
+      component: () => import("@/views/ChatPage.vue"),
+    },
+    {
       path: "/404",
       name: "notfound",
       component: () => import("@/views/NotFound.vue"),
@@ -98,7 +103,6 @@ const router = createRouter({
 
 router.afterEach((to) => {
   router.isReady().then(() => {
-    document.title = localStorage.getItem("currentTitle") || "Pripo";
     if (to.meta.requiresAuth) {
       if (!localStorage.getItem("token")) {
         router.back();

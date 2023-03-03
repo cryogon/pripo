@@ -15,7 +15,7 @@ const { onResult, loading } = useQuery(GET_NOTIFICATIONS, {
 const notifications = ref();
 const { mutate } = useMutation(MARK_NOTIFICATION_READ);
 const filter = ref("all");
-
+document.title = `${user.value.nickname} ● Notifications`;
 onResult((r) => {
   notifications.value = r.data?.user_notifications;
 });
@@ -39,9 +39,9 @@ function getFilteredComments(): any {
 function getDesc(type: string) {
   switch (type) {
     case "comment":
-      return "ommented on your post";
+      return "commented on your post";
     case "reply":
-      return "replied to you comment";
+      return "replied to your comment";
     case "follow":
       return "followed you";
     default:
@@ -101,7 +101,7 @@ function getDesc(type: string) {
                 <span class="user"
                   >{{ notification.sender.username + " " }}
                 </span>
-                <span class="action">commented on your post</span>
+                <span class="action">{{ getDesc(notification.type) }}</span>
               </div>
               <div class="content">
                 {{ notification.comment.content }}
