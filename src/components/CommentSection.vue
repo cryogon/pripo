@@ -19,13 +19,14 @@ onError(() => {
 });
 const builder = ref(new CommentBuilder());
 const comments = ref();
-if (props.blog.comments_allowed && props.blog.comments) {
-  watch(result, () => {
+watch(result, () => {
+  if (props.blog.comments_allowed && result.value?.comments) {
     builder.value.clear();
     builder.value.addMultiple(result.value.comments);
     comments.value = builder.value.root?.children;
-  });
-}
+    console.log("called");
+  }
+});
 
 /**
  *

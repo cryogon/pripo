@@ -588,7 +588,6 @@ onMounted(() => {
     -moz-background-clip: text;
     color: transparent;
   }
-
   .card {
     min-height: 8rem;
     margin-block-start: 1rem;
@@ -600,6 +599,10 @@ onMounted(() => {
       flex-direction: column;
       padding-block-end: 0;
       overflow-x: hidden;
+      details {
+        cursor: pointer;
+        color: red;
+      }
       .about-section__content {
         margin-block-start: auto;
         min-height: 3rem;
