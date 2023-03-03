@@ -353,12 +353,12 @@ onMounted(() => {
           />
           <div class="icon loading" v-show="isCoverImageLoading"></div>
         </i>
+        <div
+          :style="`--user-avatar:url(${user.users[0].profile_picture})`"
+          alt="user-avatar"
+          class="avatar"
+        ></div>
       </div>
-      <div
-        :style="`--user-avatar:url(${user.users[0].profile_picture})`"
-        alt="user-avatar"
-        class="avatar"
-      ></div>
     </section>
     <div class="background" ref="background">
       <section class="basic-user-info">
@@ -672,7 +672,7 @@ onMounted(() => {
     position: relative;
     .cover-image {
       width: 100%;
-      height: 18rem;
+      aspect-ratio: 16/4;
       background-position: 50%;
       background-color: grey;
       display: flex;
@@ -796,7 +796,7 @@ onMounted(() => {
       width: 9rem;
       height: 9rem;
       display: block;
-      top: 12rem;
+      bottom: -3rem;
       left: 2.5rem;
       border-radius: 2rem;
       position: absolute;
@@ -806,6 +806,10 @@ onMounted(() => {
       background-size: cover;
       image-rendering: optimizeSpeed;
       image-orientation: from-image;
+      @media screen and (max-width: 700px) {
+        width: 6rem;
+        height: 6rem;
+      }
     }
   }
   .background {
