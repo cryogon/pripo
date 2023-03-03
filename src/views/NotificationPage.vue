@@ -15,7 +15,7 @@ const { onResult, loading } = useQuery(GET_NOTIFICATIONS, {
 const notifications = ref();
 const { mutate } = useMutation(MARK_NOTIFICATION_READ);
 const filter = ref("all");
-
+document.title = `${user.value.nickname} ● Notifications`;
 onResult((r) => {
   notifications.value = r.data?.user_notifications;
 });

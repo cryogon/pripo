@@ -79,7 +79,7 @@ router.afterEach((to, from) => {
 });
 onResult((r) => {
   aboutContent.value.newValue = JSON.parse(user.value?.users[0].about) || "";
-
+  document.title = `${user.value.users[0].username} ● Pripo`;
   if (user.value?.users[0].cover_picture)
     coverImage.value = user.value?.users[0].cover_picture;
   else coverImage.value = "";

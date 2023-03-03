@@ -11,6 +11,7 @@ const commentId = parseInt(params?.id as string);
 const builder = ref(new CommentBuilder());
 const { result } = useQuery(GET_THREAD_COMMENT, { id: commentId });
 const comments = ref<Comment[]>();
+document.title = `Comments ${commentId}`;
 watch(result, () => {
   builder.value.clear();
   builder.value.addMultiple(result.value.comments);

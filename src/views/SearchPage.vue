@@ -20,6 +20,7 @@ const { onResult, loading, refetch } =
         query: `%${params.q}%`,
       });
 
+document.title = `${params.q} ● Search`;
 //Refeching on route change
 watch(router.currentRoute, (currValue, oldValue) => {
   if (
