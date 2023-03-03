@@ -39,8 +39,8 @@ export interface User {
 }
 
 export interface Comment {
-  id: number | null;
-  content: string | null;
+  id: number;
+  content: string;
   parent_id: number | null;
   posted_on: string;
   blog_id: number;
