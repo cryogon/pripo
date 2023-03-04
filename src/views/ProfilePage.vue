@@ -54,6 +54,7 @@ const md = MarkDownIt({
   html: true,
   linkify: true,
   typographer: true,
+  breaks: true,
 });
 
 //For About Input
@@ -629,15 +630,26 @@ function redirectToChat(username: string) {
       display: flex;
       flex-direction: column;
       padding-block-end: 0;
+      word-wrap: break-word;
       overflow-x: hidden;
-      details {
-        cursor: pointer;
-        color: red;
-      }
+
       .about-section__content {
         margin-block-start: auto;
         min-height: 3rem;
         flex-wrap: wrap;
+        max-height: 25rem;
+        overflow-y: auto;
+        &::-webkit-scrollbar {
+          width: 0.3rem;
+        }
+        &::-webkit-scrollbar-track {
+          border-radius: 2rem;
+          background-color: #202020;
+        }
+        &::-webkit-scrollbar-thumb {
+          border-radius: 2rem;
+          background-color: #e75151;
+        }
       }
       .about-section__input {
         all: unset;
@@ -651,6 +663,7 @@ function redirectToChat(username: string) {
       }
       .about-section__option {
         place-self: flex-end;
+
         .edit-icon {
           padding: 0.4rem;
           width: 2rem;

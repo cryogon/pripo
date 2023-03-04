@@ -860,7 +860,7 @@ export const GET_CHAT_CONTENT = gql`
   query chat($user: String!, $receiver: String!) {
     user_chats(
       where: {
-        _and: [
+        _or: [
           { sender: { _eq: $user }, receiver: { _eq: $receiver } }
           { receiver: { _eq: $user }, sender: { _eq: $receiver } }
         ]
