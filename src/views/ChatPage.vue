@@ -1,18 +1,111 @@
 <script setup lang="ts">
-import { GET_USER_BY_USERNAME } from "@/graphql";
+import { GET_CHAT_ALL, LISTEN_CHAT_CONTENT, ADD_CHAT } from "@/graphql";
 import { useAuth0 } from "@auth0/auth0-vue";
-import { useQuery } from "@vue/apollo-composable";
+import { useMutation, useQuery, useSubscription } from "@vue/apollo-composable";
+import { ref, watchEffect } from "vue";
+import router from "@/router";
+import type { Chat } from "@/types";
+defineProps<{
+  userParam: string;
+}>();
 
 const { user } = useAuth0();
-// const { onResult } = useQuery(GET_USER_BY_USERNAME, {
-//   username: user.value?.nickname || "",
-// });
+const { onResult: onChatListReceived } = useQuery(GET_CHAT_ALL, {
+  user: user.value?.nickname || "",
+});
+const recipents = ref<any>([]);
+const messsageContent = ref("");
+const chats = ref<Chat[]>([]);
+onChatListReceived((r) => {
+  recipents.value = r.data.users[0].chatting_with;
+});
+
+function expandChat(_user: string) {
+  const { onResult } = useSubscription(LISTEN_CHAT_CONTENT, {
+    user: user.value?.nickname || "",
+    receiver: _user,
+  });
+  onResult((result) => {
+    chats.value = result.data.user_chats;
+  });
+}
+function sendMessage(_user: string) {
+  if (user.value?.nickname && !!messsageContent.value.length) {
+    const { mutate: addChat } = useMutation(ADD_CHAT);
+    addChat({
+      user: user.value.nickname,
+      receiver: _user,
+      content: messsageContent.value,
+    });
+    messsageContent.value = "";
+  }
+}
+
+function formatTime(time: number | string | Date) {
+  return new Intl.DateTimeFormat(undefined, {
+    hour: "2-digit",
+    hour12: true,
+    minute: "2-digit",
+  }).format(new Date(time));
+}
+watchEffect(() => {
+  expandChat(router.currentRoute.value.params.userParam as string);
+});
 </script>
 <template>
   <main>
     <section class="container">
-      <aside class="user-list"></aside>
-      <aside class="chat-main"></aside>
+      <aside class="user-list">
+        <div
+          class="user-list__item"
+          :class="{
+            selected: userParam && u.username === userParam,
+          }"
+          v-for="(u, i) in recipents"
+          @click="router.replace(`/chat/${u.username}`)"
+          :key="i"
+        >
+          <img :src="u.profile_picture" class="user-avatar" />
+          <span class="user-name">{{ u.username }}</span>
+        </div>
+      </aside>
+      <aside class="chat-main">
+        <div class="chat-main__chats">
+          <div
+            class="chat-item"
+            v-for="(chat, i) in chats"
+            :key="i"
+            :class="{ me: chat.sender.username === user?.nickname }"
+          >
+            <img
+              class="chat-item__avatar"
+              :src="chat.sender.profile_picture"
+              alt=""
+            />
+            <div class="chat-item__detail">
+              <span class="chat-content">
+                {{ chat.content }}
+              </span>
+              <span class="chat-date">
+                {{ formatTime(chat.created_at) }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="chat-main__input-container" v-show="userParam">
+          <input
+            type="text"
+            name="chat-main__input"
+            class="chat-main__input"
+            placeholder="Message"
+            v-model="messsageContent"
+          />
+          <button @click="sendMessage(userParam)" class="chat_main__button">
+            Send
+          </button>
+        </div>
+      </aside>
     </section>
   </main>
 </template>
@@ -23,14 +116,85 @@ main {
     display: grid;
     grid-template-columns: max(20vw, 10rem) 1fr;
     .user-list {
-      background-color: red;
+      background-color: #202020;
       width: 100%;
       min-height: 10rem;
+      padding: 0.3rem;
+      .user-list__item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 0.2rem;
+        cursor: pointer;
+        &.selected {
+          background-color: var(--link-hover-background);
+        }
+        &:not(.selected):hover {
+          background-color: var(--link-hover-background);
+        }
+        .user-avatar {
+          width: 2.5rem;
+          aspect-ratio: 1/1;
+          border-radius: 50%;
+        }
+      }
     }
     .chat-main {
-      background-color: aquamarine;
+      background-color: #303030;
+      display: grid;
       width: 100%;
       min-height: 10rem;
+      align-items: flex-end;
+      .chat-main__input-container {
+        display: flex;
+        padding: 0.3rem;
+        gap: 10px;
+        .chat-main__input {
+          background-color: #202020;
+          color: white;
+          padding: 0.3rem;
+          border: 0;
+          outline-color: transparent;
+          display: block;
+          flex: 1;
+        }
+        .chat_main__button {
+          all: unset;
+          background-color: var(--accent-color);
+          padding: 0.3rem;
+          border-radius: 0.5rem;
+          &:hover {
+            cursor: pointer;
+            background-color: rgb(0, 150, 100);
+          }
+        }
+      }
+      .chat-main__chats {
+        width: 100%;
+        .chat-item {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          margin: 10px;
+          &.me {
+            margin-inline-start: auto;
+            flex-direction: row-reverse;
+          }
+          .chat-item__avatar {
+            width: 3rem;
+            aspect-ratio: 1/1;
+            border-radius: 50%;
+          }
+          .chat-item__detail {
+            display: flex;
+            flex-direction: column;
+            .chat-date {
+              opacity: 0.7;
+              font-size: 12px;
+            }
+          }
+        }
+      }
     }
   }
 }

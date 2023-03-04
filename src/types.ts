@@ -33,6 +33,14 @@ export interface User {
       user: User;
     }[];
   };
+  followings: {
+    aggregate: {
+      count: number;
+    };
+    nodes: {
+      user: User;
+    }[];
+  };
   liked_blogs: Blog[];
   liked_comments: Comment[];
   created_at: Date | string;
@@ -63,4 +71,19 @@ export interface Comment {
 export interface ConfirmRequest {
   mutate: (v: any) => void;
   id: number;
+}
+
+export interface Chat {
+  id: number;
+  sender: {
+    username: string;
+    profile_picture: string;
+  };
+  receiver: {
+    username: string;
+    profile_picture: string;
+  };
+  content: string;
+  created_at: Date | number | string;
+  is_deleted: boolean;
 }

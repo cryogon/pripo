@@ -72,11 +72,12 @@ const router = createRouter({
       component: () => import("@/components/LoadingScreen.vue"),
     },
     {
-      path: "/chat/:user?",
+      path: "/chat/:userParam?",
       name: "chat",
       meta: {
         requiresAuth: true,
       },
+      props: true,
       component: () => import("@/views/ChatPage.vue"),
     },
     {

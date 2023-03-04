@@ -14,6 +14,7 @@ import {
   FOLLOW_USER,
   UNFOLLOW_USER,
   UPDATE_ABOUT,
+  INITIALIZE_CHAT,
 } from "@/graphql";
 import { useMutation, useQuery } from "@vue/apollo-composable";
 import { useOnline } from "@vueuse/core";
@@ -52,6 +53,7 @@ const md = MarkDownIt({
   html: true,
   linkify: true,
   typographer: true,
+  breaks: true,
 });
 
 //For About Input
@@ -327,6 +329,34 @@ onMounted(() => {
       );
   });
 });
+
+function redirectToChat(_user: User) {
+  if (
+    user.value.users[0].chatting_with.some((us: User) => {
+      return us.username === u.value.nickname;
+    })
+  ) {
+    router.push(`/chat/${_user.username}`);
+  } else {
+    const { mutate } = useMutation(INITIALIZE_CHAT, {
+      variables: {
+        user1: u.value.nickname,
+        receiver1: {
+          username: _user.username,
+          profile_picture: _user.profile_picture,
+        },
+        user2: _user.username,
+        receiver2: {
+          username: u.value.nickname,
+          profile_picture: u.value.picture,
+        },
+      },
+    });
+    mutate().then(() => {
+      router.push(`/chat/${_user.username}`);
+    });
+  }
+}
 </script>
 <template>
   <main class="container" v-if="user && userFound && !loading">
@@ -353,12 +383,12 @@ onMounted(() => {
           />
           <div class="icon loading" v-show="isCoverImageLoading"></div>
         </i>
+        <div
+          :style="`--user-avatar:url(${user.users[0].profile_picture})`"
+          alt="user-avatar"
+          class="avatar"
+        ></div>
       </div>
-      <div
-        :style="`--user-avatar:url(${user.users[0].profile_picture})`"
-        alt="user-avatar"
-        class="avatar"
-      ></div>
     </section>
     <div class="background" ref="background">
       <section class="basic-user-info">
@@ -412,7 +442,13 @@ onMounted(() => {
             >
               Unfollow
             </button>
-            <button type="button" class="message-button">Message</button>
+            <button
+              type="button"
+              class="message-button"
+              @click="redirectToChat(user.users[0])"
+            >
+              Message
+            </button>
             <button type="button" class="report-button">Report</button>
           </div>
         </div>
@@ -598,15 +634,26 @@ onMounted(() => {
       display: flex;
       flex-direction: column;
       padding-block-end: 0;
+      word-wrap: break-word;
       overflow-x: hidden;
-      details {
-        cursor: pointer;
-        color: red;
-      }
+
       .about-section__content {
         margin-block-start: auto;
         min-height: 3rem;
         flex-wrap: wrap;
+        max-height: 25rem;
+        overflow-y: auto;
+        &::-webkit-scrollbar {
+          width: 0.3rem;
+        }
+        &::-webkit-scrollbar-track {
+          border-radius: 2rem;
+          background-color: #202020;
+        }
+        &::-webkit-scrollbar-thumb {
+          border-radius: 2rem;
+          background-color: #e75151;
+        }
       }
       .about-section__input {
         all: unset;
@@ -620,6 +667,7 @@ onMounted(() => {
       }
       .about-section__option {
         place-self: flex-end;
+
         .edit-icon {
           padding: 0.4rem;
           width: 2rem;
@@ -672,7 +720,7 @@ onMounted(() => {
     position: relative;
     .cover-image {
       width: 100%;
-      height: 18rem;
+      aspect-ratio: 16/4;
       background-position: 50%;
       background-color: grey;
       display: flex;
@@ -796,7 +844,7 @@ onMounted(() => {
       width: 9rem;
       height: 9rem;
       display: block;
-      top: 12rem;
+      bottom: -3rem;
       left: 2.5rem;
       border-radius: 2rem;
       position: absolute;
@@ -806,6 +854,10 @@ onMounted(() => {
       background-size: cover;
       image-rendering: optimizeSpeed;
       image-orientation: from-image;
+      @media screen and (max-width: 700px) {
+        width: 6rem;
+        height: 6rem;
+      }
     }
   }
   .background {

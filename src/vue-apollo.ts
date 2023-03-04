@@ -20,11 +20,11 @@ const headers = token
   : guestUser;
 const httpLink = createHttpLink({
   headers,
-  uri: "https://pripo-db.hasura.app/v1/graphql",
+  uri: "https://" + import.meta.env.VITE_HASURA_GRAPHQL_ENDPOINT,
 });
 const wsLink = new GraphQLWsLink(
   createClient({
-    url: `wss://pripo-db.hasura.app/v1/graphql`,
+    url: `wss://${import.meta.env.VITE_HASURA_GRAPHQL_ENDPOINT}`,
     connectionParams: {
       headers: {
         Authorization: `Bearer ${token}`,
