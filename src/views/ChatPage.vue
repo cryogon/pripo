@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { GET_CHAT_ALL, GET_CHAT_CONTENT, ADD_CHAT } from "@/graphql";
+import { GET_CHAT_ALL, LISTEN_CHAT_CONTENT, ADD_CHAT } from "@/graphql";
 import { useAuth0 } from "@auth0/auth0-vue";
-import { useMutation, useQuery } from "@vue/apollo-composable";
+import { useMutation, useQuery, useSubscription } from "@vue/apollo-composable";
 import { ref, watchEffect } from "vue";
 import router from "@/router";
 import type { Chat } from "@/types";
@@ -21,7 +21,7 @@ onChatListReceived((r) => {
 });
 
 function expandChat(_user: string) {
-  const { onResult } = useQuery(GET_CHAT_CONTENT, {
+  const { onResult } = useSubscription(LISTEN_CHAT_CONTENT, {
     user: user.value?.nickname || "",
     receiver: _user,
   });
@@ -90,7 +90,7 @@ watchEffect(() => {
           </div>
         </div>
 
-        <div class="chat-main__input-container">
+        <div class="chat-main__input-container" v-show="userParam">
           <input
             type="text"
             name="chat-main__input"

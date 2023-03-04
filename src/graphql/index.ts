@@ -852,8 +852,8 @@ export const GET_CHAT_ALL = gql`
   }
 `;
 
-export const GET_CHAT_CONTENT = gql`
-  query chat($user: String!, $receiver: String!) {
+export const LISTEN_CHAT_CONTENT = gql`
+  subscription chat($user: String!, $receiver: String!) {
     user_chats(
       where: {
         _or: [
