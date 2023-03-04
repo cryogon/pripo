@@ -5,7 +5,7 @@ import LinkIcon from "../components/Icons/LinkIcon.vue";
 import CheckIcon from "@/components/Icons/CheckIcon.vue";
 import { useElementBounding, useFileDialog } from "@vueuse/core";
 import { ref, watch, onMounted, computed } from "vue";
-import type { Blog, User } from "@/types";
+import type { Blog, User, Chat } from "@/types";
 import router from "@/router";
 import { useAuth0 } from "@auth0/auth0-vue";
 import {
@@ -14,6 +14,8 @@ import {
   FOLLOW_USER,
   UNFOLLOW_USER,
   UPDATE_ABOUT,
+  GET_CHAT,
+  INITIALIZE_CHAT,
 } from "@/graphql";
 import { useMutation, useQuery } from "@vue/apollo-composable";
 import { useOnline } from "@vueuse/core";
@@ -327,6 +329,29 @@ onMounted(() => {
       );
   });
 });
+
+function redirectToChat(username: string) {
+  const { onResult } = useQuery(GET_CHAT, {
+    user: u.value.nickname,
+    receiver: username,
+  });
+  onResult((chat) => {
+    if (
+      chat.data.user_chats.some(
+        (c: Chat) => c.receiver === username || c.sender === username
+      )
+    ) {
+      router.push(`/chat/${username}`);
+    } else {
+      const { mutate } = useMutation(INITIALIZE_CHAT, {
+        variables: { user: u.value.nickname, receiver: username },
+      });
+      mutate().then(() => {
+        router.push(`/chat/${username}`);
+      });
+    }
+  });
+}
 </script>
 <template>
   <main class="container" v-if="user && userFound && !loading">
@@ -412,7 +437,13 @@ onMounted(() => {
             >
               Unfollow
             </button>
-            <button type="button" class="message-button">Message</button>
+            <button
+              type="button"
+              class="message-button"
+              @click="redirectToChat(user.users[0].username)"
+            >
+              Message
+            </button>
             <button type="button" class="report-button">Report</button>
           </div>
         </div>

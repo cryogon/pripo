@@ -828,3 +828,77 @@ export const SET_LINKS = gql`
     }
   }
 `;
+
+export const GET_CHAT = gql`
+  query chat($user: String!, $receiver: String!) {
+    user_chats(
+      where: {
+        _and: [{ sender: { _eq: $user } }, { receiver: { _eq: $receiver } }]
+      }
+    ) {
+      id
+      sender
+      receiver
+    }
+  }
+`;
+export const GET_CHAT_ALL = gql`
+  query chat($user: String!) {
+    user_chats(
+      where: { _or: [{ sender: { _eq: $user } }, { receiver: { _eq: $user } }] }
+    ) {
+      id
+      chat_with {
+        username
+        profile_picture
+      }
+    }
+  }
+`;
+
+export const GET_CHAT_CONTENT = gql`
+  query chat($user: String!, $receiver: String!) {
+    user_chats(
+      where: {
+        _and: [
+          { sender: { _eq: $user }, receiver: { _eq: $receiver } }
+          { receiver: { _eq: $user }, sender: { _eq: $receiver } }
+        ]
+      }
+    ) {
+      id
+      chat
+      sender
+      receiver
+    }
+  }
+`;
+export const INITIALIZE_CHAT = gql`
+  mutation setChat($user: String!, $receiver: String!) {
+    insert_user_chats(objects: { sender: $user, receiver: $receiver }) {
+      returning {
+        id
+        sender
+        receiver
+      }
+    }
+  }
+`;
+
+export const ADD_CHAT = gql`
+  mutation addChat($user: String!, $receiver: String!, $chat: jsonb!) {
+    update_user_chats(
+      _append: { chat: $chat }
+      where: {
+        _and: [{ sender: { _eq: $user } }, { receiver: { _eq: $receiver } }]
+      }
+    ) {
+      returning {
+        id
+        sender
+        receiver
+        chat
+      }
+    }
+  }
+`;
