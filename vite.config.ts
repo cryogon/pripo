@@ -31,6 +31,13 @@ const pwaOptions: Partial<VitePWAOptions> = {
         short_name: "notify",
         icons: [],
       },
+      {
+        name: "Chat",
+        url: "/chat",
+        description: "Missing someone",
+        short_name: "chat",
+        icons: [],
+      },
     ],
     orientation: "portrait",
   },

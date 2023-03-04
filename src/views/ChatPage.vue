@@ -115,6 +115,7 @@ main {
   .container {
     display: grid;
     grid-template-columns: max(20vw, 10rem) 1fr;
+    height: 80vh;
     .user-list {
       background-color: #202020;
       width: 100%;
@@ -142,6 +143,7 @@ main {
     .chat-main {
       background-color: #303030;
       display: grid;
+      grid-template-rows: 1fr auto;
       width: 100%;
       min-width: 23rem;
       min-height: 10rem;
@@ -153,7 +155,7 @@ main {
         .chat-main__input {
           background-color: #202020;
           color: white;
-          padding: 0.3rem;
+          padding: 0.5rem;
           border: 0;
           outline-color: transparent;
           display: block;
@@ -172,6 +174,19 @@ main {
       }
       .chat-main__chats {
         width: 100%;
+        height: 100%;
+        overflow-y: auto;
+        &::-webkit-scrollbar {
+          width: 0.3rem;
+        }
+        &::-webkit-scrollbar-track {
+          border-radius: 2rem;
+          background-color: #202020;
+        }
+        &::-webkit-scrollbar-thumb {
+          border-radius: 2rem;
+          background-color: #e75151;
+        }
         .chat-item {
           display: flex;
           align-items: center;
