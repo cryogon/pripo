@@ -10,15 +10,14 @@ defineProps<{
 }>();
 
 const { user } = useAuth0();
-const { onResult: onChatReceived } = useQuery(GET_CHAT_ALL, {
+const { onResult: onChatListReceived } = useQuery(GET_CHAT_ALL, {
   user: user.value?.nickname || "",
 });
-const recipents = ref();
+const recipents = ref<any>([]);
 const messsageContent = ref("");
-const chats = ref<Chat>();
-onChatReceived((r) => {
-  recipents.value = r.data.user_chats;
-  // console.log(r.data);
+const chats = ref<Chat[]>([]);
+onChatListReceived((r) => {
+  recipents.value = r.data.users[0].chatting_with;
 });
 
 function expandChat(_user: string) {
@@ -27,8 +26,7 @@ function expandChat(_user: string) {
     receiver: _user,
   });
   onResult((result) => {
-    console.log(result.data);
-    chats.value = result.data.user_chats[0];
+    chats.value = result.data.user_chats;
   });
 }
 function sendMessage(_user: string) {
@@ -37,15 +35,9 @@ function sendMessage(_user: string) {
     addChat({
       user: user.value.nickname,
       receiver: _user,
-      chat: {
-        id: chats.value?.chat.length,
-        content: messsageContent.value,
-        date: new Date().toUTCString(),
-        is_deleted: false,
-      },
+      content: messsageContent.value,
     });
     messsageContent.value = "";
-    console.log(chats.value);
   }
 }
 
@@ -59,26 +51,28 @@ watchEffect(() => {
       <aside class="user-list">
         <div
           class="user-list__item"
-          :class="{ selected: userParam && u.chat_with.username === userParam }"
+          :class="{
+            selected: userParam && u.username === userParam,
+          }"
           v-for="(u, i) in recipents"
-          @click="router.replace(`/chat/${u.chat_with.username}`)"
+          @click="router.replace(`/chat/${u.username}`)"
           :key="i"
         >
-          <img :src="u.chat_with.profile_picture" class="user-avatar" />
-          <span class="user-name">{{ u.chat_with.username }}</span>
+          <img :src="u.profile_picture" class="user-avatar" />
+          <span class="user-name">{{ u.username }}</span>
         </div>
       </aside>
       <aside class="chat-main">
         <div class="chat-main__chats">
           <div
             class="chat-item"
-            v-for="(chat, i) in chats?.chat"
+            v-for="(chat, i) in chats"
             :key="i"
-            :class="{ me: chats?.sender === user?.nickname }"
+            :class="{ me: chat.sender.username === user?.nickname }"
           >
             <img
               class="chat-item__avatar"
-              src="https://res.cloudinary.com/dmerejjkt/image/upload/v1677831303/g2srp6sszksql4htyzkd.jpg"
+              :src="chat.sender.profile_picture"
               alt=""
             />
             <div class="chat-item__detail">
@@ -87,9 +81,9 @@ watchEffect(() => {
               </span>
               <span class="chat-date">
                 {{
-                  new Date(chat.date).getHours() +
+                  new Date(chat.created_at).getHours() +
                   ":" +
-                  new Date(chat.date).getMinutes()
+                  new Date(chat.created_at).getMinutes()
                 }}
               </span>
             </div>
@@ -101,6 +95,7 @@ watchEffect(() => {
             type="text"
             name="chat-main__input"
             class="chat-main__input"
+            placeholder="Message"
             v-model="messsageContent"
           />
           <button @click="sendMessage(userParam)" class="chat_main__button">
@@ -150,6 +145,7 @@ main {
       .chat-main__input-container {
         display: flex;
         padding: 0.3rem;
+        gap: 10px;
         .chat-main__input {
           background-color: #202020;
           color: white;

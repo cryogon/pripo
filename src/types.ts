@@ -74,12 +74,16 @@ export interface ConfirmRequest {
 }
 
 export interface Chat {
-  sender: string;
-  receiver: string;
-  chat: {
-    id: number;
-    content: string;
-    date: Date | number | string;
-    is_deleted: boolean;
-  }[];
+  id: number;
+  sender: {
+    username: string;
+    profile_picture: string;
+  };
+  receiver: {
+    username: string;
+    profile_picture: string;
+  };
+  content: string;
+  created_at: Date | number | string;
+  is_deleted: boolean;
 }

@@ -290,6 +290,7 @@ export const GET_USER_BY_USERNAME = gql`
       cover_picture
       about
       social_links
+      chatting_with
       liked_blogs {
         blog {
           id
@@ -844,14 +845,9 @@ export const GET_CHAT = gql`
 `;
 export const GET_CHAT_ALL = gql`
   query chat($user: String!) {
-    user_chats(
-      where: { _or: [{ sender: { _eq: $user } }, { receiver: { _eq: $user } }] }
-    ) {
+    users(where: { username: { _eq: $user } }) {
       id
-      chat_with {
-        username
-        profile_picture
-      }
+      chatting_with
     }
   }
 `;
@@ -862,43 +858,75 @@ export const GET_CHAT_CONTENT = gql`
       where: {
         _or: [
           { sender: { _eq: $user }, receiver: { _eq: $receiver } }
-          { receiver: { _eq: $user }, sender: { _eq: $receiver } }
+          { sender: { _eq: $receiver }, receiver: { _eq: $user } }
         ]
       }
     ) {
       id
-      chat
-      sender
-      receiver
+      content
+      sender: chat_by {
+        username
+        profile_picture
+      }
+      is_deleted
+      created_at
+      receiver: chat_with {
+        username
+        profile_picture
+      }
     }
   }
 `;
 export const INITIALIZE_CHAT = gql`
-  mutation setChat($user: String!, $receiver: String!) {
-    insert_user_chats(objects: { sender: $user, receiver: $receiver }) {
+  mutation setChat(
+    $user1: String!
+    $receiver1: jsonb!
+    $user2: String!
+    $receiver2: jsonb!
+  ) {
+    u1: update_users(
+      _append: { chatting_with: $receiver1 }
+      where: { username: { _eq: $user1 } }
+    ) {
       returning {
         id
-        sender
-        receiver
+        username
+        chatting_with
+      }
+    }
+    u2: update_users(
+      _append: { chatting_with: $receiver2 }
+      where: { username: { _eq: $user2 } }
+    ) {
+      returning {
+        id
+        username
+        chatting_with
       }
     }
   }
 `;
 
 export const ADD_CHAT = gql`
-  mutation addChat($user: String!, $receiver: String!, $chat: jsonb!) {
-    update_user_chats(
-      _append: { chat: $chat }
-      where: {
-        _and: [{ sender: { _eq: $user } }, { receiver: { _eq: $receiver } }]
-      }
+  mutation addChat($user: String!, $receiver: String!, $content: String!) {
+    insert_user_chats(
+      objects: { sender: $user, receiver: $receiver, content: $content }
     ) {
       returning {
         id
         sender
         receiver
-        chat
+        content
       }
+    }
+  }
+`;
+
+export const TEMP_USER = gql`
+  query getTempUser($user: String!) {
+    users(where: { username: { _eq: $user } }) {
+      username
+      profile_picture
     }
   }
 `;
