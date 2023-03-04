@@ -143,6 +143,7 @@ main {
       background-color: #303030;
       display: grid;
       width: 100%;
+      min-width: 23rem;
       min-height: 10rem;
       align-items: flex-end;
       .chat-main__input-container {
@@ -194,6 +195,21 @@ main {
             }
           }
         }
+      }
+    }
+  }
+  @media screen and (max-width: 700px) {
+    padding-inline: 0;
+    .container {
+      display: flex;
+      .user-list:has(.selected) {
+        display: none;
+        & ~ .chat-main {
+          display: grid;
+        }
+      }
+      .chat-main {
+        display: none;
       }
     }
   }
