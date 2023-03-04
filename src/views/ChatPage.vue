@@ -41,6 +41,13 @@ function sendMessage(_user: string) {
   }
 }
 
+function formatTime(time: number | string | Date) {
+  return new Intl.DateTimeFormat(undefined, {
+    hour: "2-digit",
+    hour12: true,
+    minute: "2-digit",
+  }).format(new Date(time));
+}
 watchEffect(() => {
   expandChat(router.currentRoute.value.params.userParam as string);
 });
@@ -80,11 +87,7 @@ watchEffect(() => {
                 {{ chat.content }}
               </span>
               <span class="chat-date">
-                {{
-                  new Date(chat.created_at).getHours() +
-                  ":" +
-                  new Date(chat.created_at).getMinutes()
-                }}
+                {{ formatTime(chat.created_at) }}
               </span>
             </div>
           </div>
