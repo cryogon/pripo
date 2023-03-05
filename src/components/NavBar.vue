@@ -118,7 +118,7 @@ function toggleNotification() {
               placeholder="search"
               class="mobile-input-search"
               v-model="searchInputData"
-              @keydown.enter="search"
+              @keypress.enter="search"
             />
             <ul class="mobile-tabs">
               <li><router-link to="/contact">Contact</router-link></li>

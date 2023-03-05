@@ -2,9 +2,11 @@
 import { GET_CHAT_ALL, LISTEN_CHAT_CONTENT, ADD_CHAT } from "@/graphql";
 import { useAuth0 } from "@auth0/auth0-vue";
 import { useMutation, useQuery, useSubscription } from "@vue/apollo-composable";
-import { ref, watchEffect } from "vue";
+import { ref, watchEffect, watch } from "vue";
 import router from "@/router";
+import { useScroll } from "@vueuse/core";
 import type { Chat } from "@/types";
+
 defineProps<{
   userParam: string;
 }>();
@@ -16,6 +18,10 @@ const { onResult: onChatListReceived } = useQuery(GET_CHAT_ALL, {
 const recipents = ref<any>([]);
 const messsageContent = ref("");
 const chats = ref<Chat[]>([]);
+const chatScroll = ref();
+const { y } = useScroll(chatScroll, {
+  behavior: "smooth",
+});
 onChatListReceived((r) => {
   recipents.value = r.data.users[0].chatting_with;
 });
@@ -48,6 +54,11 @@ function formatTime(time: number | string | Date) {
     minute: "2-digit",
   }).format(new Date(time));
 }
+watch(chats, () => {
+  setTimeout(() => {
+    y.value = chatScroll.value.scrollHeight;
+  }, 100);
+});
 watchEffect(() => {
   expandChat(router.currentRoute.value.params.userParam as string);
 });
@@ -70,7 +81,7 @@ watchEffect(() => {
         </div>
       </aside>
       <aside class="chat-main">
-        <div class="chat-main__chats">
+        <div class="chat-main__chats" ref="chatScroll">
           <div
             class="chat-item"
             v-for="(chat, i) in chats"
@@ -98,12 +109,13 @@ watchEffect(() => {
             type="text"
             name="chat-main__input"
             class="chat-main__input"
-            placeholder="Message"
+            placeholder="Type a Message"
+            @keypress.enter="sendMessage(userParam)"
             v-model="messsageContent"
           />
-          <button @click="sendMessage(userParam)" class="chat_main__button">
+          <!-- <button @click="sendMessage(userParam)" class="chat_main__button">
             Send
-          </button>
+          </button> -->
         </div>
       </aside>
     </section>
@@ -115,9 +127,12 @@ main {
   .container {
     display: grid;
     grid-template-columns: max(20vw, 10rem) 1fr;
+    height: 80vh;
     .user-list {
       background-color: #202020;
       width: 100%;
+      height: 100%;
+      overflow-y: auto;
       min-height: 10rem;
       padding: 0.3rem;
       .user-list__item {
@@ -142,6 +157,7 @@ main {
     .chat-main {
       background-color: #303030;
       display: grid;
+      grid-template-rows: 1fr auto;
       width: 100%;
       min-width: 23rem;
       min-height: 10rem;
@@ -153,7 +169,7 @@ main {
         .chat-main__input {
           background-color: #202020;
           color: white;
-          padding: 0.3rem;
+          padding: 0.5rem;
           border: 0;
           outline-color: transparent;
           display: block;
@@ -172,6 +188,19 @@ main {
       }
       .chat-main__chats {
         width: 100%;
+        height: 100%;
+        overflow-y: auto;
+        &::-webkit-scrollbar {
+          width: 0.3rem;
+        }
+        &::-webkit-scrollbar-track {
+          border-radius: 2rem;
+          background-color: #202020;
+        }
+        &::-webkit-scrollbar-thumb {
+          border-radius: 2rem;
+          background-color: #e75151;
+        }
         .chat-item {
           display: flex;
           align-items: center;
