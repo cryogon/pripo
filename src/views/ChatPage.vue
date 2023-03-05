@@ -188,7 +188,7 @@ main {
       }
       .chat-main__chats {
         width: 100%;
-        height: 100%;
+        max-height: 100%;
         overflow-y: auto;
         &::-webkit-scrollbar {
           width: 0.3rem;
@@ -218,6 +218,8 @@ main {
           .chat-item__detail {
             display: flex;
             flex-direction: column;
+            padding-inline: 0.3rem;
+            line-break: anywhere;
             .chat-date {
               opacity: 0.7;
               font-size: 12px;
