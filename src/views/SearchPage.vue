@@ -9,39 +9,43 @@ import LoadingScreen from "../components/LoadingScreen.vue";
 import { useOnline } from "@vueuse/core";
 const results = ref();
 const filter = ref("posts");
-const params = router.currentRoute.value.query;
 const online = useOnline();
 const { onResult, loading, refetch } =
-  params.f === "tags"
+  router.currentRoute.value.query.f === "tags"
     ? useQuery(FILTER_BY_TAGS, {
-        tags: params.q,
+        tags: router.currentRoute.value.query.q,
       })
     : useQuery(GET_FILTERED_POSTS, {
-        query: `%${params.q}%`,
+        query: `%${router.currentRoute.value.query.q}%`,
       });
 
-document.title = `${params.q} ● Search`;
+document.title = `${router.currentRoute.value.query.q} ● Search`;
 //Refeching on route change
 watch(router.currentRoute, (currValue, oldValue) => {
+  console.log(router.currentRoute.value.query);
   if (
-    currValue.query?.q !== oldValue.query?.q &&
-    currValue.query?.f !== oldValue.query?.f
+    currValue.query?.q !== oldValue.query?.q ||
+    currValue.query?.f !== oldValue.query.f
   ) {
-    refetch({ query: `%${currValue.query.q}%`, tags: params.q });
+    refetch({
+      query: `%${currValue.query.q}%`,
+      tags: router.currentRoute.value.query.q,
+    });
+    changeFilterOnMount();
   }
 });
 function changeFilter(_filter: string) {
   filter.value = _filter;
   router.replace({
-    query: { q: params.q, f: _filter },
+    query: { q: router.currentRoute.value.query.q, f: _filter },
   });
 }
 
 function changeFilterOnMount() {
-  if (params.f === "posts") {
+  if (router.currentRoute.value.query.f === "posts") {
     filter.value = "posts";
   }
-  if (params.f === "users") {
+  if (router.currentRoute.value.query.f === "users") {
     filter.value = "users";
   }
 }
@@ -49,13 +53,14 @@ function changeFilterOnMount() {
 onResult((r) => {
   results.value = r.data;
 });
+
 onMounted(() => {
   changeFilterOnMount();
 });
 </script>
 <template>
   <main v-if="!loading && results?.blogs" class="container">
-    <h2>Results for: {{ params.q }}</h2>
+    <h2>Results for: {{ router.currentRoute.value.query.q }}</h2>
     <section class="search-card">
       <div class="filters">
         <div
@@ -70,7 +75,7 @@ onMounted(() => {
           role="button"
           class="filter-option"
           @click="changeFilter('users')"
-          v-if="params.f !== 'tags'"
+          v-if="router.currentRoute.value.query.f !== 'tags'"
           :class="{ active: filter === 'users' }"
         >
           Users
