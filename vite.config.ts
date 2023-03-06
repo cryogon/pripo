@@ -9,7 +9,12 @@ const { icons } = JSON.parse(fs.readFileSync("./icons.json", "utf-8"));
 const pwaOptions: Partial<VitePWAOptions> = {
   mode: "development",
   base: "/",
-  includeAssets: ["icon.svg", "ios/192.png", "ios/512.png", "ios/180.png"],
+  includeAssets: [
+    "icon.svg",
+    "icons/ios/192.png",
+    "icons/ios/512.png",
+    "icons/ios/180.png",
+  ],
   manifest: {
     name: "pripo",
     start_url: "/?home=true",
@@ -22,21 +27,21 @@ const pwaOptions: Partial<VitePWAOptions> = {
         url: "/publish",
         description: "Thinking something alone! why not share it with world",
         short_name: "Post",
-        icons: [],
+        icons: [{ src: "/icons/post-icon.png", sizes: "192*192" }],
       },
       {
         name: "Notifications",
         url: "/notifications",
         description: "Check if you got something new",
         short_name: "notify",
-        icons: [],
+        icons: [{ src: "/icons/message-icon.png", sizes: "192*192" }],
       },
       {
         name: "Chat",
         url: "/chat",
         description: "Missing someone",
         short_name: "chat",
-        icons: [],
+        icons: [{ src: "/icons/notification-icon.png", sizes: "192*192" }],
       },
     ],
     orientation: "portrait",
