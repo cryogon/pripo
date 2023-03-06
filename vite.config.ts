@@ -8,6 +8,7 @@ import { VitePWA } from "vite-plugin-pwa";
 const { icons } = JSON.parse(fs.readFileSync("./icons.json", "utf-8"));
 const pwaOptions: Partial<VitePWAOptions> = {
   mode: "development",
+  registerType: "autoUpdate",
   base: "/",
   includeAssets: [
     "icon.svg",
@@ -27,21 +28,21 @@ const pwaOptions: Partial<VitePWAOptions> = {
         url: "/publish",
         description: "Thinking something alone! why not share it with world",
         short_name: "Post",
-        icons: [{ src: "/icons/post-icon.png", sizes: "192*192" }],
+        icons: [{ src: "/icons/post-icon.png", sizes: "96x96" }],
       },
       {
         name: "Notifications",
         url: "/notifications",
         description: "Check if you got something new",
         short_name: "notify",
-        icons: [{ src: "/icons/message-icon.png", sizes: "192*192" }],
+        icons: [{ src: "/icons/message-icon.png", sizes: "96x96" }],
       },
       {
         name: "Chat",
         url: "/chat",
         description: "Missing someone",
         short_name: "chat",
-        icons: [{ src: "/icons/notification-icon.png", sizes: "192*192" }],
+        icons: [{ src: "/icons/notification-icon.png", sizes: "96x96" }],
       },
     ],
     orientation: "portrait",
