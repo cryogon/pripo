@@ -34,7 +34,7 @@
   --nav-background: var(--nav-background-light);
   --button-hover-color: var(--button-hover-color-light);
   --link-hover-background: var(--link-hover-background-light);
-  --link-color: #5f9ea0;
+  --link-color: var(--accent-color);
   --dropdown-background: var(--dropdown-background-light);
   --accent-color: var(--link-color);
   --link-visited:var(--link-visited-light);
