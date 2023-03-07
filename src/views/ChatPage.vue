@@ -6,16 +6,20 @@ import { ref, watchEffect, watch } from "vue";
 import router from "@/router";
 import { useScroll } from "@vueuse/core";
 import type { Chat } from "@/types";
+import { setMeta } from "@/helper";
 
-defineProps<{
+const props = defineProps<{
   userParam: string;
 }>();
-
+setMeta({
+  title: `Chats ● Pripo`,
+  description: `Chatting With ${props.userParam || ""}`,
+});
 const { user } = useAuth0();
 const { onResult: onChatListReceived } = useQuery(GET_CHAT_ALL, {
   user: user.value?.nickname || "",
 });
-const recipents = ref<any>([]);
+const recipient = ref<any>([]);
 const messsageContent = ref("");
 const chats = ref<Chat[]>([]);
 const chatScroll = ref();
@@ -23,7 +27,7 @@ const { y } = useScroll(chatScroll, {
   behavior: "smooth",
 });
 onChatListReceived((r) => {
-  recipents.value = r.data.users[0].chatting_with;
+  recipient.value = r.data.users[0].chatting_with;
 });
 
 function expandChat(_user: string) {
@@ -72,7 +76,7 @@ watchEffect(() => {
           :class="{
             selected: userParam && u.username === userParam,
           }"
-          v-for="(u, i) in recipents"
+          v-for="(u, i) in recipient"
           @click="router.replace(`/chat/${u.username}`)"
           :key="i"
         >

@@ -1,17 +1,48 @@
-interface MetaParamsType {
+export interface MetaOptions {
+  /**
+   *Title for the current page
+   */
   title: string;
-  description: string;
+  /**
+   * @default ""
+   */
+  description?: string;
 }
-export function setMeta(param: MetaParamsType): void {
-  const meta = document.getElementsByTagName("meta") as any;
+
+export interface MetaType extends HTMLCollectionOf<HTMLMetaElement> {
+  namedItem(name: string): HTMLMetaElement;
+}
+export function setMeta(param: MetaOptions): void {
+  const { title, description = "" } = param;
+  const meta: MetaType = document.getElementsByTagName("meta") as MetaType;
+  //Open Graph Title
   if (meta.namedItem("og:title")?.content) {
-    meta["og:title"].content = param.title;
+    meta.namedItem("og:title").content = title;
   } else {
-    const ogTitle = document.createElement("meta");
-    ogTitle.setAttribute("name", "og:title");
-    ogTitle.setAttribute("content", param.title);
-    document.head.appendChild(ogTitle);
+    createMetaElement("og:title", title);
   }
-  document.title = param.title;
-  console.log(meta);
+
+  //Open Graph Description
+  if (meta.namedItem("og:description")?.content) {
+    meta.namedItem("og:description").content = description;
+  } else {
+    createMetaElement("og:description", description);
+  }
+
+  //Page Description
+  if (meta.namedItem("description")?.content) {
+    meta.namedItem("description").content = description;
+  } else {
+    createMetaElement("description", description);
+  }
+
+  //Page Title
+  document.title = title;
+}
+
+function createMetaElement(name: string, _content: string) {
+  const el = document.createElement("meta");
+  el.setAttribute("name", name);
+  el.setAttribute("content", _content);
+  document.head.appendChild(el);
 }
