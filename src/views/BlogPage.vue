@@ -12,6 +12,7 @@ import { useShare } from "@vueuse/core";
 import { useEmitter } from "@/composables/EventEmitter";
 import LoadingScreen from "../components/LoadingScreen.vue";
 import { useTimeAgo } from "@vueuse/core";
+import { setMeta } from "@/helper";
 const emitter = useEmitter();
 const { user } = useAuth0();
 const params = router.currentRoute.value.params;
@@ -39,8 +40,12 @@ watch(result, () => {
     "currentTitle",
     result.value.blogs[0].title + " - Pripo"
   );
-  //This is workaround for title updating
-  document.title = result.value.blogs[0].title + " - Pripo";
+  //For Updating Page Meta
+  setMeta({
+    title: result.value.blogs[0].title + " ● Pripo",
+    description: result.value.blogs[0].content.substring(0, 50) + "...",
+  });
+
   blog.value = result.value.blogs[0];
   isPostPublic.value = blog.value.is_public;
   isCommentDisabled.value = !blog.value.comments_allowed;

@@ -26,6 +26,7 @@ import { useEmitter } from "@/composables/EventEmitter";
 import XIcon from "../components/Icons/XIcon.vue";
 import DOMpurify from "dompurify";
 import MarkDownIt from "markdown-it";
+import { setMeta } from "@/helper";
 
 const { files, open, reset } = useFileDialog({
   accept: "image/jpeg, image/gif, image/x-png",
@@ -81,7 +82,7 @@ router.afterEach((to, from) => {
 });
 onResult((r) => {
   aboutContent.value.newValue = JSON.parse(user.value?.users[0].about) || "";
-  document.title = `${user.value.users[0].username} ● Pripo`;
+  setMeta({ title: `${user.value.users[0].username} ● Pripo` });
   if (user.value?.users[0].cover_picture)
     coverImage.value = user.value?.users[0].cover_picture;
   else coverImage.value = "";
@@ -91,7 +92,8 @@ onResult((r) => {
     userFound.value = true;
   }
 });
-onError(() => {
+onError((err) => {
+  console.log(err);
   console.error("Some Problem Occured! Please Refetch");
 });
 

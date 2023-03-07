@@ -4,6 +4,12 @@ import { useQuery } from "@vue/apollo-composable";
 import { GET_ALL_BLOGS } from "@/graphql";
 import LoadingScreen from "../components/LoadingScreen.vue";
 import { useOnline } from "@vueuse/core";
+import { setMeta } from "@/helper";
+
+setMeta({
+  title: "Pripo",
+  description: "A Platform where you can post anything anonymously",
+});
 const {
   result: blogs,
   onError,
@@ -12,7 +18,6 @@ const {
 } = useQuery(GET_ALL_BLOGS, { offset: 0, limit: 6 });
 const isOnline = useOnline();
 
-document.title = "Pripo";
 onError((e) => {
   console.error(e);
   console.error("Some Error Occured! Try to refetch");

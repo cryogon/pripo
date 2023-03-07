@@ -6,12 +6,16 @@ import { useQuery } from "@vue/apollo-composable";
 import { GET_THREAD_COMMENT } from "@/graphql";
 import type { Comment } from "@/types";
 import router from "@/router";
+import { setMeta } from "@/helper";
 const params = router.currentRoute.value.params;
 const commentId = parseInt(params?.id as string);
 const builder = ref(new CommentBuilder());
 const { result } = useQuery(GET_THREAD_COMMENT, { id: commentId });
 const comments = ref<Comment[]>();
-document.title = `Comments ${commentId}`;
+
+setMeta({
+  title: `Comments ${commentId}`,
+});
 watch(result, () => {
   builder.value.clear();
   builder.value.addMultiple(result.value.comments);
