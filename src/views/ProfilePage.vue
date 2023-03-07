@@ -426,7 +426,7 @@ function redirectToChat(_user: User) {
           </div>
           <div
             class="options"
-            v-if="u && u.nickname !== user.users[0].username"
+            v-if="u?.nickname && u.nickname !== user.users[0].username"
           >
             <button
               type="button"
@@ -640,7 +640,6 @@ function redirectToChat(_user: User) {
       overflow-x: hidden;
 
       .about-section__content {
-        margin-block-start: auto;
         min-height: 3rem;
         flex-wrap: wrap;
         max-height: 25rem;
@@ -968,12 +967,22 @@ function redirectToChat(_user: User) {
         margin-block-start: 0.1rem;
         flex-direction: column;
         a {
+          color: var(--link-color);
           display: flex;
           align-items: center;
           gap: 5px;
           padding: 0;
           &:hover {
             text-decoration: underline;
+          }
+          &.youtube {
+            color: red;
+          }
+          &.twitter {
+            color: #1da1f2;
+          }
+          &.instagram {
+            color: #f70077;
           }
         }
       }
