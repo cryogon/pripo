@@ -86,6 +86,10 @@ watchEffect(() => {
       </aside>
       <aside class="chat-main">
         <div class="chat-main__chats" ref="chatScroll">
+          <!-- <div class="chat-main__header" @click="router.replace('/chat')">
+            <fa-icon icon="arrow-left" />
+            Go Back
+          </div> -->
           <div
             class="chat-item"
             v-for="(chat, i) in chats"
@@ -127,15 +131,14 @@ watchEffect(() => {
 </template>
 <style scoped lang="scss">
 main {
-  padding: 1rem 15vw;
+  height: 90vh;
+  padding: 0 15vw;
   .container {
-    display: grid;
-    grid-template-columns: max(20vw, 10rem) 1fr;
-    height: 80vh;
+    display: flex;
+    height: 100%;
     .user-list {
       background-color: #202020;
-      width: 100%;
-      height: 100%;
+      width: 35%;
       overflow-y: auto;
       min-height: 10rem;
       padding: 0.3rem;
@@ -160,16 +163,19 @@ main {
     }
     .chat-main {
       background-color: #303030;
-      display: grid;
-      grid-template-rows: 1fr auto;
+      display: flex;
+      justify-content: flex-end;
+      flex-direction: column;
+      height: inherit;
       width: 100%;
       min-width: 23rem;
       min-height: 10rem;
-      align-items: flex-end;
+      align-items: center;
       .chat-main__input-container {
         display: flex;
         padding: 0.3rem;
         gap: 10px;
+        width: 100%;
         .chat-main__input {
           background-color: #202020;
           color: white;
@@ -237,14 +243,22 @@ main {
     padding-inline: 0;
     .container {
       display: flex;
-      .user-list:has(.selected) {
-        display: none;
-        & ~ .chat-main {
-          display: grid;
-        }
+      flex-direction: column;
+      .user-list {
+        width: 100%;
+        display: flex;
+        min-height: auto;
+        min-width: 23rem;
+        overflow-x: auto;
       }
       .chat-main {
-        display: none;
+        // display: none;
+        position: relative;
+        .chat-main__return {
+          display: block;
+          top: 0.2rem;
+          position: absolute;
+        }
       }
     }
   }

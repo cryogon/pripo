@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import alogolia from "algoliasearch";
 import { ref, watchEffect, onMounted } from "vue";
-
+const emit = defineEmits(["close"]);
 const client = alogolia(
   import.meta.env.VITE_ALGOLIA_APP_ID,
   import.meta.env.VITE_ALGOLIA_API_KEY
@@ -42,13 +42,18 @@ onMounted(() => {
 </script>
 <template>
   <div class="search-bar">
-    <input
-      type="text"
-      v-model="query"
-      ref="searchBar"
-      class="search-bar__input"
-      placeholder="Search"
-    />
+    <div class="search-bar__input-container">
+      <input
+        type="text"
+        v-model="query"
+        ref="searchBar"
+        class="search-bar__input"
+        placeholder="Search"
+      />
+      <button type="button" @click="emit('close')" class="close-button">
+        Close
+      </button>
+    </div>
     <div v-show="query.length" class="search-bar__results">
       <section class="search-bar__results-users">
         <h3>Users</h3>
@@ -103,12 +108,14 @@ onMounted(() => {
   background-color: #202020;
   transform: translateX(-50%);
   z-index: 9999;
-
+  .close-button {
+    display: none;
+  }
   .search-bar__input {
     padding: 1rem 0.5rem;
     border: 0;
     color: var(--color-text);
-    border-radius: 0.3rem;
+    border-radius: 0.3rem 0% 0 0.3rem;
     width: 100%;
     background-color: #303030;
   }
@@ -146,6 +153,17 @@ onMounted(() => {
   }
   @media screen and (max-width: 700px) {
     width: 28rem;
+    .search-bar__input-container {
+      display: flex;
+      .close-button {
+        all: unset;
+        padding: 0.2rem;
+        border-inline-start: 1px solid grey;
+        border-radius: 0% 0.3rem 0.3rem 0;
+        background-color: #303030;
+        display: block;
+      }
+    }
   }
   @media screen and (max-width: 500px) {
     width: 23rem;

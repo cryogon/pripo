@@ -31,11 +31,11 @@ const {
   isAuthenticated,
   getAccessTokenSilently,
 } = useAuth0();
-const windowWidth = ref(window.innerWidth - 49);
 const unreadNotification = ref();
 store.notification.onResult((n) => {
   unreadNotification.value = n.data.user_notifications.length;
 });
+
 watch(y, () => {
   if (Math.round(y.value) > 130) {
     compactNavbar.value = true;
@@ -48,6 +48,7 @@ router.afterEach(() => {
   isDropDownVisible.value = false;
   isNotificationActive.value = false;
   searchBarVisible.value = false;
+  isMobileOptionVisible.value = false;
 });
 
 //For Search Bar Toggle
@@ -91,19 +92,55 @@ if (isAuthenticated) {
     localStorage.setItem("token", d);
   });
 }
-window.addEventListener("resize", () => {
-  windowWidth.value = window.innerWidth - 49;
-});
 
 function toggleNotification() {
   isNotificationActive.value = !isNotificationActive.value;
+}
+
+document.addEventListener("touchstart", handleTouchStart);
+document.addEventListener("touchmove", handleTouchMove);
+//Mobile Swipe Event for drop down
+let xDown = 0,
+  yDown = 0;
+function handleTouchStart(e: TouchEvent) {
+  const firstTouch = e.touches[0];
+  xDown = firstTouch.clientX;
+  yDown = firstTouch.clientY;
+}
+function handleTouchMove(e: TouchEvent) {
+  if (!xDown || !yDown) return;
+  const xUp = e.touches[0].clientX;
+  const yUp = e.touches[0].clientY;
+
+  const xDiff = xDown - xUp;
+  const yDiff = yDown - yUp;
+
+  if (Math.abs(xDiff) > Math.abs(yDiff)) {
+    //Horizontal Movement
+    if (xDiff > 0) {
+      //Right Swipe
+      isMobileOptionVisible.value = false;
+    } else {
+      //Left Swipe
+      isMobileOptionVisible.value = true;
+    }
+  } else {
+    //Vertical Movement
+    if (yDiff > 0) {
+      //Down Swipe
+    } else {
+      //Up Swipe
+    }
+  }
+  xDown = 0;
+  yDown = 0;
 }
 </script>
 <template>
   <header>
     <nav ref="navbar" :class="{ compact: compactNavbar }">
       <section class="left-section">
-        <div class="mobile-options" :style="`--window-size:${windowWidth}px`">
+        <div class="mobile-options">
           <HamBurger class="mobile-options-icon" @click="toggleMobileOptions" />
           <div
             class="mobile-options-tray"
@@ -178,7 +215,7 @@ function toggleNotification() {
         </div>
       </div>
     </nav>
-    <SearchBar v-if="searchBarVisible" />
+    <SearchBar v-if="searchBarVisible" @close="searchBarVisible = false" />
   </header>
 </template>
 <style scoped lang="scss">
@@ -205,7 +242,7 @@ header:has(.compact) {
 nav {
   display: flex;
   justify-content: space-between;
-  padding-inline: min(10rem, 3vw);
+  padding-inline: min(10rem, 10vw);
   align-items: center;
   height: 4.75rem;
   transition: height 300ms;
@@ -338,6 +375,7 @@ nav {
 }
 @media (max-width: 700px) {
   nav {
+    padding-inline: min(3rem, 5vw);
     .left-section {
       .options {
         display: none;
@@ -361,17 +399,14 @@ nav {
           top: 4.5rem;
           left: 0rem;
           width: 100%;
-          animation: slide-down 150ms linear;
-          @keyframes slide-down {
+          animation: slide 200ms linear;
+          @keyframes slide {
             from {
-              left: -7rem;
+              left: -12rem;
             }
             to {
               left: 0rem;
             }
-          }
-          .mobile-input-search {
-            width: var(--window-size);
           }
           &.active {
             display: flex;
@@ -379,6 +414,7 @@ nav {
         }
         .mobile-tabs > li {
           display: block;
+          margin-block: 0.5rem;
         }
       }
     }
