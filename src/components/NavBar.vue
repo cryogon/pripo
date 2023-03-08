@@ -205,7 +205,7 @@ header:has(.compact) {
 nav {
   display: flex;
   justify-content: space-between;
-  padding-inline: min(10rem, 3vw);
+  padding-inline: min(10rem, 10vw);
   align-items: center;
   height: 4.75rem;
   transition: height 300ms;
@@ -338,6 +338,7 @@ nav {
 }
 @media (max-width: 700px) {
   nav {
+    padding-inline: min(3rem, 5vw);
     .left-section {
       .options {
         display: none;
