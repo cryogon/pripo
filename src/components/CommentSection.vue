@@ -20,18 +20,13 @@ onError(() => {
 const builder = ref(new CommentBuilder());
 const comments = ref();
 watch(result, () => {
-  if (props.blog.comments_allowed && result.value?.comments) {
+  if (props.blog.comments_allowed && result.value?.comments.length) {
     builder.value.clear();
     builder.value.addMultiple(result.value.comments);
     comments.value = builder.value.root?.children;
-    console.log("called");
+    comments.value.reverse();
   }
 });
-
-/**
- *
- * @param data it contains posted comment data
- */
 
 const emitter = useEmitter();
 emitter.on("refetchComments", () => {

@@ -53,11 +53,6 @@ const router = createRouter({
       component: () => import("@/views/CommentThread.vue"),
     },
     {
-      path: "/commentstest",
-      name: "commentstest",
-      component: () => import("@/views/CommentThread"),
-    },
-    {
       path: "/settings",
       name: "settings",
       meta: {
