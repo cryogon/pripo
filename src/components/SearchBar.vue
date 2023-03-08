@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import alogolia from "algoliasearch";
-import { ref, watchEffect } from "vue";
+import { ref, watchEffect, onMounted } from "vue";
+
 const client = alogolia(
   import.meta.env.VITE_ALGOLIA_APP_ID,
   import.meta.env.VITE_ALGOLIA_API_KEY
@@ -10,6 +11,8 @@ const postsIndex = client.initIndex("posts");
 const usersIndex = client.initIndex("users");
 const posts = ref();
 const users = ref();
+const searchBar = ref();
+
 watchEffect(() => {
   postsIndex
     .search(query.value, {
@@ -33,12 +36,16 @@ watchEffect(() => {
       console.error(err);
     });
 });
+onMounted(() => {
+  searchBar.value.focus();
+});
 </script>
 <template>
   <div class="search-bar">
     <input
       type="text"
       v-model="query"
+      ref="searchBar"
       class="search-bar__input"
       placeholder="Search"
     />
@@ -72,9 +79,14 @@ watchEffect(() => {
       <section class="search-bar__results-posts">
         <h3>Posts</h3>
         <div class="posts-list" v-if="posts?.length">
-          <div v-for="(post, index) in posts" :key="index">
+          <router-link
+            :to="`/posts/${post.id}`"
+            v-for="(post, index) in posts"
+            :key="index"
+            class="posts-list__item"
+          >
             {{ post.title }}
-          </div>
+          </router-link>
         </div>
         <div v-else>Posts not found</div>
       </section>
@@ -83,13 +95,14 @@ watchEffect(() => {
 </template>
 <style scoped lang="scss">
 .search-bar {
-  position: absolute;
+  position: fixed;
   left: 50%;
   width: 40rem;
   display: flex;
   flex-direction: column;
   background-color: #202020;
   transform: translateX(-50%);
+  z-index: 9999;
 
   .search-bar__input {
     padding: 1rem 0.5rem;
@@ -118,6 +131,16 @@ watchEffect(() => {
         width: 3rem;
         aspect-ratio: 1/1;
         border-radius: 1rem;
+      }
+    }
+    .posts-list {
+      .posts-list__item {
+        display: flex;
+        padding: 1rem;
+        &:hover {
+          cursor: pointer;
+          background-color: #303030;
+        }
       }
     }
   }

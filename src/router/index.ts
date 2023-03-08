@@ -53,11 +53,6 @@ const router = createRouter({
       component: () => import("@/views/CommentThread.vue"),
     },
     {
-      path: "/searcht",
-      name: "st",
-      component: () => import("@/components/SearchBar.vue"),
-    },
-    {
       path: "/settings",
       name: "settings",
       meta: {

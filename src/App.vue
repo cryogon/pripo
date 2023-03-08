@@ -6,10 +6,16 @@ import NavBar from "./components/NavBar.vue";
 import AlertBox from "./components/AlertBox.vue";
 import { useEmitter } from "./composables/EventEmitter";
 import ConfirmBox from "./components/ConfirmBox.vue";
+import SearchBar from "./components/SearchBar.vue";
+import router from "./router";
 const emitter = useEmitter();
 const { isAuthenticated } = useAuth0();
 const alertDescription = ref("");
+const searchBarVisible = ref(false);
 
+router.afterEach(() => {
+  searchBarVisible.value = false;
+});
 onMounted(() => {
   setTimeout(() => {
     if (!isAuthenticated.value && localStorage.getItem("token")) {
@@ -24,6 +30,17 @@ onMounted(() => {
       alertDescription.value = "";
     }, 3000);
   });
+  //For Search Bar Toggle
+  document.addEventListener("keydown", (e) => {
+    if (!searchBarVisible.value && e.ctrlKey && e.key.toLowerCase() === "k") {
+      e.preventDefault();
+      searchBarVisible.value = true;
+    }
+    if (searchBarVisible.value && e.key === "Escape") {
+      e.preventDefault();
+      searchBarVisible.value = false;
+    }
+  });
 });
 </script>
 
@@ -31,6 +48,7 @@ onMounted(() => {
   <AlertBox :description="alertDescription" v-show="alertDescription" />
   <ConfirmBox />
   <NavBar />
+  <SearchBar v-if="searchBarVisible" />
   <RouterView />
 </template>
 

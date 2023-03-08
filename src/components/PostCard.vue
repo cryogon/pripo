@@ -87,6 +87,7 @@ function showFormatedDate(date: Date | string | number) {
 <style scoped lang="scss">
 a {
   padding: 0;
+  color: var(--link-color);
 }
 .container {
   .header {
