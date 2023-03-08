@@ -10,6 +10,10 @@ import BellIcon from "./Icons/BellIcon.vue";
 import HamBurger from "./Icons/HamBurger.vue";
 import NotificationCenter from "./NotificationCenter.vue";
 import { usePripoStore } from "@/stores";
+import SearchIcon from "./Icons/SearchIcon.vue";
+import SearchBar from "@/components/SearchBar.vue";
+import MessageIcon from "./Icons/MessageIcon.vue";
+
 const store = usePripoStore();
 // import { setContext } from "@apollo/client/link/context";
 const isDropDownVisible = ref(false);
@@ -20,6 +24,7 @@ const compactNavbar = ref(false);
 const { y } = useScroll(window);
 const isMobileOptionVisible = ref(false);
 const isNotificationActive = ref(false);
+const searchBarVisible = ref(false);
 const {
   user,
   logout: signout,
@@ -27,8 +32,6 @@ const {
   getAccessTokenSilently,
 } = useAuth0();
 const windowWidth = ref(window.innerWidth - 49);
-const searchInputData = ref("");
-const filter = ref("posts");
 const unreadNotification = ref();
 store.notification.onResult((n) => {
   unreadNotification.value = n.data.user_notifications.length;
@@ -44,6 +47,19 @@ watch(y, () => {
 router.afterEach(() => {
   isDropDownVisible.value = false;
   isNotificationActive.value = false;
+  searchBarVisible.value = false;
+});
+
+//For Search Bar Toggle
+document.addEventListener("keydown", (e) => {
+  if (!searchBarVisible.value && e.ctrlKey && e.key.toLowerCase() === "k") {
+    e.preventDefault();
+    searchBarVisible.value = true;
+  }
+  if (searchBarVisible.value && e.key === "Escape") {
+    e.preventDefault();
+    searchBarVisible.value = false;
+  }
 });
 
 function toggleDropDown() {
@@ -79,26 +95,6 @@ window.addEventListener("resize", () => {
   windowWidth.value = window.innerWidth - 49;
 });
 
-function search() {
-  if (searchInputData.value.startsWith("user:")) {
-    filter.value = "users";
-    searchInputData.value = searchInputData.value.replace("user:", "");
-  }
-  if (searchInputData.value.startsWith("tag:")) {
-    filter.value = "tags";
-    searchInputData.value = searchInputData.value.replace("tag:", "");
-  }
-  if (searchInputData.value.startsWith("#")) {
-    filter.value = "tags";
-    searchInputData.value = searchInputData.value.replace("#", "");
-  }
-  router.push({
-    path: "/search",
-    query: { q: searchInputData.value, f: filter.value },
-  });
-  filter.value = "posts";
-  searchInputData.value = "";
-}
 function toggleNotification() {
   isNotificationActive.value = !isNotificationActive.value;
 }
@@ -113,41 +109,35 @@ function toggleNotification() {
             class="mobile-options-tray"
             :class="{ active: isMobileOptionVisible }"
           >
-            <input
-              type="search"
-              placeholder="search"
-              class="mobile-input-search"
-              v-model="searchInputData"
-              @keypress.enter="search"
-            />
             <ul class="mobile-tabs">
-              <li><router-link to="/contact">Contact</router-link></li>
+              <li>
+                <router-link to="/publish" class="link">create</router-link>
+              </li>
+              <li class="search-icon link">
+                <span>search</span>
+              </li>
               <li>on Alpha Stage for mobile</li>
             </ul>
           </div>
         </div>
         <div class="icon" @click="router.push('/')">
           <AppIcon class="icon-image" />
-          <h2>pripo</h2>
         </div>
-        <input
-          type="search"
-          placeholder="search"
-          class="input-search"
-          @keydown.enter="search"
-          v-model="searchInputData"
-        />
         <ul class="options">
-          <li><router-link to="/contact" class="link">Contact</router-link></li>
+          <li><router-link to="/publish" class="link">create</router-link></li>
+          <li class="search-icon link" @click="searchBarVisible = true">
+            <SearchIcon />
+            <span>search</span>
+          </li>
         </ul>
       </section>
       <div class="buttons">
         <LoginButton v-if="!isAuthenticated" />
         <div class="user-bar" v-else-if="user && isAuthenticated">
-          <span v-if="!isDark" title="Light mode is on alpha stage">Alpha</span>
+          <MessageIcon class="icon" @click="router.push('/chat')" />
           <div class="notification-container">
             <BellIcon
-              class="notification-icon"
+              class="notification-icon icon"
               @click.prevent="toggleNotification"
             />
             <NotificationCenter
@@ -188,19 +178,21 @@ function toggleNotification() {
         </div>
       </div>
     </nav>
+    <SearchBar v-if="searchBarVisible" />
   </header>
 </template>
 <style scoped lang="scss">
 header {
-  z-index: 9999;
   user-select: none;
   -webkit-user-select: none;
+  background: linear-gradient(#040303 1%, #0403033a 95%);
 }
 header:has(.compact) {
   position: sticky;
   top: 0;
   z-index: 9999;
   animation: slidedown 300ms ease-out;
+  background-color: var(--nav-background);
 }
 @keyframes slidedown {
   from {
@@ -212,12 +204,12 @@ header:has(.compact) {
 }
 nav {
   display: flex;
-  background-color: var(--nav-background);
   justify-content: space-between;
-  padding-inline: min(7.5rem, 10vw);
+  padding-inline: min(10rem, 3vw);
   align-items: center;
-  height: 6rem;
+  height: 4.75rem;
   transition: height 300ms;
+
   &.compact {
     height: 5rem;
   }
@@ -225,6 +217,15 @@ nav {
     display: flex;
     align-items: center;
     gap: 15px;
+    .options {
+      display: flex;
+      align-items: center;
+      .search-icon {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+    }
     .input-search,
     .mobile-input-search {
       padding: 0.5rem;
@@ -243,7 +244,7 @@ nav {
       display: flex;
       cursor: pointer;
       align-items: center;
-      gap: 0.8rem;
+      margin-inline-end: 1rem;
       &:hover .icon-image {
         rotate: -30deg;
       }
@@ -253,7 +254,6 @@ nav {
     }
     .icon-image {
       transition: 300ms;
-      scale: 1.3;
     }
   }
   & button {
@@ -274,6 +274,9 @@ nav {
     align-items: center;
     gap: 20px;
     position: relative;
+    .icon {
+      cursor: pointer;
+    }
     .notification-container {
       position: relative;
       .notification-icon {
@@ -292,6 +295,7 @@ nav {
       }
     }
     .userpfp {
+      cursor: pointer;
       border-radius: 50%;
       width: 50px;
       height: 50px;
@@ -334,12 +338,7 @@ nav {
 }
 @media (max-width: 700px) {
   nav {
-    // background-color: red;
-    .icon > h2 {
-      display: none;
-    }
     .left-section {
-      .input-search,
       .options {
         display: none;
       }
@@ -347,7 +346,7 @@ nav {
         margin-inline-start: 25vw;
       }
       .mobile-options {
-        display: block;
+        display: flex;
         // position: relative;
         .mobile-options-tray {
           display: none;
@@ -355,12 +354,22 @@ nav {
           position: absolute;
           box-sizing: border-box;
           padding: 1rem;
-          z-index: 999;
+          z-index: 1;
           flex-direction: column;
           min-height: 10rem;
           gap: 15px;
-          top: 5rem;
+          top: 4.5rem;
           left: 0rem;
+          width: 100%;
+          animation: slide-down 150ms linear;
+          @keyframes slide-down {
+            from {
+              left: -7rem;
+            }
+            to {
+              left: 0rem;
+            }
+          }
           .mobile-input-search {
             width: var(--window-size);
           }
