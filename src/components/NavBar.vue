@@ -151,7 +151,7 @@ function handleTouchMove(e: TouchEvent) {
                 <router-link to="/publish" class="link">create</router-link>
               </li>
               <li class="search-icon link">
-                <span>search</span>
+                <span @click="searchBarVisible = true">search</span>
               </li>
               <li>on Alpha Stage for mobile</li>
             </ul>
