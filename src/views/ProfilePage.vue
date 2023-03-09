@@ -125,7 +125,7 @@ function changeAbout(content: string) {
   }
 
   const { mutate, onError } = useMutation(UPDATE_ABOUT);
-  mutate({ user: u.value.nickname, content: JSON.stringify(content) });
+  mutate({ user: u.value?.nickname, content: JSON.stringify(content) });
   isAboutEditable.value = false;
   onError(() => {
     emitter.emit(
@@ -136,6 +136,9 @@ function changeAbout(content: string) {
 }
 
 function followUser(user: User) {
+  if (!u.value?.nickname) {
+    return;
+  }
   const { mutate } = useMutation(FOLLOW_USER, {
     update(cache, { data: follow }) {
       let data = cache.readQuery({
@@ -167,6 +170,9 @@ function followUser(user: User) {
   mutate({ me: u.value.nickname, user: user.username });
 }
 function unfollowUser(user: User) {
+  if (!u.value?.nickname) {
+    return;
+  }
   const { mutate } = useMutation(UNFOLLOW_USER, {
     update(cache, { data: unfollow }) {
       let data = cache.readQuery({
@@ -191,9 +197,12 @@ function unfollowUser(user: User) {
 }
 
 function isMutual(user: any) {
+  if (!u.value?.nickname) {
+    return false;
+  }
   //!!u.value is shorthand for u.value !== "" && u.value !== null && u.value !== undefined
   if (
-    (!!u.value && user.username === u.value.nickname) ||
+    user.username === u.value.nickname ||
     user.followings.nodes.length === 0
   ) {
     return false;
@@ -211,6 +220,10 @@ function isMutual(user: any) {
 }
 // To Update it in real time I have to look info GQL Query and return proper id of followed user from user table not follower table
 function isFollowed(user: any) {
+  //If user is not logged in return false since there is not need for futher checking
+  if (!u.value?.nickname) {
+    return false;
+  }
   for (let follower of user.followers.nodes || []) {
     if (follower.user.username === u.value.nickname) {
       return true;
@@ -220,7 +233,7 @@ function isFollowed(user: any) {
 }
 
 function isMe(user: User) {
-  return user.username === u.value.nickname;
+  return user.username === u.value?.nickname;
 }
 
 async function uploadImage() {
@@ -333,6 +346,9 @@ onMounted(() => {
 });
 
 function redirectToChat(_user: User) {
+  if (!u.value?.nickname) {
+    return;
+  }
   if (
     user.value.users[0].chatting_with.some((us: User) => {
       return us.username === u.value.nickname;
