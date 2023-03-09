@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import PostCard from "@/components/PostCard.vue";
 import { useQuery } from "@vue/apollo-composable";
 import { GET_ALL_BLOGS } from "@/graphql";
