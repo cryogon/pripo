@@ -49,7 +49,9 @@ onMounted(() => {
         ref="searchBar"
         class="search-bar__input"
         placeholder="Search"
+        autocomplete="off"
       />
+
       <button type="button" @click="emit('close')" class="close-button">
         Close
       </button>

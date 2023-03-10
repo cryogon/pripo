@@ -22,6 +22,9 @@ const router = createRouter({
     {
       path: "/publish",
       name: "publish",
+      meta: {
+        requiresAuth: true,
+      },
       component: () => import("@/views/PostPage.vue"),
     },
     {
@@ -101,10 +104,13 @@ const router = createRouter({
 });
 
 router.afterEach((to) => {
-  router.isReady().then(() => {
+  router.isReady().then(async () => {
     if (to.meta.requiresAuth) {
       if (!localStorage.getItem("token")) {
         router.back();
+        const useEmitter = (await import("@/composables/EventEmitter"))
+          .useEmitter;
+        useEmitter().emit("alert", "Login Required!!!");
       }
     }
   });

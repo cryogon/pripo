@@ -135,6 +135,10 @@ function handleTouchMove(e: TouchEvent) {
   xDown = 0;
   yDown = 0;
 }
+function openSearchBar() {
+  searchBarVisible.value = true;
+  isMobileOptionVisible.value = false;
+}
 </script>
 <template>
   <header>
@@ -151,7 +155,7 @@ function handleTouchMove(e: TouchEvent) {
                 <router-link to="/publish" class="link">create</router-link>
               </li>
               <li class="search-icon link">
-                <span>search</span>
+                <span @click="openSearchBar">search</span>
               </li>
               <li>on Alpha Stage for mobile</li>
             </ul>
