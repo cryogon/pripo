@@ -201,9 +201,6 @@ function openSearchBar() {
               role="button"
               >Profile</router-link
             >
-            <router-link class="hover-item" to="/publish" role="button"
-              >Post</router-link
-            >
             <span
               class="hover-item"
               @click="toggleDark()"

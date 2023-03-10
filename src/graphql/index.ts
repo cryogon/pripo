@@ -225,6 +225,7 @@ export const GET_USER_BY_ID = gql`
       cover_picture
       about
       social_links
+      profile_visibility
       liked_blogs {
         blog {
           id
@@ -291,6 +292,7 @@ export const GET_USER_BY_USERNAME = gql`
       about
       social_links
       chatting_with
+      profile_visibility
       liked_blogs {
         blog {
           id
@@ -927,6 +929,21 @@ export const TEMP_USER = gql`
     users(where: { username: { _eq: $user } }) {
       username
       profile_picture
+    }
+  }
+`;
+
+export const UPDATE_PROFILE_VISIBILITY = gql`
+  mutation updateProfileVisibility($user: String!, $visibility: String!) {
+    update_users(
+      _set: { profile_visibility: $visibility }
+      where: { username: { _eq: $user } }
+    ) {
+      returning {
+        id
+        username
+        profile_visibility
+      }
     }
   }
 `;

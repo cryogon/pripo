@@ -25,6 +25,13 @@ export interface User {
   username: string;
   profile_picture: string;
   email: string;
+  /**
+   *- **default** means that the user profile is visible but private posts are not.
+   *- **partial** means that the user profile is visible but follower/followings and posts are not visible.
+   *- **none** means that the user profile is not visible
+   * @default "default"
+   */
+  profile_visibility: "default" | "partial" | "none";
   followers: {
     aggregate: {
       count: number;

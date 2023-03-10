@@ -50,6 +50,8 @@ onMounted(() => {
         class="search-bar__input"
         placeholder="Search"
         autocomplete="off"
+        autocorrect="off"
+        autocapitalize="off"
       />
 
       <button type="button" @click="emit('close')" class="close-button">
