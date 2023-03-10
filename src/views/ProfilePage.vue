@@ -81,16 +81,16 @@ router.afterEach((to, from) => {
     refetch({ id: to.params.user, username: to.params.user });
 });
 onResult((r) => {
-  aboutContent.value.newValue = JSON.parse(user.value?.users[0].about) || "";
+  if (r.data.users.length == 0) {
+    router.push("/404");
+    return;
+  }
+  userFound.value = true;
+  aboutContent.value.newValue = JSON.parse(user.value?.users[0]?.about) || "";
   setMeta({ title: `${user.value.users[0].username} ● Pripo` });
   if (user.value?.users[0].cover_picture)
     coverImage.value = user.value?.users[0].cover_picture;
   else coverImage.value = "";
-  if (r.data.users.length == 0) {
-    router.push("/404");
-  } else {
-    userFound.value = true;
-  }
 });
 onError((err) => {
   console.log(err);
