@@ -947,3 +947,14 @@ export const UPDATE_PROFILE_VISIBILITY = gql`
     }
   }
 `;
+
+export const DELETE_POST = gql`
+  mutation deleteBlog($id: Int!) {
+    update_blogs(_set: { is_deleted: true }, where: { id: { _eq: $id } }) {
+      returning {
+        id
+        is_deleted
+      }
+    }
+  }
+`;
