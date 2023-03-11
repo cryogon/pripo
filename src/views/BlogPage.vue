@@ -2,7 +2,13 @@
 import router from "@/router";
 import CommentSection from "@/components/CommentSection.vue";
 import { useMutation, useQuery } from "@vue/apollo-composable";
-import { GET_BLOG, SET_LIKE, REMOVE_LIKE, EDIT_BLOG } from "@/graphql";
+import {
+  GET_BLOG,
+  SET_LIKE,
+  REMOVE_LIKE,
+  EDIT_BLOG,
+  DELETE_POST,
+} from "@/graphql";
 import { ref, watch, provide } from "vue";
 import StarIcon from "../components/Icons/StarIcon.vue";
 import { useAuth0 } from "@auth0/auth0-vue";
@@ -128,6 +134,10 @@ function editBlog() {
     tags: blogTags.value.split(" ").map((c: any) => c.toLowerCase()),
   });
   blogEditable.value = false;
+}
+function deletePost(id: number) {
+  const variables = { id };
+  useMutation(DELETE_POST, { variables }).mutate();
 }
 </script>
 
