@@ -81,7 +81,11 @@ router.afterEach((to, from) => {
     refetch({ id: to.params.user, username: to.params.user });
 });
 onResult((r) => {
-  if (r.data.users.length == 0) {
+  if (!r.data.users.length) {
+    router.push("/404");
+    return;
+  }
+  if (r.data.users[0].profile_visibility === "none" && !isMe(r.data.users[0])) {
     router.push("/404");
     return;
   }
@@ -508,7 +512,7 @@ function redirectToChat(_user: User) {
             v-for="(tab, i) in tabs"
             :key="i"
             :to="`#${tab.toLowerCase()}`"
-            class="tab-item"
+            class="tab-item link"
             :class="{ active: tab.toLowerCase() === currentSection }"
             >{{ tab }}</router-link
           >
@@ -571,6 +575,9 @@ function redirectToChat(_user: User) {
         class="posts-section card section"
         ref="postsSection"
         id="postsSection"
+        v-if="
+          user.users[0].profile_visibility === 'default' || isMe(user.users[0])
+        "
       >
         <h4 class="heading" id="posts">Posts</h4>
         <PostItem
@@ -587,6 +594,9 @@ function redirectToChat(_user: User) {
         class="favourite-section card section"
         ref="favouritesSection"
         id="favouritesSection"
+        v-if="
+          user.users[0].profile_visibility === 'default' || isMe(user.users[0])
+        "
       >
         <h4 class="heading" id="favourites">Favourites</h4>
         <PostItem
@@ -603,6 +613,9 @@ function redirectToChat(_user: User) {
         class="follower-section card section"
         ref="followersSection"
         id="followersSection"
+        v-if="
+          user.users[0].profile_visibility === 'default' || isMe(user.users[0])
+        "
       >
         <h4 class="heading" id="followers">Followers</h4>
         <FollowerItem
@@ -617,6 +630,9 @@ function redirectToChat(_user: User) {
         class="following-section card section"
         ref="followingsSection"
         id="followingsSection"
+        v-if="
+          user.users[0].profile_visibility === 'default' || isMe(user.users[0])
+        "
       >
         <h4 class="heading" id="followings">Followings</h4>
         <FollowerItem
@@ -662,6 +678,11 @@ function redirectToChat(_user: User) {
         overflow-y: auto;
         &::-webkit-scrollbar {
           width: 0.3rem;
+          height: 0.3rem;
+        }
+        &::-webkit-scrollbar-corner {
+          background-color: #202020;
+          border-radius: 2rem;
         }
         &::-webkit-scrollbar-track {
           border-radius: 2rem;

@@ -41,7 +41,11 @@ export const INSERT_BLOG = gql`
 
 export const GET_ALL_BLOGS = gql`
   query getBlog($limit: Int!, $offset: Int!) {
-    blogs(limit: $limit, offset: $offset) {
+    blogs(
+      limit: $limit
+      offset: $offset
+      where: { is_deleted: { _eq: false } }
+    ) {
       id
       title
       content
@@ -73,7 +77,9 @@ export const GET_ALL_BLOGS = gql`
 
 export const GET_BLOG = gql`
   query getBlog($id: Int) {
-    blogs(where: { id: { _eq: $id } }) {
+    blogs(
+      where: { _and: [{ id: { _eq: $id } }, { is_deleted: { _eq: false } }] }
+    ) {
       id
       title
       content
@@ -225,6 +231,7 @@ export const GET_USER_BY_ID = gql`
       cover_picture
       about
       social_links
+      profile_visibility
       liked_blogs {
         blog {
           id
@@ -291,8 +298,9 @@ export const GET_USER_BY_USERNAME = gql`
       about
       social_links
       chatting_with
+      profile_visibility
       liked_blogs {
-        blog {
+        blog(where: { is_deleted: { _eq: false } }) {
           id
           title
           favourites: favourites_aggregate {
@@ -304,7 +312,7 @@ export const GET_USER_BY_USERNAME = gql`
           is_public
         }
       }
-      blogs(order_by: { id: asc }) {
+      blogs(order_by: { id: asc }, where: { is_deleted: { _eq: false } }) {
         id
         title
         favourites: favourites_aggregate {
@@ -927,6 +935,32 @@ export const TEMP_USER = gql`
     users(where: { username: { _eq: $user } }) {
       username
       profile_picture
+    }
+  }
+`;
+
+export const UPDATE_PROFILE_VISIBILITY = gql`
+  mutation updateProfileVisibility($user: String!, $visibility: String!) {
+    update_users(
+      _set: { profile_visibility: $visibility }
+      where: { username: { _eq: $user } }
+    ) {
+      returning {
+        id
+        username
+        profile_visibility
+      }
+    }
+  }
+`;
+
+export const DELETE_POST = gql`
+  mutation deleteBlog($id: Int!) {
+    update_blogs(_set: { is_deleted: true }, where: { id: { _eq: $id } }) {
+      returning {
+        id
+        is_deleted
+      }
     }
   }
 `;

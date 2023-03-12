@@ -11,6 +11,7 @@ import {
   UPDATE_INTERESTS,
   SET_LINKS,
   GET_USER_BY_USERNAME,
+  UPDATE_PROFILE_VISIBILITY,
 } from "@/graphql";
 const emitter = useEmitter();
 const { files, open, reset } = useFileDialog();
@@ -19,6 +20,7 @@ const { getAccessTokenSilently, user } = useAuth0();
 const fullNameChangeStatus = ref("idle");
 const locationChangeStatus = ref("idle");
 const interestsChangeStatus = ref("idle");
+const profileVisibiltyChangeStatus = ref("idle");
 const linksChangeStatus = ref(Array.from({ length: 4 }).fill("idle"));
 const dbUser = ref();
 const { onResult } = useQuery(GET_USER_BY_USERNAME, {
@@ -252,6 +254,31 @@ function setLinks(event: any, pos: number) {
       });
   }, 3000);
 }
+
+function setProfileVisibility(e: Event) {
+  if (!user.value?.nickname) {
+    return;
+  }
+  const { value } = e.target as HTMLInputElement;
+  profileVisibiltyChangeStatus.value = "updating";
+  useMutation(UPDATE_PROFILE_VISIBILITY, {
+    variables: {
+      user: user.value.nickname,
+      visibility: value,
+    },
+  })
+    .mutate()
+    .then(() => {
+      profileVisibiltyChangeStatus.value = "updated";
+      setTimeout(() => {
+        profileVisibiltyChangeStatus.value = "idle";
+      }, 1000);
+    })
+    .catch((err) => {
+      emitter.emit("alert", "Couldn't update visisbilty!!!");
+      console.error(err);
+    });
+}
 </script>
 <template>
   <main class="settings-container">
@@ -373,6 +400,34 @@ function setLinks(event: any, pos: number) {
               ></span>
             </div>
           </div>
+        </article>
+        <article class="privacy-settings">
+          <h2 class="heading" id="privacy">Privacy</h2>
+          <ul class="privacy-options">
+            <li class="privacy-item">
+              <span> Profile Visibiity Option </span>
+              <div class="profile-visibility-options">
+                <select
+                  name="profile_visibility"
+                  id="profile-visibility-options"
+                  class="profile-visibility-options-item"
+                  @change="setProfileVisibility"
+                >
+                  <option value="default">default</option>
+                  <option value="partial">partial</option>
+                  <option value="none">none</option>
+                </select>
+                <span
+                  :class="{
+                    'privacy-options__updating':
+                      profileVisibiltyChangeStatus === 'updating',
+                    'privacy-options__updated':
+                      profileVisibiltyChangeStatus === 'updated',
+                  }"
+                ></span>
+              </div>
+            </li>
+          </ul>
         </article>
       </section>
       <!-- Will enable this when all tabs are available. now only profile is available -->
@@ -563,6 +618,65 @@ function setLinks(event: any, pos: number) {
               border: 0;
               color: var(--tag-color);
               margin-inline-start: 2rem;
+            }
+          }
+        }
+      }
+      .privacy-settings {
+        .privacy-options {
+          list-style: none;
+          .privacy-item {
+            display: flex;
+            gap: 1rem;
+            margin: 0.5rem;
+            .profile-visibility-options {
+              position: relative;
+              .profile-visibility-options-item {
+                background-color: #303030;
+                color: white;
+              }
+              .privacy-options__updating {
+                outline: 3px dotted var(--color-text);
+                border-radius: 50%;
+                // align-items: center;
+                position: absolute;
+                right: -2rem;
+                top: 20%;
+                width: 1rem;
+                height: 1rem;
+                background: red;
+                animation: rotate 1s ease-out infinite;
+
+                @keyframes rotate {
+                  0% {
+                    transform: rotate(0deg);
+                  }
+                  100% {
+                    transform: rotate(360deg);
+                  }
+                }
+              }
+              .privacy-options__updated {
+                position: absolute;
+                right: -2rem;
+                top: 20%;
+                width: 1rem;
+                transition: 1s;
+                background-color: rgb(99, 250, 99);
+                height: 1rem;
+                clip-path: polygon(
+                  14% 50%,
+                  33% 81%,
+                  100% 0,
+                  100% 18%,
+                  32% 100%,
+                  0% 50%
+                );
+                &.link {
+                  top: 30%;
+                  right: -3rem;
+                }
+              }
             }
           }
         }

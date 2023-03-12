@@ -2,17 +2,23 @@
 import router from "@/router";
 import CommentSection from "@/components/CommentSection.vue";
 import { useMutation, useQuery } from "@vue/apollo-composable";
-import { GET_BLOG, SET_LIKE, REMOVE_LIKE, EDIT_BLOG } from "@/graphql";
+import {
+  GET_BLOG,
+  SET_LIKE,
+  REMOVE_LIKE,
+  EDIT_BLOG,
+  DELETE_POST,
+} from "@/graphql";
 import { ref, watch, provide } from "vue";
 import StarIcon from "../components/Icons/StarIcon.vue";
 import { useAuth0 } from "@auth0/auth0-vue";
 import ShareIcon from "../components/Icons/ShareIcon.vue";
-import EditIcon from "../components/Icons/EditIcon.vue";
 import { useShare } from "@vueuse/core";
 import { useEmitter } from "@/composables/EventEmitter";
 import LoadingScreen from "../components/LoadingScreen.vue";
 import { useTimeAgo } from "@vueuse/core";
 import { setMeta } from "@/helper";
+import OptionsIcon from "../components/Icons/OptionsIcon.vue";
 const emitter = useEmitter();
 const { user } = useAuth0();
 const params = router.currentRoute.value.params;
@@ -129,6 +135,20 @@ function editBlog() {
   });
   blogEditable.value = false;
 }
+function deletePost(id: number) {
+  const variables = { id };
+  const { mutate } = useMutation(DELETE_POST, { variables });
+  emitter.emit("confirm", { mutate, id });
+  isBlogOptionVisible.value = false;
+}
+const isBlogOptionVisible = ref(false);
+function toggleBlogOptions() {
+  isBlogOptionVisible.value = !isBlogOptionVisible.value;
+}
+function toggleBlogEditMode() {
+  blogEditable.value = !blogEditable.value;
+  isBlogOptionVisible.value = false;
+}
 </script>
 
 <template>
@@ -153,17 +173,27 @@ function editBlog() {
           </span>
         </div>
         <div class="blog-options">
-          <EditIcon
-            class="icon edit"
-            v-if="blog.user.id == user?.uid"
-            @click="blogEditable = !blogEditable"
-          />
+          <!-- <EditIcon class="icon edit" /> -->
           <ShareIcon class="star icon" @click="shareButton" />
           <StarIcon
             class="star icon"
             :class="{ staractive: isFav }"
             @click="setLike"
           />
+          <OptionsIcon
+            class="options-icon icon"
+            @click="toggleBlogOptions"
+            v-if="blog.user.id == user?.uid"
+          />
+          <ul
+            class="blog-options__drop-down"
+            :class="{ active: isBlogOptionVisible }"
+          >
+            <li class="list-item" @click="toggleBlogEditMode">Edit</li>
+            <li class="list-item danger" @click="deletePost(blog.id)">
+              Delete
+            </li>
+          </ul>
         </div>
       </div>
       <h1 class="title" :contenteditable="blogEditable" ref="blogTitle">
@@ -279,6 +309,7 @@ function editBlog() {
       display: flex;
       gap: 3px;
       flex-direction: column;
+      user-select: none;
       .date-posted {
         opacity: 0.7;
         font-size: 14px;
@@ -289,10 +320,38 @@ function editBlog() {
     }
     .blog-options {
       display: flex;
+      user-select: none;
       align-items: center;
       justify-content: flex-end;
       gap: 30px;
       width: 75%;
+      position: relative;
+      .blog-options__drop-down {
+        position: absolute;
+        bottom: -4.5rem;
+        display: none;
+        flex-direction: column;
+        gap: 5px;
+        padding-block: 0.5rem;
+        background-color: #202020;
+        &.active {
+          display: flex;
+        }
+        .list-item {
+          list-style: none;
+          cursor: pointer;
+          padding: 0.1rem 1rem;
+          &.danger {
+            background-color: rgb(178, 58, 58);
+          }
+          &:hover {
+            background-color: #303030;
+            &.danger {
+              background-color: rgb(218, 59, 59);
+            }
+          }
+        }
+      }
       .icon {
         // margin-inline-start: auto;
         width: 2.1rem;
