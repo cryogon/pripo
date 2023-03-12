@@ -34,7 +34,7 @@ interface ImageQualityParams {
    * quality of the image
    * @default "original"
    */
-  quality?: "q_10" | "q_30" | "q_50" | "q_100" | "q_200" | "original";
+  quality?: "q_10" | "q_30" | "q_50" | "q_100" | "q_200";
   /**
    * width of the image in px
    */
@@ -44,15 +44,17 @@ interface ImageQualityParams {
    */
   height?: number;
 }
-function ImageQuality(url: string, imageOptions: ImageQualityParams) {
-  const { quality = "original", width, height } = imageOptions;
+function ImageQuality(url: string, imageOptions?: ImageQualityParams = {}) {
+  const { quality = "", width, height } = imageOptions;
   const origin = new URL(url).origin;
-  const assetType = new URL(url).pathname.slice(0, 23);
-  const pathname = new URL(url).pathname.slice(23);
-  if (quality === "original" && !width && !height) {
-    return `${origin}${assetType}${pathname}`;
+  if (origin.includes("cloudinary")) {
+    const assetType = new URL(url).pathname.slice(0, 23);
+    const pathname = new URL(url).pathname.slice(23);
+    return `${origin}${assetType}${quality ? "/" + quality : ""}${
+      width ? "/w_" + width : ""
+    }${height ? "/h_" + height : ""}${pathname}`;
   }
-  return `${origin}${assetType}/${quality}${pathname}`;
+  return "";
 }
 </script>
 
@@ -61,7 +63,7 @@ function ImageQuality(url: string, imageOptions: ImageQualityParams) {
     <h4 class="header">
       <router-link :to="`/users/${user?.username}`" v-if="isPublic">
         <img
-          :src="ImageQuality(user?.profile_picture, { quality: 'q_10' })"
+          :src="ImageQuality(user?.profile_picture, { width: 96 })"
           alt="userProfile"
           class="user-profile-picture"
           style="cursor: pointer"

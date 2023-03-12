@@ -7,7 +7,6 @@ const mutate = ref();
 const variables = ref();
 
 function clickYep(cb: (v: any) => void, variables: any) {
-  console.log(variables);
   cb(variables);
   isVisible.value = false;
 }

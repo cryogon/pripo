@@ -41,7 +41,11 @@ export const INSERT_BLOG = gql`
 
 export const GET_ALL_BLOGS = gql`
   query getBlog($limit: Int!, $offset: Int!) {
-    blogs(limit: $limit, offset: $offset) {
+    blogs(
+      limit: $limit
+      offset: $offset
+      where: { is_deleted: { _eq: false } }
+    ) {
       id
       title
       content
@@ -73,7 +77,9 @@ export const GET_ALL_BLOGS = gql`
 
 export const GET_BLOG = gql`
   query getBlog($id: Int) {
-    blogs(where: { id: { _eq: $id } }) {
+    blogs(
+      where: { _and: [{ id: { _eq: $id } }, { is_deleted: { _eq: false } }] }
+    ) {
       id
       title
       content
@@ -294,7 +300,7 @@ export const GET_USER_BY_USERNAME = gql`
       chatting_with
       profile_visibility
       liked_blogs {
-        blog {
+        blog(where: { is_deleted: { _eq: false } }) {
           id
           title
           favourites: favourites_aggregate {
@@ -306,7 +312,7 @@ export const GET_USER_BY_USERNAME = gql`
           is_public
         }
       }
-      blogs(order_by: { id: asc }) {
+      blogs(order_by: { id: asc }, where: { is_deleted: { _eq: false } }) {
         id
         title
         favourites: favourites_aggregate {
