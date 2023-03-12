@@ -44,8 +44,8 @@ interface ImageQualityParams {
    */
   height?: number;
 }
-function ImageQuality(url: string, imageOptions?: ImageQualityParams = {}) {
-  const { quality = "", width, height } = imageOptions;
+function ImageQuality(url: string, imageOptions?: ImageQualityParams) {
+  const { quality = "", width, height } = imageOptions || {};
   const origin = new URL(url).origin;
   if (origin.includes("cloudinary")) {
     const assetType = new URL(url).pathname.slice(0, 23);
