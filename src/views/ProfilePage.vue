@@ -512,7 +512,7 @@ function redirectToChat(_user: User) {
             v-for="(tab, i) in tabs"
             :key="i"
             :to="`#${tab.toLowerCase()}`"
-            class="tab-item"
+            class="tab-item link"
             :class="{ active: tab.toLowerCase() === currentSection }"
             >{{ tab }}</router-link
           >
