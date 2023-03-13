@@ -1,9 +1,7 @@
 <script setup lang="ts">
-import LocationPin from "../components/Icons/LocationPin.vue";
-import HeartIcon from "../components/Icons/HeartIcon.vue";
-import LinkIcon from "../components/Icons/LinkIcon.vue";
-import CheckIcon from "@/components/Icons/CheckIcon.vue";
-import { useElementBounding, useFileDialog } from "@vueuse/core";
+import PostItem from "../components/PostItem.vue";
+import FollowerItem from "../components/FollowerItem.vue";
+import { useElementBounding, useFileDialog, useOnline } from "@vueuse/core";
 import { ref, watch, onMounted, computed } from "vue";
 import type { Blog, User } from "@/types";
 import router from "@/router";
@@ -16,14 +14,17 @@ import {
   UPDATE_ABOUT,
   INITIALIZE_CHAT,
 } from "@/graphql";
+import {
+  LocationPin,
+  HeartIcon,
+  LinkIcon,
+  CheckIcon,
+  PencilIcon,
+  XIcon,
+} from "@/components/Icons";
 import { useMutation, useQuery } from "@vue/apollo-composable";
-import { useOnline } from "@vueuse/core";
-import PostItem from "../components/PostItem.vue";
-import FollowerItem from "../components/FollowerItem.vue";
-import PencilIcon from "../components/Icons/PencilIcon.vue";
 import axios from "axios";
 import { useEmitter } from "@/composables/EventEmitter";
-import XIcon from "../components/Icons/XIcon.vue";
 import DOMpurify from "dompurify";
 import MarkDownIt from "markdown-it";
 import { setMeta } from "@/helper";
