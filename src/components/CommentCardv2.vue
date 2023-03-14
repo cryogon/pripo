@@ -52,17 +52,10 @@ function setLikes(cmnt: Comment) {
   };
   const { mutate: setLikes } = useMutation(SET_COMMENT_LIKE);
   const { mutate: removeLikes } = useMutation(REMOVE_COMMENT_LIKE);
-  for (let cUser of cmnt.liked_users) {
-    if (cUser.user_id != user.value?.uid) {
-      setLikes(variable);
-      return;
-    } else {
-      removeLikes(variable);
-      return;
-    }
-  }
-  if (!cmnt.liked_users.length) {
+  if (!hasUserLiked(cmnt)) {
     setLikes(variable);
+  } else {
+    removeLikes(variable);
   }
 }
 
@@ -73,10 +66,9 @@ function hasUserLiked(cmnt: Comment) {
   for (let cUser of cmnt.liked_users || []) {
     if (cUser.user_id == user.value?.uid) {
       return true;
-    } else {
-      return false;
     }
   }
+  return false;
 }
 
 function editComment() {

@@ -10,9 +10,8 @@ import {
   DELETE_POST,
 } from "@/graphql";
 import { ref, watch, provide } from "vue";
-import StarIcon from "../components/Icons/StarIcon.vue";
 import { useAuth0 } from "@auth0/auth0-vue";
-import ShareIcon from "../components/Icons/ShareIcon.vue";
+import { ShareIcon, StarIcon } from "@/components/Icons";
 import { useShare } from "@vueuse/core";
 import { useEmitter } from "@/composables/EventEmitter";
 import LoadingScreen from "../components/LoadingScreen.vue";
