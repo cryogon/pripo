@@ -11,6 +11,8 @@ const postsIndex = client.initIndex("posts");
 const usersIndex = client.initIndex("users");
 const posts = ref();
 const users = ref();
+const userSearchMore = ref(false);
+const postSearchMore = ref(false);
 const searchBar = ref();
 
 watchEffect(() => {
@@ -18,8 +20,13 @@ watchEffect(() => {
     .search(query.value, {
       hitsPerPage: 5,
     })
-    .then(({ hits }) => {
-      posts.value = hits;
+    .then((res) => {
+      if (res.nbHits > 5) {
+        postSearchMore.value = true;
+      } else {
+        postSearchMore.value = false;
+      }
+      posts.value = res.hits;
     })
     .catch((err) => {
       console.error(err);
@@ -29,8 +36,13 @@ watchEffect(() => {
     .search(query.value, {
       hitsPerPage: 5,
     })
-    .then(({ hits }) => {
-      users.value = hits;
+    .then((res) => {
+      if (res.nbHits > 5) {
+        userSearchMore.value = true;
+      } else {
+        userSearchMore.value = false;
+      }
+      users.value = res.hits;
     })
     .catch((err) => {
       console.error(err);
@@ -58,7 +70,7 @@ onMounted(() => {
         Close
       </button>
     </div>
-    <div v-show="query.length" class="search-bar__results">
+    <div v-if="query.length" class="search-bar__results">
       <section class="search-bar__results-users">
         <h3>Users</h3>
         <div class="users-list" v-if="users?.length">
@@ -82,6 +94,13 @@ onMounted(() => {
               </span>
             </div>
           </router-link>
+          <router-link
+            :to="`/search?f=users&q=${query}`"
+            class="search-bar__options"
+            v-show="userSearchMore"
+          >
+            Search More
+          </router-link>
         </div>
         <div v-else>User not found</div>
       </section>
@@ -95,6 +114,13 @@ onMounted(() => {
             class="posts-list__item"
           >
             {{ post.title }}
+          </router-link>
+          <router-link
+            :to="`/search?f=posts&q=${query}`"
+            class="search-bar__options"
+            v-show="postSearchMore"
+          >
+            Search More
           </router-link>
         </div>
         <div v-else>Posts not found</div>
@@ -125,7 +151,13 @@ onMounted(() => {
   }
   .search-bar__results {
     margin-block-start: 0.5rem;
-    .users-list__item {
+    .search-bar__options {
+      margin-inline-start: 1rem;
+      padding: 0.5rem;
+      padding-inline-start: 1.5rem;
+    }
+    .users-list__item,
+    .search-bar__options {
       display: flex;
       margin: 0.7rem 0.4rem;
       gap: 10px;

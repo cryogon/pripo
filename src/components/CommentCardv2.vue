@@ -109,9 +109,14 @@ function commentUrl(id: number) {
         <div class="anonymous-user" v-else></div>
       </div>
       <div class="user-info">
-        <router-link :to="`/users/${comment.user.username}`" class="username">
-          {{ comment.is_public ? comment.user.username : "Anonymous" }}
+        <router-link
+          :to="`/users/${comment.user.username}`"
+          class="username"
+          v-if="comment.is_public"
+        >
+          {{ comment.user.username }}
         </router-link>
+        <span class="username" v-else>Anonymous</span>
         <div class="content">{{ comment.content }}</div>
       </div>
     </div>
