@@ -6,13 +6,10 @@ import { ref, watch } from "vue";
 import { useDark, useScroll, useToggle } from "@vueuse/core";
 import { useAuth0 } from "@auth0/auth0-vue";
 import LoginButton from "./LoginButton.vue";
-import BellIcon from "./Icons/BellIcon.vue";
-import HamBurger from "./Icons/HamBurger.vue";
 import NotificationCenter from "./NotificationCenter.vue";
 import { usePripoStore } from "@/stores";
-import SearchIcon from "./Icons/SearchIcon.vue";
+import { SearchIcon, MessageIcon, HamBurger, BellIcon } from "./Icons";
 import SearchBar from "@/components/SearchBar.vue";
-import MessageIcon from "./Icons/MessageIcon.vue";
 
 const store = usePripoStore();
 // import { setContext } from "@apollo/client/link/context";
@@ -97,16 +94,19 @@ function toggleNotification() {
   isNotificationActive.value = !isNotificationActive.value;
 }
 
-document.addEventListener("touchstart", handleTouchStart);
-document.addEventListener("touchmove", handleTouchMove);
+// document.addEventListener("touchstart", handleTouchStart);
+// document.addEventListener("touchmove", handleTouchMove);
 //Mobile Swipe Event for drop down
 let xDown = 0,
   yDown = 0;
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function handleTouchStart(e: TouchEvent) {
   const firstTouch = e.touches[0];
   xDown = firstTouch.clientX;
   yDown = firstTouch.clientY;
 }
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function handleTouchMove(e: TouchEvent) {
   if (!xDown || !yDown) return;
   const xUp = e.touches[0].clientX;
@@ -122,7 +122,7 @@ function handleTouchMove(e: TouchEvent) {
       isMobileOptionVisible.value = false;
     } else {
       //Left Swipe
-      isMobileOptionVisible.value = true;
+      if (xDown < 50) isMobileOptionVisible.value = true;
     }
   } else {
     //Vertical Movement
