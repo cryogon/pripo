@@ -1,11 +1,6 @@
-<<<<<<< HEAD
 <p align="center">
 <img width="500" src="public/icon.png" alt="logo">
 </p>
-=======
-# pripo-vue
-![App Logo](https://github.com/cryogon/pripo/blob/main/public/icon.png?raw=true)
->>>>>>> ffa2abf (Update README.md)
 
 # pripo
 A platform where you can post anything you want anonymously

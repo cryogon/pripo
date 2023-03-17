@@ -415,7 +415,7 @@ function setProfileVisibility(e: Event) {
                 >
                   <option value="default">default</option>
                   <option value="partial">partial</option>
-                  <option value="none">none</option>
+                  <option value="hidden">hidden</option>
                 </select>
                 <span
                   :class="{

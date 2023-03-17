@@ -86,7 +86,10 @@ onResult((r) => {
     router.push("/404");
     return;
   }
-  if (r.data.users[0].profile_visibility === "none" && !isMe(r.data.users[0])) {
+  if (
+    r.data.users[0].profile_visibility === "hidden" &&
+    !isMe(r.data.users[0])
+  ) {
     router.push("/404");
     return;
   }
@@ -713,13 +716,13 @@ function redirectToChat(_user: User) {
           height: 2rem;
           border-radius: 0.6rem;
           background-color: #202020;
-          user-select: none;
+          user-select: hidden;
           position: relative;
           margin-block-start: 0.3rem;
           cursor: pointer;
         }
         .icon-container {
-          user-select: none;
+          user-select: hidden;
           display: flex;
           align-items: center;
           gap: 10px;
@@ -774,7 +777,7 @@ function redirectToChat(_user: User) {
         height: 2rem;
         border-radius: 50%;
         background-color: #303030;
-        user-select: none;
+        user-select: hidden;
         position: relative;
         cursor: pointer;
         margin: 0.5rem;
@@ -848,7 +851,7 @@ function redirectToChat(_user: User) {
           left: 50%;
           transform: translate(-50%, -50%);
           &.check {
-            display: none;
+            display: hidden;
             left: 0;
             padding: 0.1rem;
           }
@@ -1048,7 +1051,7 @@ function redirectToChat(_user: User) {
       }
       ul {
         display: flex;
-        list-style: none;
+        list-style: hidden;
         gap: 1rem;
       }
     }
@@ -1059,7 +1062,7 @@ function redirectToChat(_user: User) {
   @media screen and (max-width: 700px) {
     padding: 0 0;
     .tab-navigation {
-      display: none;
+      display: hidden;
     }
   }
 }
