@@ -4,12 +4,17 @@ import { useAuth0 } from "@auth0/auth0-vue";
 import { useMutation } from "@vue/apollo-composable";
 import { FOLLOW_USER, UNFOLLOW_USER, GET_FILTERED_POSTS } from "@/graphql";
 import router from "@/router";
+import { useEmitter } from "@/composables/EventEmitter";
 const query = router.currentRoute.value.query;
 defineProps<{
   user: User | any;
 }>();
 const { user: u } = useAuth0();
 function isFollowed(user: any) {
+  //If user is not logged in than just return false
+  if (!u.value) {
+    return false;
+  }
   for (let follower of user.followers || []) {
     if (follower.user.username === u.value.nickname) {
       return true;
@@ -18,11 +23,15 @@ function isFollowed(user: any) {
   return false;
 }
 function isMe(user: User) {
-  return user.username === u.value.nickname;
+  return u.value?.nickname && user.username === u.value.nickname;
 }
 
 //TODO:Update Cache after following
 function followUser(user: User) {
+  if (!u.value) {
+    useEmitter().emit("alert", "You Must Login First!");
+    return;
+  }
   const { mutate } = useMutation(FOLLOW_USER, {
     update(cache, { data: follow }) {
       let data = cache.readQuery({
@@ -62,6 +71,10 @@ function followUser(user: User) {
   mutate({ me: u.value.nickname, user: user.username });
 }
 function unfollowUser(user: User) {
+  if (!u.value) {
+    useEmitter().emit("alert", "You Must Login First!");
+    return;
+  }
   const { mutate } = useMutation(UNFOLLOW_USER, {
     update(cache, { data: unfollow }) {
       let data = cache.readQuery({

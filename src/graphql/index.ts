@@ -609,10 +609,15 @@ export const GET_FILTERED_POSTS = gql`
   query getFilteredPosts($query: String!) {
     blogs(
       where: {
-        _or: [
-          { title: { _ilike: $query } }
-          { content: { _ilike: $query } }
-          { username: { _ilike: $query } }
+        _and: [
+          { is_public: { _eq: true } }
+          {
+            _or: [
+              { title: { _ilike: $query } }
+              { content: { _ilike: $query } }
+              { username: { _ilike: $query } }
+            ]
+          }
         ]
       }
     ) {
@@ -629,7 +634,15 @@ export const GET_FILTERED_POSTS = gql`
     }
     users(
       where: {
-        _or: [{ name: { _ilike: $query } }, { username: { _ilike: $query } }]
+        _and: [
+          {
+            _or: [
+              { name: { _ilike: $query } }
+              { username: { _ilike: $query } }
+            ]
+          }
+          { profile_visibility: { _neq: "hidden" } }
+        ]
       }
     ) {
       id
