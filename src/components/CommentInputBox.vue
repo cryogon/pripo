@@ -130,10 +130,12 @@ function toggleInputBox() {
   position: relative;
   background-color: var(--input-box-background);
   display: flex;
+  border-radius: 2rem;
   flex-direction: column;
   .comment_input {
-    border-radius: 2rem;
+    border-radius: 1rem;
     background-color: var(--input-box-background);
+    font-family: inherit;
     outline: none;
     border: none;
     width: min(60vw, 49rem);
