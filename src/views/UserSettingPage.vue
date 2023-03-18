@@ -411,6 +411,7 @@ function setProfileVisibility(e: Event) {
                   name="profile_visibility"
                   id="profile-visibility-options"
                   class="profile-visibility-options-item"
+                  :value="dbUser?.profile_visibility || ''"
                   @change="setProfileVisibility"
                 >
                   <option value="default">default</option>
@@ -644,7 +645,7 @@ function setProfileVisibility(e: Event) {
                 top: 20%;
                 width: 1rem;
                 height: 1rem;
-                background: red;
+
                 animation: rotate 1s ease-out infinite;
 
                 @keyframes rotate {
