@@ -3,9 +3,9 @@ import CommentInputBox from "./CommentInputBox.vue";
 import { CommentBuilder } from "@/composables/CommentBuilder";
 import { useQuery } from "@vue/apollo-composable";
 import { GET_COMMENTS } from "@/graphql";
-import { watch, ref } from "vue";
+import { ref, watchEffect } from "vue";
 import { useEmitter } from "@/composables/EventEmitter";
-import type { Blog } from "@/types";
+import type { Blog, Comment } from "@/types";
 import CommentCardv2 from "./CommentCardv2.vue";
 import router from "@/router";
 const props = defineProps<{
@@ -18,13 +18,22 @@ onError(() => {
   console.error("Some problem on our side.");
 });
 const builder = ref(new CommentBuilder());
-const comments = ref();
-watch(result, () => {
+const comments = ref<Comment[]>([]);
+type CommentSortOptions = "recent" | "old" | "top";
+const sortingOption: CommentSortOptions[] = ["recent", "old", "top"];
+const sortOption = ref<CommentSortOptions>("recent");
+watchEffect(() => {
   if (props.blog.comments_allowed && result.value?.comments.length) {
     builder.value.clear();
     builder.value.addMultiple(result.value.comments);
     comments.value = builder.value.root?.children;
-    comments.value.reverse();
+    if (sortOption.value === "recent") {
+      comments.value.reverse();
+    } else if (sortOption.value === "old") {
+      comments.value.sort();
+    } else {
+      comments.value.sort((a, b) => b.likes - a.likes);
+    }
   }
 });
 
@@ -32,6 +41,9 @@ const emitter = useEmitter();
 emitter.on("refetchComments", () => {
   refetch();
 });
+function capitalize(str: string) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
 </script>
 
 <template>
@@ -41,6 +53,21 @@ emitter.on("refetchComments", () => {
     </div>
     <div class="comment-container" v-else>
       <CommentInputBox :blog="blog" />
+      <div class="comments-options-bar">
+        <div class="comments-option__sort">
+          <label for="sorting-options">Sort By</label>
+          <ul id="sorting-options" class="sorting-options">
+            <li
+              v-for="(sort, index) in sortingOption"
+              :key="index"
+              :class="{ active: sortOption === sort }"
+              @click="sortOption = sort"
+            >
+              {{ capitalize(sort) }}
+            </li>
+          </ul>
+        </div>
+      </div>
       <div class="comment-main" v-for="comment in comments" :key="comment.id">
         <CommentCardv2 :comment="comment" />
         <div class="reply-container">
@@ -131,7 +158,7 @@ emitter.on("refetchComments", () => {
                                                 />
                                                 <div
                                                   class="continue-thread"
-                                                  v-if="reply8.children.length"
+                                                  v-if="reply8.children?.length"
                                                   @click="
                                                     router.push(
                                                       `/comments/${reply8.id}`
@@ -167,15 +194,42 @@ emitter.on("refetchComments", () => {
 </template>
 <style scoped lang="scss">
 .comment-section {
-  margin-block-start: 2rem;
+  margin-block: 2rem 4rem;
+  padding: 1rem;
+  background-color: #303030;
+  border-radius: 1rem;
   .disabled-comments {
     padding-block-start: 2rem;
   }
   .comment-container {
     background-color: var(--comment-section-background);
     min-height: 10rem;
+    .comments-options-bar {
+      background-color: #252525;
+      padding: 1rem;
+      border-radius: 1rem;
+      .comments-option__sort {
+        display: flex;
+        gap: 1.5rem;
+        align-items: center;
+        .sorting-options {
+          display: flex;
+          gap: 10px;
+          list-style: none;
+          li {
+            padding: 0.2rem;
+            border-radius: 0.3rem;
+            cursor: pointer;
+            &.active {
+              background-color: #505050;
+            }
+          }
+        }
+      }
+    }
     .comment-main {
-      background-color: var(--color-background);
+      // background-color: var(--color-background);
+      // background-color: red;
       overflow-y: hidden;
     }
     .reply-container {

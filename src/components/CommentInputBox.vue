@@ -121,6 +121,7 @@ function toggleInputBox() {
   display: flex;
   gap: 10px;
   margin-block: 1rem 2rem;
+  align-items: center;
   a {
     padding: 0;
   }
@@ -131,6 +132,7 @@ function toggleInputBox() {
   display: flex;
   flex-direction: column;
   .comment_input {
+    border-radius: 2rem;
     background-color: var(--input-box-background);
     outline: none;
     border: none;
