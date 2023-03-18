@@ -207,7 +207,8 @@ function commentUrl(id: number) {
     align-items: center;
     gap: 10px;
     padding-inline-end: 1rem;
-    background-color: var(--color-background);
+    // background-color: var(--color-background);
+    background-color: inherit;
     .user-avatar-container {
       position: relative;
       a {
