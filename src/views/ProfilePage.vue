@@ -716,13 +716,13 @@ function redirectToChat(_user: User) {
           height: 2rem;
           border-radius: 0.6rem;
           background-color: #202020;
-          user-select: hidden;
+          user-select: none;
           position: relative;
           margin-block-start: 0.3rem;
           cursor: pointer;
         }
         .icon-container {
-          user-select: hidden;
+          user-select: none;
           display: flex;
           align-items: center;
           gap: 10px;
@@ -777,7 +777,7 @@ function redirectToChat(_user: User) {
         height: 2rem;
         border-radius: 50%;
         background-color: #303030;
-        user-select: hidden;
+        user-select: none;
         position: relative;
         cursor: pointer;
         margin: 0.5rem;
@@ -1051,7 +1051,7 @@ function redirectToChat(_user: User) {
       }
       ul {
         display: flex;
-        list-style: hidden;
+        list-style: none;
         gap: 1rem;
       }
     }
@@ -1062,7 +1062,7 @@ function redirectToChat(_user: User) {
   @media screen and (max-width: 700px) {
     padding: 0 0;
     .tab-navigation {
-      display: hidden;
+      display: none;
     }
   }
 }
