@@ -22,6 +22,7 @@ const { y } = useScroll(window);
 const isMobileOptionVisible = ref(false);
 const isNotificationActive = ref(false);
 const searchBarVisible = ref(false);
+
 const {
   user,
   logout: signout,
@@ -83,10 +84,9 @@ function logout() {
   localStorage.removeItem("token");
 }
 if (isAuthenticated) {
-  const token = getAccessTokenSilently();
   //FIXME: Temporary Solution: Have to find a way to use ApolloClient.setContext
-  token.then((d) => {
-    localStorage.setItem("token", d);
+  getAccessTokenSilently({ ignoreCache: true }).then((token) => {
+    localStorage.setItem("token", token);
   });
 }
 
