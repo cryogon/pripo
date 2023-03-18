@@ -816,7 +816,7 @@ function redirectToChat(_user: User) {
             }
             &.check {
               display: block;
-              // place-items: center;
+              place-items: center;
               left: 3rem;
               animation: fade 350ms linear;
 
@@ -851,7 +851,7 @@ function redirectToChat(_user: User) {
           left: 50%;
           transform: translate(-50%, -50%);
           &.check {
-            display: hidden;
+            display: none;
             left: 0;
             padding: 0.1rem;
           }
