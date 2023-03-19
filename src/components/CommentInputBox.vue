@@ -138,7 +138,7 @@ function toggleInputBox() {
     font-family: inherit;
     outline: none;
     border: none;
-    width: min(60vw, 49rem);
+    width: 100%;
     color: var(--text-color);
     padding: 0.6rem 1rem;
     min-height: 3rem;
