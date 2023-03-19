@@ -1,6 +1,6 @@
 {
   "name": "pripo",
-  "version": "0.22.5",
+  "version": "0.22.8",
   "license": "MIT",
   "scripts": {
     "dev": "vite",

@@ -28,7 +28,7 @@ const { result, loading, error, onError, stop } = useQuery(GET_BLOG, {
 
 const isFav = ref(false);
 const { share, isSupported } = useShare();
-const blog = ref<any>();
+const blog = ref<any>(result.value?.blogs[0] || null);
 //Variables For Editing Blogs
 const blogEditable = ref(false);
 const isPostPublic = ref(false);
@@ -40,11 +40,6 @@ const blogTags = ref();
 provide("blog_id", blogId);
 
 watch(result, () => {
-  //This is not working since router is appling value of currentTitle first and it is updating later since blog is updating late
-  localStorage.setItem(
-    "currentTitle",
-    result.value.blogs[0].title + " - Pripo"
-  );
   //For Updating Page Meta
   setMeta({
     title: result.value.blogs[0].title + " ● Pripo",
@@ -63,7 +58,8 @@ watch(result, () => {
   }
 });
 
-onError(() => {
+onError((err) => {
+  console.error(err);
   stop();
 });
 function setLike() {
