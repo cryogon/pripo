@@ -7,13 +7,18 @@ export interface MetaOptions {
    * @default ""
    */
   description?: string;
+  /**
+   * Icon for the  current page
+   * @default null
+   */
+  icon?: string;
 }
 
 export interface MetaType extends HTMLCollectionOf<HTMLMetaElement> {
   namedItem(name: string): HTMLMetaElement;
 }
 export function setMeta(param: MetaOptions): void {
-  const { title, description = "" } = param;
+  const { title, description = "", icon = null } = param;
   const meta: MetaType = document.getElementsByTagName("meta") as MetaType;
   //Open Graph Title
   if (meta.namedItem("og:title")?.content) {
@@ -36,13 +41,24 @@ export function setMeta(param: MetaOptions): void {
     createMetaElement("description", description);
   }
 
+  //Page Icon
+  if (icon) {
+    document.querySelector("link[rel='icon']")?.setAttribute("href", icon) ||
+      (() => {
+        const el = document.createElement("link");
+        el.setAttribute("rel", "icon");
+        el.setAttribute("href", icon);
+        document.head.appendChild(el);
+      })();
+  }
+
   //Page Title
   document.title = title;
 }
 
-function createMetaElement(name: string, _content: string) {
+function createMetaElement(name: string, content: string) {
   const el = document.createElement("meta");
   el.setAttribute("name", name);
-  el.setAttribute("content", _content);
+  el.setAttribute("content", content);
   document.head.appendChild(el);
 }
