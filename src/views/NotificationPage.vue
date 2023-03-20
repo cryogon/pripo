@@ -166,6 +166,7 @@ main {
         padding: 0.5rem;
         display: flex;
         column-gap: 10px;
+        align-items: center;
         .user-avatar {
           width: 3rem;
           height: 3rem;
@@ -187,6 +188,7 @@ main {
         .markread-and-date {
           margin-inline-start: auto;
           display: flex;
+          align-self: flex-end;
           flex-direction: column;
           align-items: center;
           justify-content: flex-end;

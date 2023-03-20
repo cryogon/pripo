@@ -18,6 +18,7 @@ import LoadingScreen from "../components/LoadingScreen.vue";
 import { useTimeAgo } from "@vueuse/core";
 import { setMeta } from "@/helper";
 import OptionsIcon from "../components/Icons/OptionsIcon.vue";
+import { setImageQuality } from "@/helper/setImageQuality";
 const emitter = useEmitter();
 const { user } = useAuth0();
 const params = router.currentRoute.value.params;
@@ -153,7 +154,12 @@ function toggleBlogEditMode() {
         <div class="author-pfp anonymous" v-if="!blog.is_public"></div>
         <router-link :to="`/users/${blog.user.id}`" v-else>
           <img
-            :src="blog.user.profile_picture"
+            :src="
+              setImageQuality(blog.user.profile_picture, {
+                width: 196,
+                height: 196,
+              })
+            "
             alt="author"
             class="author-pfp"
             referrerpolicy="no-referrer"
@@ -253,6 +259,7 @@ function toggleBlogEditMode() {
       margin-block-end: 0.8rem;
       line-height: 1.4rem;
       white-space: pre-wrap;
+      word-wrap: break-word;
     }
     .extra-editing-options {
       display: flex;
