@@ -4,6 +4,7 @@ import { useAuth0 } from "@auth0/auth0-vue";
 import { useMutation } from "@vue/apollo-composable";
 import { POST_COMMENT, INSERT_NOTIFICATION } from "@/graphql";
 import { useEmitter } from "@/composables/EventEmitter";
+import { setImageQuality } from "@/helper/setImageQuality";
 import type { Blog } from "@/types";
 
 defineProps<{
@@ -74,7 +75,11 @@ function toggleInputBox() {
 <template>
   <div class="comment-input-section" v-if="user?.nickname">
     <router-link :to="`/users/${user.nickname}`">
-      <img :src="user.picture" alt="user" class="user-icon" />
+      <img
+        :src="setImageQuality(user.picture, { width: 196, height: 196 })"
+        alt="user"
+        class="user-icon"
+      />
     </router-link>
     <div class="input-container">
       <textarea

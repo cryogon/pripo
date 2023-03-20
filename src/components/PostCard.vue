@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { setImageQuality } from "@/helper/setImageQuality";
 defineProps<{
   id: number;
   user: {
@@ -29,33 +30,6 @@ function showFormatedDate(date: Date | string | number) {
     year: "numeric",
   }).format(new Date(date));
 }
-interface ImageQualityParams {
-  /**
-   * quality of the image
-   * @default "original"
-   */
-  quality?: "q_10" | "q_30" | "q_50" | "q_100" | "q_200";
-  /**
-   * width of the image in px
-   */
-  width?: number;
-  /**
-   * height of the image in px
-   */
-  height?: number;
-}
-function ImageQuality(url: string, imageOptions?: ImageQualityParams) {
-  const { quality = "", width, height } = imageOptions || {};
-  const origin = new URL(url).origin;
-  if (origin.includes("cloudinary")) {
-    const assetType = new URL(url).pathname.slice(0, 23);
-    const pathname = new URL(url).pathname.slice(23);
-    return `${origin}${assetType}${quality ? "/" + quality : ""}${
-      width ? "/w_" + width : ""
-    }${height ? "/h_" + height : ""}${pathname}`;
-  }
-  return "";
-}
 </script>
 
 <template>
@@ -63,7 +37,7 @@ function ImageQuality(url: string, imageOptions?: ImageQualityParams) {
     <h4 class="header">
       <router-link :to="`/users/${user?.username}`" v-if="isPublic">
         <img
-          :src="ImageQuality(user?.profile_picture, { width: 96 })"
+          :src="setImageQuality(user?.profile_picture, { width: 96 })"
           alt="userProfile"
           class="user-profile-picture"
           style="cursor: pointer"
@@ -101,7 +75,13 @@ function ImageQuality(url: string, imageOptions?: ImageQualityParams) {
 
     <div class="recent-comment" v-if="comment && comment[0]?.id">
       <img
-        :src="comment[0].user?.profile_picture"
+        :src="
+          setImageQuality(comment[0].user?.profile_picture, {
+            height: 96,
+            width: 96,
+            quality: 'q_50',
+          })
+        "
         class="comment-user-profile"
         alt="user"
         v-if="isPublic && comment[0].user?.profile_picture"

@@ -13,6 +13,7 @@ import {
 } from "@/graphql";
 import { useClipboard, useTimeAgo } from "@vueuse/core";
 import OptionsIcon from "./Icons/OptionsIcon.vue";
+import { setImageQuality } from "@/helper/setImageQuality";
 defineProps<{ comment: Comment }>();
 const { user } = useAuth0();
 const emitter = useEmitter();
@@ -101,7 +102,13 @@ function commentUrl(id: number) {
           :to="`/users/${comment.user.username}`"
         >
           <img
-            :src="comment.user.profile_picture"
+            :src="
+              setImageQuality(comment.user.profile_picture, {
+                height: 96,
+                width: 96,
+                quality: 'q_50',
+              })
+            "
             alt="user-avatar"
             class="user-avatar"
           />

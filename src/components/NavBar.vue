@@ -10,7 +10,7 @@ import NotificationCenter from "./NotificationCenter.vue";
 import { usePripoStore } from "@/stores";
 import { SearchIcon, MessageIcon, HamBurger, BellIcon } from "./Icons";
 import SearchBar from "@/components/SearchBar.vue";
-
+import { setImageQuality } from "@/helper/setImageQuality";
 const store = usePripoStore();
 // import { setContext } from "@apollo/client/link/context";
 const isDropDownVisible = ref(false);
@@ -188,7 +188,12 @@ function openSearchBar() {
             />
           </div>
           <img
-            :src="user.picture"
+            :src="
+              setImageQuality(user.picture, {
+                width: 196,
+                height: 196,
+              })
+            "
             alt="userImg"
             class="userpfp"
             @click="toggleDropDown"
