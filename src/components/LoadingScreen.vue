@@ -14,13 +14,16 @@ div.blob {
   left: 50%;
   border: none;
   outline: none;
-  translate: -50% -50%;
   background-color: lightgoldenrodyellow;
   border-radius: 50%;
   animation: blob 5s infinite;
   display: flex;
   overflow: hidden;
+  transform: translate(-50%, -50%);
   align-items: flex-end;
+  @supports (translate: 50%) {
+    translate: -50% -50%;
+  }
   .inside {
     background-color: lightblue;
     width: 100%;
