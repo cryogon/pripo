@@ -21,11 +21,20 @@ export function setImageQuality(
   const { quality = "", width, height } = imageOptions || {};
   const origin = new URL(url).origin;
   if (origin.includes("cloudinary")) {
-    const assetType = new URL(url).pathname.slice(0, 23);
-    const pathname = new URL(url).pathname.slice(23);
+    const assetType = new URL(url).pathname
+      .split("/")
+      .splice(1)
+      .map((_v, _i, arr) => {
+        return `/${arr[0]}/${arr[1]}/${arr[2]}`;
+      })[0];
+    // const pathname = new URL(url).pathname.slice(23);
+    const pathname = new URL(url).pathname.split("/").slice(4).join("/");
+    console.log(pathname);
     return `${origin}${assetType}${quality ? "/" + quality : ""}${
       width ? "/w_" + width : ""
-    }${height ? "/h_" + height : ""}${pathname}`;
+    }${height ? "/h_" + height : ""}/${pathname}`;
+  } else {
+    return image;
   }
   return "";
 }
