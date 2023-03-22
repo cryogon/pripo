@@ -29,7 +29,6 @@ export function setImageQuality(
       })[0];
     // const pathname = new URL(url).pathname.slice(23);
     const pathname = new URL(url).pathname.split("/").slice(4).join("/");
-    console.log(pathname);
     return `${origin}${assetType}${quality ? "/" + quality : ""}${
       width ? "/w_" + width : ""
     }${height ? "/h_" + height : ""}/${pathname}`;
