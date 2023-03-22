@@ -14,15 +14,15 @@ export interface ImageQualityParams {
   height?: number;
 }
 export function setImageQuality(
-  url?: string,
+  image?: string,
   imageOptions?: ImageQualityParams
 ) {
-  const u = url || "";
+  const url = image || window.location.origin;
   const { quality = "", width, height } = imageOptions || {};
-  const origin = new URL(u).origin;
+  const origin = new URL(url).origin;
   if (origin.includes("cloudinary")) {
-    const assetType = new URL(u).pathname.slice(0, 23);
-    const pathname = new URL(u).pathname.slice(23);
+    const assetType = new URL(url).pathname.slice(0, 23);
+    const pathname = new URL(url).pathname.slice(23);
     return `${origin}${assetType}${quality ? "/" + quality : ""}${
       width ? "/w_" + width : ""
     }${height ? "/h_" + height : ""}${pathname}`;

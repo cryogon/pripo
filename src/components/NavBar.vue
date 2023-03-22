@@ -12,6 +12,7 @@ import { SearchIcon, MessageIcon, HamBurger, BellIcon } from "./Icons";
 import SearchBar from "@/components/SearchBar.vue";
 import { setImageQuality } from "@/helper/setImageQuality";
 const store = usePripoStore();
+
 // import { setContext } from "@apollo/client/link/context";
 const isDropDownVisible = ref(false);
 const isDark = useDark({ initialValue: "dark" });
@@ -96,6 +97,7 @@ function toggleNotification() {
 
 // document.addEventListener("touchstart", handleTouchStart);
 // document.addEventListener("touchmove", handleTouchMove);
+
 //Mobile Swipe Event for drop down
 let xDown = 0,
   yDown = 0;
@@ -106,6 +108,7 @@ function handleTouchStart(e: TouchEvent) {
   xDown = firstTouch.clientX;
   yDown = firstTouch.clientY;
 }
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function handleTouchMove(e: TouchEvent) {
   if (!xDown || !yDown) return;

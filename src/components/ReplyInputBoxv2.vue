@@ -36,8 +36,9 @@ async function submitReply(cmnt: Comment) {
     parent_id: cmnt.id,
     isPublic: shouldPostPublicaly.value,
     receiver: cmnt.user.username,
+    root_id: cmnt.root_id || cmnt.id,
   });
-
+  console.log(cmnt);
   props.toggleReply();
   //Used To refetch comments from db - handled in CommentSection Component;
   emitter.emit("refetchComments");
