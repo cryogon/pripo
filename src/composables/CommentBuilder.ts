@@ -28,6 +28,7 @@ export class CommentBuilder {
     parent_id,
     liked_users,
     is_public,
+    root_id,
     blog,
     user,
   }: Comment) {
@@ -36,6 +37,7 @@ export class CommentBuilder {
       content,
       parent_id,
       posted_on,
+      root_id,
       likes,
       user,
       blog_id,

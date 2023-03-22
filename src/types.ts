@@ -60,6 +60,7 @@ export interface Comment {
   posted_on: string;
   blog_id: number;
   likes: number;
+  root_id: number;
   is_public: boolean;
   user: {
     id: number;

@@ -117,7 +117,6 @@ export const POST_COMMENT = gql`
     ) {
       returning {
         blog_id
-        children
         content
         id
         is_edited
@@ -140,6 +139,7 @@ export const POST_REPLY = gql`
     $parent_id: bigint!
     $isPublic: Boolean!
     $receiver: String!
+    $root_id: bigint!
   ) {
     insert_comments(
       objects: {
@@ -148,6 +148,7 @@ export const POST_REPLY = gql`
         username: $name
         parent_id: $parent_id
         is_public: $isPublic
+        root_id: $root_id
       }
     ) {
       returning {
@@ -157,6 +158,7 @@ export const POST_REPLY = gql`
         username
         parent_id
         is_edited
+        root_id
         is_public
         user {
           id
@@ -204,6 +206,7 @@ export const GET_COMMENTS = gql`
       posted_on
       likes
       username
+      root_id
       user {
         id
         profile_picture
@@ -674,7 +677,7 @@ export const GET_THREAD_COMMENT = gql`
   query threadComment($id: bigint!) {
     comments(
       order_by: { id: asc }
-      where: { _or: [{ id: { _eq: $id } }, { parent_id: { _eq: $id } }] }
+      where: { _or: [{ id: { _eq: $id } }, { root_id: { _eq: $id } }] }
     ) {
       blog_id
       id
