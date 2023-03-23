@@ -1,25 +1,16 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
-import CommentCardv2 from "../components/CommentCardv2.vue";
-import { CommentBuilder } from "@/composables/CommentBuilder";
-import { useQuery } from "@vue/apollo-composable";
-import { GET_THREAD_COMMENT } from "@/graphql";
+import { ref } from "vue";
 import type { Comment } from "@/types";
 import router from "@/router";
 import { setMeta } from "@/utils";
+import CommentSection from "@/components/CommentSection.vue";
+
 const params = router.currentRoute.value.params;
 const commentId = parseInt(params?.id as string);
-const builder = ref(new CommentBuilder());
-const { result } = useQuery(GET_THREAD_COMMENT, { id: commentId });
 const comments = ref<Comment[]>();
 
 setMeta({
   title: `Comments ${commentId}`,
-});
-watch(result, () => {
-  builder.value.clear();
-  builder.value.addMultiple(result.value.comments);
-  comments.value = builder.value.root?.children;
 });
 </script>
 <template>
@@ -30,7 +21,8 @@ watch(result, () => {
     >
       {{ comments && comments[0].blog.title }}
     </h2>
-    <section class="comment-container" v-if="comments">
+    <CommentSection :comment-id="commentId" />
+    <!-- <section class="comment-container" v-if="comments">
       <div
         class="comment-main"
         v-for="comment in comments"
@@ -52,7 +44,7 @@ watch(result, () => {
           </div>
         </div>
       </div>
-    </section>
+    </section> -->
   </main>
 </template>
 <style scoped lang="scss">

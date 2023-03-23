@@ -191,34 +191,39 @@ export const POST_REPLY = gql`
   }
 `;
 
-export const GET_COMMENTS = gql`
-  query getComments($blogId: Int!) {
-    comments(
-      where: {
-        _and: [{ blog_id: { _eq: $blogId } }, { is_deleted: { _eq: false } }]
-      }
-      order_by: { id: asc }
-    ) {
-      blog_id
-      id
-      parent_id
-      content
-      posted_on
-      likes
-      username
-      root_id
-      user {
+export const GET_COMMENTS = (cmntId: number | undefined) =>
+  gql`
+    query getComments($blogId: Int) {
+      comments(
+        where: {
+          ${
+            cmntId
+              ? `_or:[{id:{_eq:${cmntId}}},{root_id:{_eq:${cmntId}}}]`
+              : "_and: [{ blog_id: { _eq: $blogId } }, { is_deleted: { _eq: false } }]"
+          }
+        }
+        order_by: { id: asc }
+      ) {
+        blog_id
         id
-        profile_picture
+        parent_id
+        content
+        posted_on
+        likes
         username
+        root_id
+        user {
+          id
+          profile_picture
+          username
+        }
+        liked_users {
+          user_id
+        }
+        is_public
       }
-      liked_users {
-        user_id
-      }
-      is_public
     }
-  }
-`;
+  `;
 
 export const GET_USER_BY_ID = gql`
   query getUser($id: Int!) {
@@ -670,35 +675,6 @@ export const FILTER_BY_TAGS = gql`
       title
       content
       likes
-    }
-  }
-`;
-
-export const GET_THREAD_COMMENT = gql`
-  query threadComment($id: bigint!) {
-    comments(
-      order_by: { id: asc }
-      where: { _or: [{ id: { _eq: $id } }, { root_id: { _eq: $id } }] }
-    ) {
-      blog_id
-      id
-      parent_id
-      content
-      posted_on
-      likes
-      username
-      user {
-        id
-        profile_picture
-        username
-      }
-      liked_users {
-        user_id
-      }
-      blog {
-        title
-      }
-      is_public
     }
   }
 `;
