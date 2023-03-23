@@ -10,7 +10,7 @@ import NotificationCenter from "./NotificationCenter.vue";
 import { usePripoStore } from "@/stores";
 import { SearchIcon, MessageIcon, HamBurger, BellIcon } from "./Icons";
 import SearchBar from "@/components/SearchBar.vue";
-import { setImageQuality } from "@/helper/setImageQuality";
+import { setImageQuality } from "@/utils/setImageQuality";
 const store = usePripoStore();
 
 // import { setContext } from "@apollo/client/link/context";

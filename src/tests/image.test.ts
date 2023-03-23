@@ -3,7 +3,7 @@ import { describe, test, expect } from "vitest";
 import {
   setImageQuality,
   type ImageQualityParams,
-} from "@/helper/setImageQuality";
+} from "@/utils/setImageQuality";
 describe("setImageQuality", () => {
   test("returns the same URL when origin does not includes 'cloudinary'", () => {
     const url = "https://example.com/image.jpg";

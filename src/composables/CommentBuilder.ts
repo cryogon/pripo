@@ -19,35 +19,13 @@ export class CommentBuilder {
     walk(this.root);
   }
 
-  add({
-    id,
-    content,
-    posted_on,
-    blog_id,
-    likes,
-    parent_id,
-    liked_users,
-    is_public,
-    root_id,
-    blog,
-    user,
-  }: Comment) {
+  add(comment: Comment) {
     const newNode = {
-      id,
-      content,
-      parent_id,
-      posted_on,
-      root_id,
-      likes,
-      user,
-      blog_id,
-      liked_users,
-      is_public,
-      blog,
+      ...comment,
       children: [],
     };
 
-    if (!this.root.children.length && parent_id != null) {
+    if (!this.root.children.length && comment.parent_id != null) {
       this.root = {
         id: null,
         content: null,
@@ -58,7 +36,7 @@ export class CommentBuilder {
     }
 
     this.traverse((node: any) => {
-      if (node.id === parent_id) {
+      if (node.id === comment.parent_id) {
         node.children.push(newNode);
         return;
       }

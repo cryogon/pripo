@@ -21,9 +21,6 @@ div.blob {
   overflow: hidden;
   transform: translate(-50%, -50%);
   align-items: flex-end;
-  @supports (translate: 50%) {
-    translate: -50% -50%;
-  }
   .inside {
     background-color: lightblue;
     width: 100%;

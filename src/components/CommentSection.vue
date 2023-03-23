@@ -8,14 +8,24 @@ import { useEmitter } from "@/composables/EventEmitter";
 import type { Blog, Comment } from "@/types";
 import CommentCardv2 from "./CommentCardv2.vue";
 import router from "@/router";
+/**
+ * Using blog and comment id seprately because this component
+ * is used by two pages one is blog page and another one is comment
+ * Thread. So when it is in comment thread it will fetch based on
+ * comment id
+ */
 const props = defineProps<{
-  blog: Blog;
+  /**
+   * Blog object which contains all blogs info i.e title,content etc.
+   */
+  blog?: Blog;
+  commentId?: number;
 }>();
-const { result, refetch, onError } = useQuery(GET_COMMENTS, {
+const { result, refetch, onError } = useQuery(GET_COMMENTS(props.commentId), {
   blogId: props.blog?.id,
 });
-onError(() => {
-  console.error("Some problem on our side.");
+onError((e) => {
+  console.error("Some problem on our side.", e);
 });
 const builder = ref(new CommentBuilder());
 const comments = ref<Comment[]>([]);
@@ -23,10 +33,16 @@ type CommentSortOptions = "recent" | "old" | "top";
 const sortingOption: CommentSortOptions[] = ["recent", "old", "top"];
 const sortOption = ref<CommentSortOptions>("recent");
 watchEffect(() => {
-  if (props.blog.comments_allowed && result.value?.comments.length) {
+  if (
+    (props.blog &&
+      props.blog.comments_allowed &&
+      result.value?.comments.length) ||
+    (props?.commentId && result.value?.comments.length)
+  ) {
     builder.value.clear();
     builder.value.addMultiple(result.value.comments);
     comments.value = builder.value.root?.children;
+
     if (sortOption.value === "recent") {
       comments.value.reverse();
     } else if (sortOption.value === "old") {
@@ -48,12 +64,12 @@ function capitalize(str: string) {
 
 <template>
   <section class="comment-section">
-    <div class="disabled-comments" v-if="!blog.comments_allowed">
+    <div class="disabled-comments" v-if="blog && !blog.comments_allowed">
       <h4>Comments are Disabled by author</h4>
     </div>
     <div class="comment-container" v-else>
-      <CommentInputBox :blog="blog" />
-      <div class="comments-options-bar">
+      <CommentInputBox :blog="blog" v-if="blog" />
+      <div class="comments-options-bar" v-if="blog">
         <div class="comments-option__sort">
           <label for="sorting-options">Sort By</label>
           <ul id="sorting-options" class="sorting-options">
@@ -68,7 +84,13 @@ function capitalize(str: string) {
           </ul>
         </div>
       </div>
-      <div class="comment-main" v-for="comment in comments" :key="comment.id">
+      <span class="no-comments" v-if="!comments.length">Nothing Here</span>
+      <div
+        class="comment-main"
+        v-for="comment in comments"
+        :key="comment.id"
+        v-else
+      >
         <CommentCardv2 :comment="comment" />
         <div class="reply-container">
           <div
@@ -200,6 +222,10 @@ function capitalize(str: string) {
   border-radius: 1rem;
   .disabled-comments {
     padding-block-start: 2rem;
+  }
+  .no-comments {
+    display: block;
+    margin: 1rem 0 0 1rem;
   }
   .comment-container {
     background-color: var(--comment-section-background);

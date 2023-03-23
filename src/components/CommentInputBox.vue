@@ -4,7 +4,7 @@ import { useAuth0 } from "@auth0/auth0-vue";
 import { useMutation } from "@vue/apollo-composable";
 import { POST_COMMENT, INSERT_NOTIFICATION } from "@/graphql";
 import { useEmitter } from "@/composables/EventEmitter";
-import { setImageQuality } from "@/helper/setImageQuality";
+import { setImageQuality } from "@/utils/setImageQuality";
 import type { Blog } from "@/types";
 
 defineProps<{
@@ -91,6 +91,7 @@ function toggleInputBox() {
         :rows="2"
         cols="100"
         @click="toggleInputBox"
+        autocomplete="off"
         required
       ></textarea>
       <div

@@ -27,7 +27,7 @@ import axios from "axios";
 import { useEmitter } from "@/composables/EventEmitter";
 import DOMpurify from "dompurify";
 import MarkDownIt from "markdown-it";
-import { setMeta } from "@/helper";
+import { setMeta } from "@/utils";
 
 const { files, open, reset } = useFileDialog({
   accept: "image/jpeg, image/gif, image/x-png",
@@ -93,6 +93,7 @@ onResult((r) => {
     router.push("/404");
     return;
   }
+
   userFound.value = true;
   aboutContent.value.newValue = JSON.parse(user.value?.users[0]?.about) || "";
   setMeta({ title: `${user.value.users[0].username} ● Pripo` });
