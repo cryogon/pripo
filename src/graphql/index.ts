@@ -234,9 +234,10 @@ export const GET_USER_BY_ID = gql`
       cover_picture
       about
       social_links
+      chatting_with
       profile_visibility
       liked_blogs {
-        blog {
+        blog(where: { is_deleted: { _eq: false } }) {
           id
           title
           favourites: favourites_aggregate {
@@ -248,7 +249,7 @@ export const GET_USER_BY_ID = gql`
           is_public
         }
       }
-      blogs(order_by: { id: asc }) {
+      blogs(order_by: { id: asc }, where: { is_deleted: { _eq: false } }) {
         id
         title
         favourites: favourites_aggregate {

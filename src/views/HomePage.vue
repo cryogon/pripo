@@ -5,7 +5,7 @@ import { useQuery } from "@vue/apollo-composable";
 import { GET_ALL_BLOGS } from "@/graphql";
 import LoadingScreen from "../components/LoadingScreen.vue";
 import { useOnline } from "@vueuse/core";
-import { setMeta } from "@/helper";
+import { setMeta } from "@/utils";
 
 setMeta({
   title: "Pripo",

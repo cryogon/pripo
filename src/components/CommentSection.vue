@@ -68,7 +68,13 @@ function capitalize(str: string) {
           </ul>
         </div>
       </div>
-      <div class="comment-main" v-for="comment in comments" :key="comment.id">
+      <span class="no-comments" v-if="!comments.length">Nothing Here</span>
+      <div
+        class="comment-main"
+        v-for="comment in comments"
+        :key="comment.id"
+        v-else
+      >
         <CommentCardv2 :comment="comment" />
         <div class="reply-container">
           <div
@@ -200,6 +206,10 @@ function capitalize(str: string) {
   border-radius: 1rem;
   .disabled-comments {
     padding-block-start: 2rem;
+  }
+  .no-comments {
+    display: block;
+    margin: 1rem 0 0 1rem;
   }
   .comment-container {
     background-color: var(--comment-section-background);

@@ -6,7 +6,7 @@ import { useQuery } from "@vue/apollo-composable";
 import { GET_THREAD_COMMENT } from "@/graphql";
 import type { Comment } from "@/types";
 import router from "@/router";
-import { setMeta } from "@/helper";
+import { setMeta } from "@/utils";
 const params = router.currentRoute.value.params;
 const commentId = parseInt(params?.id as string);
 const builder = ref(new CommentBuilder());

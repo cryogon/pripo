@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { setImageQuality } from "@/helper/setImageQuality";
+import { setImageQuality } from "@/utils/setImageQuality";
 defineProps<{
   id: number;
   user: {

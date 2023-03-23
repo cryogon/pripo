@@ -6,7 +6,7 @@ import { ref, watchEffect, watch } from "vue";
 import router from "@/router";
 import { useScroll } from "@vueuse/core";
 import type { Chat } from "@/types";
-import { setMeta } from "@/helper";
+import { setMeta } from "@/utils";
 
 const props = defineProps<{
   userParam: string;

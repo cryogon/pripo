@@ -13,7 +13,7 @@ import {
 } from "@/graphql";
 import { useClipboard, useTimeAgo } from "@vueuse/core";
 import OptionsIcon from "./Icons/OptionsIcon.vue";
-import { setImageQuality } from "@/helper/setImageQuality";
+import { setImageQuality } from "@/utils/setImageQuality";
 defineProps<{ comment: Comment }>();
 const { user } = useAuth0();
 const emitter = useEmitter();
