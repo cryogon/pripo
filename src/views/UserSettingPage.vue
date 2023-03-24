@@ -46,7 +46,7 @@ watch(files, () => {
       reset();
       return;
     }
-    if (files.value[0].size / 1024 / 1024 >= 5) {
+    if (files.value[0].size / 1024 / 1024 >= 2) {
       emitter.emit("alert", "Image Size should be less than 2MB");
       reset();
       return;
