@@ -31,19 +31,19 @@ function pushPostToDB() {
     emitter.emit("alert", "Your content is quite long isn't it.hehe");
     return;
   }
-  if (blogTags.value.length === 0) {
-    emitter.emit(
-      "alert",
-      "Atleast apply on tag so it is easier to search later on"
-    );
-    return;
-  }
+  // if (blogTags.value.length === 0) {
+  //   emitter.emit(
+  //     "alert",
+  //     "Atleast apply on tag so it is easier to search later on"
+  //   );
+  //   return;
+  // }
   const variables = {
     title: postTitle.value,
     content: JSON.stringify(postContent.value),
     isPublic: isPostPublic.value,
     commentAllowed: !isCommentDisabled.value,
-    tags: blogTags.value?.split(" ").map((c) => c.toLowerCase()),
+    tags: blogTags.value?.split(" ").map((c) => c.toLowerCase()) || [],
     username: user.value.nickname,
     likes: 0,
     shares: 0,
