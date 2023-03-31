@@ -32,6 +32,7 @@ const comments = ref<Comment[]>([]);
 type CommentSortOptions = "recent" | "old" | "top";
 const sortingOption: CommentSortOptions[] = ["recent", "old", "top"];
 const sortOption = ref<CommentSortOptions>("recent");
+
 watchEffect(() => {
   if (
     (props.blog &&
@@ -42,7 +43,6 @@ watchEffect(() => {
     builder.value.clear();
     builder.value.addMultiple(result.value.comments);
     comments.value = builder.value.root?.children;
-
     if (sortOption.value === "recent") {
       comments.value.reverse();
     } else if (sortOption.value === "old") {

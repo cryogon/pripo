@@ -80,6 +80,7 @@ function setLike() {
   align-items: center;
   column-gap: 20px;
   padding-inline: 1rem;
+  // overflow-x: hidden;
   .user-avatar {
     width: 3rem;
     height: 3rem;
@@ -101,6 +102,8 @@ function setLike() {
     .content {
       color: var(--accent-color);
       font-size: 14px;
+      word-wrap: break-word;
+      width: 100%;
     }
   }
   .options {

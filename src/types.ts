@@ -25,6 +25,7 @@ export interface User {
   username: string;
   profile_picture: string;
   email: string;
+  is_supporter: boolean;
   /**
    *- **default** means that the user profile is visible but private posts are not.
    *- **partial** means that the user profile is visible but follower/followings and posts are not visible.
@@ -77,7 +78,7 @@ export interface Comment {
 }
 
 export interface ConfirmRequest {
-  mutate: (v: any) => void;
+  mutate(v: any): void;
   id: number;
 }
 

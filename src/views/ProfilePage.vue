@@ -28,6 +28,7 @@ import { useEmitter } from "@/composables/EventEmitter";
 import DOMpurify from "dompurify";
 import MarkDownIt from "markdown-it";
 import { setMeta } from "@/utils";
+import LoadingScreen from "@/components/LoadingScreen.vue";
 
 const { files, open, reset } = useFileDialog({
   accept: "image/jpeg, image/gif, image/x-png",
@@ -102,8 +103,7 @@ onResult((r) => {
   else coverImage.value = "";
 });
 onError((err) => {
-  console.log(err);
-  console.error("Some Problem Occured! Please Refetch");
+  console.error("Some Problem Occured! Please Refetch", err);
 });
 
 function sanitizeHTML(html: string) {
@@ -386,6 +386,7 @@ function redirectToChat(_user: User) {
 }
 </script>
 <template>
+  <LoadingScreen v-if="loading" />
   <main class="container" v-if="user && userFound && !loading">
     <section class="user-info" :style="`--cover-image:url(${coverImage})`">
       <div class="cover-image">
