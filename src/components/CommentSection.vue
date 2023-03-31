@@ -43,7 +43,6 @@ watchEffect(() => {
     builder.value.clear();
     builder.value.addMultiple(result.value.comments);
     comments.value = builder.value.root?.children;
-    console.log(comments.value);
     if (sortOption.value === "recent") {
       comments.value.reverse();
     } else if (sortOption.value === "old") {

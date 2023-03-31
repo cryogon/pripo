@@ -22,7 +22,6 @@ const results = ref(result.value || null);
 document.title = `${router.currentRoute.value.query.q} ● Search`;
 //Refeching on route change
 watch(router.currentRoute, (currValue, oldValue) => {
-  console.log(router.currentRoute.value.query);
   if (
     currValue.query?.q !== oldValue.query?.q ||
     currValue.query?.f !== oldValue.query.f
