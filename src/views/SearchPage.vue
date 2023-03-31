@@ -7,10 +7,9 @@ import { GET_FILTERED_POSTS, FILTER_BY_TAGS } from "@/graphql";
 import { ref, onMounted, watch } from "vue";
 import LoadingScreen from "../components/LoadingScreen.vue";
 import { useOnline } from "@vueuse/core";
-const results = ref();
 const filter = ref("posts");
 const online = useOnline();
-const { onResult, loading, refetch } =
+const { onResult, loading, refetch, result } =
   router.currentRoute.value.query.f === "tags"
     ? useQuery(FILTER_BY_TAGS, {
         tags: router.currentRoute.value.query.q,
@@ -19,6 +18,7 @@ const { onResult, loading, refetch } =
         query: `%${router.currentRoute.value.query.q}%`,
       });
 
+const results = ref(result.value || null);
 document.title = `${router.currentRoute.value.query.q} ● Search`;
 //Refeching on route change
 watch(router.currentRoute, (currValue, oldValue) => {
