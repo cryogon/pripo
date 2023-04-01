@@ -48,6 +48,24 @@ watchEffect(() => {
       console.error(err);
     });
 });
+
+async function search() {
+  const router = await import("@/router");
+  const filter = query.value.startsWith("user:")
+    ? () => {
+        query.value = query.value.slice(5);
+        console.log(query.value);
+        return "users";
+      }
+    : query.value.startsWith("tags:")
+    ? () => {
+        query.value = query.value.slice(5);
+        return "tags";
+      }
+    : () => "";
+  console.log(query.value, filter());
+  router.default.push(`/search?q=${query.value}&f=${filter()}`);
+}
 onMounted(() => {
   searchBar.value.focus();
 });
@@ -64,6 +82,7 @@ onMounted(() => {
         autocomplete="off"
         autocorrect="off"
         autocapitalize="off"
+        @keydown.enter="search"
       />
 
       <button type="button" @click="emit('close')" class="close-button">
