@@ -54,7 +54,6 @@ async function search() {
   const filter = query.value.startsWith("user:")
     ? () => {
         query.value = query.value.slice(5);
-        console.log(query.value);
         return "users";
       }
     : query.value.startsWith("tags:")
@@ -63,7 +62,6 @@ async function search() {
         return "tags";
       }
     : () => "";
-  console.log(query.value, filter());
   router.default.push(`/search?q=${query.value}&f=${filter()}`);
 }
 onMounted(() => {
