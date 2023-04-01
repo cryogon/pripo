@@ -103,6 +103,7 @@ function setLike() {
       color: var(--accent-color);
       font-size: 14px;
       word-wrap: break-word;
+      word-break: break-all;
       width: 100%;
     }
   }
