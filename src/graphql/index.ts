@@ -274,6 +274,7 @@ export const GET_USER_BY_ID = gql`
             profile_picture
             username
             name
+            profile_visibility
           }
         }
       }
@@ -286,6 +287,7 @@ export const GET_USER_BY_ID = gql`
             profile_picture
             username
             name
+            profile_visibility
           }
         }
       }
@@ -341,6 +343,7 @@ export const GET_USER_BY_USERNAME = gql`
             profile_picture
             username
             name
+            profile_visibility
           }
         }
       }
@@ -353,6 +356,7 @@ export const GET_USER_BY_USERNAME = gql`
             profile_picture
             username
             name
+            profile_visibility
           }
         }
       }

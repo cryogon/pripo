@@ -384,6 +384,12 @@ function redirectToChat(_user: User) {
     });
   }
 }
+
+function getFilteredUsers(user: User) {
+  return user.followers.nodes.filter(
+    (follower) => follower.user.profile_visibility !== "hidden"
+  );
+}
 </script>
 <template>
   <LoadingScreen v-if="loading" />
@@ -625,7 +631,7 @@ function redirectToChat(_user: User) {
       >
         <h4 class="heading" id="followers">Followers</h4>
         <FollowerItem
-          v-for="follower in user.users[0].followers.nodes"
+          v-for="follower in getFilteredUsers(user.users[0])"
           :key="follower.user.username"
           :avatar="follower.user.profile_picture"
           :name="follower.user.name"
