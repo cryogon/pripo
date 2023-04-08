@@ -29,10 +29,10 @@ export interface User {
   /**
    *- **default** means that the user profile is visible but private posts are not.
    *- **partial** means that the user profile is visible but follower/followings and posts are not visible.
-   *- **none** means that the user profile is not visible
+   *- **hidden** means that the user profile is not visible
    * @default "default"
    */
-  profile_visibility: "default" | "partial" | "none";
+  profile_visibility: "default" | "partial" | "hidden";
   followers: {
     aggregate: {
       count: number;
