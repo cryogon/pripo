@@ -31,13 +31,15 @@ function pushPostToDB() {
     emitter.emit("alert", "Your content is quite long isn't it.hehe");
     return;
   }
-  // if (blogTags.value.length === 0) {
-  //   emitter.emit(
-  //     "alert",
-  //     "Atleast apply on tag so it is easier to search later on"
-  //   );
-  //   return;
-  // }
+
+  // eslint-disable-next-line no-control-regex
+  const re = /^[\x00-\x7F\x0A\x0D\s\-|\\/()[\]{}<>@#^_+=*&~`';:,.?!"]+$/g;
+  const safeContent = postContent.value.match(re);
+
+  if (safeContent === null) {
+    emitter.emit("alert", "ASCII Art is not allowed");
+    return;
+  }
   const variables = {
     title: postTitle.value,
     content: JSON.stringify(postContent.value),

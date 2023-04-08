@@ -86,10 +86,6 @@ watchEffect(() => {
       </aside>
       <aside class="chat-main">
         <div class="chat-main__chats" ref="chatScroll">
-          <!-- <div class="chat-main__header" @click="router.replace('/chat')">
-            <fa-icon icon="arrow-left" />
-            Go Back
-          </div> -->
           <div
             class="chat-item"
             v-for="(chat, i) in chats"
