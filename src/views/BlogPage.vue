@@ -19,6 +19,13 @@ import { useTimeAgo } from "@vueuse/core";
 import { setMeta } from "@/utils";
 import OptionsIcon from "../components/Icons/OptionsIcon.vue";
 import { setImageQuality } from "@/utils/setImageQuality";
+import MarkdownIt from "markdown-it";
+import DOMPurify from "dompurify";
+
+const md = MarkdownIt({
+  html: true,
+  linkify: true,
+});
 const emitter = useEmitter();
 const { user } = useAuth0();
 const params = router.currentRoute.value.params;
@@ -63,6 +70,10 @@ onError((err) => {
   console.error(err);
   stop();
 });
+function sanitizeHTML(html: string) {
+  return DOMPurify().sanitize(md.render(html));
+}
+
 function setLike() {
   if (!user.value?.email) {
     emitter.emit("alert", "You must login first in order to like");
@@ -124,7 +135,9 @@ function editBlog() {
   mutate({
     blogId: blog.value.id,
     title: blogTitle.value?.innerText,
-    content: JSON.stringify(blogContent.value?.innerText),
+    content: JSON.stringify(
+      sanitizeHTML(blogContent.value?.innerText as string)
+    ),
     commentAllowed: !isCommentDisabled.value,
     isPublic: isPostPublic.value,
     tags: blogTags.value.split(" ").map((c: any) => c.toLowerCase()),
@@ -201,9 +214,11 @@ function toggleBlogEditMode() {
         {{ blog.title }}
       </h1>
       <div class="content">
-        <p :contenteditable="blogEditable" ref="blogContent">
-          {{ JSON.parse(blog.content) }}
-        </p>
+        <p
+          :contenteditable="blogEditable"
+          ref="blogContent"
+          v-html="sanitizeHTML(JSON.parse(blog.content))"
+        ></p>
         <div class="tags" v-if="!blogEditable">
           <router-link
             :to="`/search?q=${tag}&f=tags`"

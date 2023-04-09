@@ -23,6 +23,7 @@
   --comment-section-background-light: rgba(240, 240, 240, 0.2);
   --tag-background:#e9c46a,#f4a261,#e76f51;
   --tag-color:#0d1b2a;
+  --input-background:#303030;
   --loading-background: linear-gradient(var(--tag-background));
   --mutual-color: #48bfe3, #80ffdb;
 }
