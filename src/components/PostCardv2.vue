@@ -6,6 +6,23 @@ import { useTimeAgo } from "@vueuse/core";
 defineProps<{
   post: Blog;
 }>();
+async function sharePost(title: string, content: string) {
+  const { useShare } = await import("@vueuse/core");
+  const { share, isSupported } = useShare();
+  if (isSupported.value) {
+    share({
+      title: title,
+      text: content.substring(0, 50),
+      url: location.href,
+    });
+  } else {
+    const emitter = (await import("@/composables/EventEmitter")).useEmitter();
+    emitter.emit(
+      "alert",
+      "It seems this feature is not supported by your browser"
+    );
+  }
+}
 </script>
 <template>
   <section class="post-card">
@@ -35,7 +52,12 @@ defineProps<{
       <span class="post-like-count">{{ post.likes }}</span>
       <Icon icon="mdi:comment-outline" :height="30" :width="30" />
       <span class="post-comment-count">{{ post.comments?.length }}</span>
-      <Icon icon="ph:share-network-light" :height="30" :width="30" />
+      <Icon
+        icon="ph:share-network-light"
+        :height="30"
+        :width="30"
+        @click="sharePost(post.title, post.content)"
+      />
     </section>
   </section>
 </template>

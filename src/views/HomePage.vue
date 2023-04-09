@@ -40,36 +40,32 @@ function fetchMoreBlogs() {
 }
 </script>
 <template>
-  <main v-if="posts?.blogs">
-    <PostCardv2 v-for="post in posts.blogs" :key="post.id" :post="post" />
-    <!-- <div v-if="loading" role="text" class="load-more fetching">Fetching...</div>
-    <div @click="fetchMoreBlogs" class="load-more" role="button" v-else>
-      Load More
-    </div> -->
+  <main v-if="posts?.blogs" class="main">
+    <div class="container">
+      <PostCardv2 v-for="post in posts.blogs" :key="post.id" :post="post" />
+      <!-- <div v-if="loading" role="text" class="load-more fetching">Fetching...</div>
+        <div @click="fetchMoreBlogs" class="load-more" role="button" v-else>
+          Load More
+        </div> -->
+    </div>
   </main>
   <main v-else-if="!isOnline">You are currently Offline</main>
   <LoadingScreen v-else />
 </template>
 <style scoped lang="scss">
-main {
+.main {
+  padding: 1rem 12vw 2rem;
   transition: 400ms;
-  display: flex;
-  padding: 2rem 10vw;
-  gap: 2rem;
-  flex-direction: column;
-  .load-more {
-    place-self: center;
-    background-color: var(--input-box-background);
-    padding: 0.5rem;
+  .container {
     border-radius: 1rem;
-    cursor: pointer;
-    &.fetching {
-      cursor: wait;
-    }
+    background-color: #252525;
+    min-width: 100%;
+    min-height: 100%;
+    padding-inline: 4rem;
   }
 }
 @media (max-width: 600px) {
-  main {
+  .main {
     padding: 1rem;
   }
 }
