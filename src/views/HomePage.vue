@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import PostCard from "@/components/PostCard.vue";
+import PostCardv2 from "@/components/PostCardv2.vue";
 import { useQuery } from "@vue/apollo-composable";
 import { GET_ALL_BLOGS } from "@/graphql";
 import LoadingScreen from "../components/LoadingScreen.vue";
@@ -12,9 +12,8 @@ setMeta({
   description: "A Platform where you can post anything anonymously",
 });
 const {
-  result: blogs,
+  result: posts,
   onError,
-  loading,
   fetchMore,
 } = useQuery(GET_ALL_BLOGS, { offset: 0, limit: 6 });
 const isOnline = useOnline();
@@ -26,7 +25,7 @@ onError((e) => {
 
 function fetchMoreBlogs() {
   fetchMore({
-    variables: { offset: blogs.value.blogs.length },
+    variables: { offset: posts.value.blogs.length },
     updateQuery: (previousResult, { fetchMoreResult }) => {
       // No new feed posts
       if (!fetchMoreResult) return previousResult;
@@ -41,20 +40,8 @@ function fetchMoreBlogs() {
 }
 </script>
 <template>
-  <main v-if="blogs?.blogs">
-    <PostCard
-      v-for="blog in blogs.blogs"
-      :key="blog.id"
-      :id="blog.id"
-      :title="blog.title"
-      :content="blog.content"
-      :user="blog.user"
-      :tags="blog.tags"
-      :date_posted="blog.date_posted"
-      :is-public="blog.is_public"
-      :comment="blog.comments || null"
-    />
-
+  <main v-if="posts?.blogs">
+    <PostCardv2 v-for="post in posts.blogs" :key="post.id" :post="post" />
     <!-- <div v-if="loading" role="text" class="load-more fetching">Fetching...</div>
     <div @click="fetchMoreBlogs" class="load-more" role="button" v-else>
       Load More
