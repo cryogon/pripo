@@ -11,13 +11,12 @@ import {
 } from "@/graphql";
 import { ref, watch, provide } from "vue";
 import { useAuth0 } from "@auth0/auth0-vue";
-import { ShareIcon, StarIcon } from "@/components/Icons";
+import { Icon } from "@iconify/vue";
 import { useShare } from "@vueuse/core";
 import { useEmitter } from "@/composables/EventEmitter";
 import LoadingScreen from "../components/LoadingScreen.vue";
 import { useTimeAgo } from "@vueuse/core";
 import { setMeta } from "@/utils";
-import OptionsIcon from "../components/Icons/OptionsIcon.vue";
 import { setImageQuality } from "@/utils/setImageQuality";
 import MarkdownIt from "markdown-it";
 import DOMPurify from "dompurify";
@@ -53,7 +52,6 @@ watch(result, () => {
     title: result.value.blogs[0].title + " ● Pripo",
     description: result.value.blogs[0].content.substring(0, 50) + "...",
   });
-
   blog.value = result.value.blogs[0];
   isPostPublic.value = blog.value.is_public;
   isCommentDisabled.value = !blog.value.comments_allowed;
@@ -155,6 +153,11 @@ function toggleBlogOptions() {
   isBlogOptionVisible.value = !isBlogOptionVisible.value;
 }
 function toggleBlogEditMode() {
+  let temp = false;
+  if (!temp) {
+    emitter.emit("alert", "Temporarily Closed!! Working on Redesign**");
+    return;
+  }
   blogEditable.value = !blogEditable.value;
   isBlogOptionVisible.value = false;
 }
@@ -163,7 +166,7 @@ function toggleBlogEditMode() {
 <template>
   <main class="container" v-if="blog">
     <section class="blog-section">
-      <div class="author">
+      <section class="post-header">
         <div class="author-pfp anonymous" v-if="!blog.is_public"></div>
         <router-link :to="`/users/${blog.user.id}`" v-else>
           <img
@@ -180,24 +183,31 @@ function toggleBlogEditMode() {
         </router-link>
         <div class="basic-post-info">
           <span class="author-name">
-            {{ blog.is_public ? blog.user.username : "Anonymous" }}</span
-          >
+            {{ blog.is_public ? blog.user.username : "Anonymous" }}
+          </span>
           <span class="date-posted">
             {{ useTimeAgo(blog.date_posted).value }}
           </span>
         </div>
         <div class="blog-options">
-          <!-- <EditIcon class="icon edit" /> -->
-          <ShareIcon class="star icon" @click="shareButton" />
-          <StarIcon
-            class="star icon"
-            :class="{ staractive: isFav }"
+          <Icon
+            icon="ph:share-network-light"
+            :height="30"
+            :width="30"
+            @click="shareButton"
+          />
+
+          <Icon
+            :icon="isFav ? 'mdi:cards-heart' : 'mdi:cards-heart-outline'"
+            :height="30"
+            :width="30"
             @click="setLike"
           />
-          <OptionsIcon
-            class="options-icon icon"
+          <Icon
+            icon="ph:dots-three-outline-vertical"
+            :height="30"
+            :width="30"
             @click="toggleBlogOptions"
-            v-if="blog.user.id == user?.uid"
           />
           <ul
             class="blog-options__drop-down"
@@ -209,7 +219,7 @@ function toggleBlogEditMode() {
             </li>
           </ul>
         </div>
-      </div>
+      </section>
       <h1 class="title" :contenteditable="blogEditable" ref="blogTitle">
         {{ blog.title }}
       </h1>
@@ -269,58 +279,39 @@ function toggleBlogEditMode() {
   padding-block-start: 3rem;
   padding-inline: min(10rem, 10vw);
   max-width: 80rem;
-  .content {
-    p {
-      margin-block-end: 0.8rem;
-      line-height: 1.4rem;
-      white-space: pre-wrap;
-      word-wrap: break-word;
-    }
-    .extra-editing-options {
-      display: flex;
-      gap: 10px;
-      height: 2rem;
-      font-family: monospace;
-      flex-wrap: wrap;
-      font-size: 16px;
-      align-items: center;
-      margin-block: 2rem;
-      .edit-tags {
-        padding: 0.5rem;
-        background-color: var(--color-background);
-        color: var(--color-text);
-        outline: none;
-        border: 1px solid var(--color-text);
-      }
-      input {
-        accent-color: aquamarine;
-      }
-    }
-    .post-button {
-      margin-inline-start: auto;
-      border-radius: 1rem;
-      padding: 0.35rem 1.2rem;
-      align-self: flex-start;
-      background: var(--accent-color);
-      color: var(--text-color);
-      font-size: 14px;
-      transition: 150ms;
-      height: 3rem;
-      width: 5rem;
-    }
-  }
 
   .title {
     line-height: 2.4rem;
   }
-
-  .author {
+  .content {
+    margin-block-end: 0.8rem;
+    line-height: 1.4rem;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    .tag {
+      background: linear-gradient(var(--tag-background));
+      text-decoration: none;
+    }
+  }
+  .post-header {
     display: flex;
     align-items: center;
     gap: 10px;
     margin-bottom: 1.5rem;
-    a: {
-      padding: 0;
+    padding-inline-end: 0.75rem;
+    .author-pfp {
+      cursor: pointer;
+      width: 45px;
+      height: 45px;
+      aspect-ratio: 1/1;
+      border-radius: 50%;
+      &.anonymous {
+        background-color: grey;
+      }
     }
     .basic-post-info {
       display: flex;
@@ -341,60 +332,31 @@ function toggleBlogEditMode() {
       align-items: center;
       justify-content: flex-end;
       gap: 30px;
-      width: 75%;
+      margin-inline-start: auto;
       position: relative;
       .blog-options__drop-down {
-        position: absolute;
-        bottom: -4.5rem;
         display: none;
+        list-style: none;
         flex-direction: column;
-        gap: 5px;
+        min-height: 5rem;
+        position: absolute;
+        top: 2.5rem;
+        gap: 1rem;
         padding-block: 0.5rem;
-        background-color: #202020;
+        background-color: #303030;
+        & > li {
+          padding: 0.5rem 1rem;
+          &:hover {
+            background-color: #202020;
+          }
+        }
         &.active {
           display: flex;
         }
-        .list-item {
-          list-style: none;
-          cursor: pointer;
-          padding: 0.1rem 1rem;
-          &.danger {
-            background-color: rgb(178, 58, 58);
-          }
-          &:hover {
-            background-color: #303030;
-            &.danger {
-              background-color: rgb(218, 59, 59);
-            }
-          }
-        }
-      }
-      .icon {
-        // margin-inline-start: auto;
-        width: 2.1rem;
-        height: 2.1rem;
-        align-items: center;
-        padding: 0.3rem;
-        // border-radius: 1rem;
-        &:hover {
-          background-color: var(--button-hover-color);
-        }
       }
     }
-    .staractive {
-      fill: var(--color-text);
-    }
   }
-  .author-pfp {
-    cursor: pointer;
-    width: 45px;
-    height: 45px;
-    aspect-ratio: 1/1;
-    border-radius: 50%;
-  }
-  .anonymous {
-    background-color: grey;
-  }
+
   .tags {
     display: flex;
     gap: 10px;

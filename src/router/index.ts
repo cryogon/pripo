@@ -97,7 +97,7 @@ const router = createRouter({
               top: 150,
             });
           }
-        }, 200);
+        }, 300);
       });
     }
   },
