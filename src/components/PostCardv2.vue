@@ -101,8 +101,9 @@ onMounted(() => {
         @click="setLike(post)"
       />
       <span class="post-like-count">{{ post.likes }}</span>
-
-      <Icon icon="mdi:comment-outline" :height="30" :width="30" />
+      <RouterLink :to="`/posts/${post.id}#comment-section`">
+        <Icon icon="mdi:comment-outline" :height="30" :width="30" />
+      </RouterLink>
       <span class="post-comment-count">{{ post.comments?.length }}</span>
       <Icon
         icon="ph:share-network-light"

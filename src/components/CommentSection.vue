@@ -63,7 +63,7 @@ function capitalize(str: string) {
 </script>
 
 <template>
-  <section class="comment-section">
+  <section class="comment-section" id="comment-section">
     <div class="disabled-comments" v-if="blog && !blog.comments_allowed">
       <h4>Comments are Disabled by author</h4>
     </div>

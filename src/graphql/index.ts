@@ -44,7 +44,10 @@ export const GET_ALL_BLOGS = gql`
     blogs(
       limit: $limit
       offset: $offset
-      where: { is_deleted: { _eq: false } }
+      order_by: { date_posted: asc }
+      where: {
+        _and: [{ is_deleted: { _eq: false } }, { username: { _eq: "cryogon" } }]
+      }
     ) {
       id
       title
