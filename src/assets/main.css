@@ -16,18 +16,18 @@
   --dropdown-background-dark: #202020;
   --link-visited-dark: #ffffffb4;
   --link-visited-light: #000000b4;
-  --input-box-background-dark:#202020;
-  --input-box-background-light:#dfdfdf;
-  --deactive-input-box-background:#9B9B9B;
+  --input-box-background-dark: #202020;
+  --input-box-background-light: #dfdfdf;
+  --deactive-input-box-background: #9b9b9b;
   --comment-section-background-dark: rgb(8 8 8 0.2);
   --comment-section-background-light: rgba(240, 240, 240, 0.2);
-  --tag-background:#e9c46a,#f4a261,#e76f51;
-  --tag-color:#0d1b2a;
-  --input-background:#303030;
+  --tag-background: #e9c46a, #f4a261, #e76f51;
+  --tag-color: #0d1b2a;
+  --input-background: #303030;
   --loading-background: linear-gradient(var(--tag-background));
   --mutual-color: #48bfe3, #80ffdb;
+  --post-separator: rgba(128, 128, 128, 0.646);
 }
-
 
 :root {
   --color-text: var(--color-light);
@@ -35,12 +35,12 @@
   --nav-background: var(--nav-background-light);
   --button-hover-color: var(--button-hover-color-light);
   --link-hover-background: var(--link-hover-background-light);
-  --link-color: #40B5AE;
+  --link-color: #40b5ae;
   --dropdown-background: var(--dropdown-background-light);
   --accent-color: var(--link-color);
-  --link-visited:var(--link-visited-light);
-  --input-box-background:var(--input-box-background-light);
-  --comment-section-background:var(--comment-section-background-light);
+  --link-visited: var(--link-visited-light);
+  --input-box-background: var(--input-box-background-light);
+  --comment-section-background: var(--comment-section-background-light);
 }
 
 html.dark {
@@ -52,8 +52,8 @@ html.dark {
   --card-background: #121212;
   --dropdown-background: var(--dropdown-background-dark);
   --link-visited: var(--link-visited-dark);
-  --input-box-background:var(--input-box-background-dark);
-  --comment-section-background:var(--comment-section-background-dark);
+  --input-box-background: var(--input-box-background-dark);
+  --comment-section-background: var(--comment-section-background-dark);
 }
 
 /* @media screen and (prefers-color-scheme: dark) {
@@ -73,12 +73,12 @@ html.dark {
   padding: 0;
   box-sizing: border-box;
 }
-html{
+html {
   scroll-behavior: smooth;
   scroll-padding-block-start: 10rem;
 }
 body {
-  font-family: -apple-system, BlinkMacSystemFont,"Inter", sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
   color: var(--color-text);
   background-color: var(--color-background);
   transition: background 200ms;
@@ -93,7 +93,7 @@ a {
 button {
   cursor: pointer;
 }
-input{
+input {
   accent-color: var(--accent-color);
 }
 .link {

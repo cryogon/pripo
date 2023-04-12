@@ -64,7 +64,8 @@ async function sharePost(title: string, content: string) {
 <style scoped lang="scss">
 section.post-card {
   $gap: 10px;
-  padding: 1rem;
+  padding-block: 1rem;
+  border-bottom: 2px solid var(--post-separator);
   .post-card__header {
     display: flex;
     align-items: center;

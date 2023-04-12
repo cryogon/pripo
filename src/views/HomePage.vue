@@ -66,7 +66,10 @@ function fetchMoreBlogs() {
 }
 @media (max-width: 600px) {
   .main {
-    padding: 1rem;
+    padding: 0rem;
+    .container {
+      padding-inline: 0.5rem;
+    }
   }
 }
 </style>
