@@ -50,6 +50,9 @@ export const GET_ALL_BLOGS = gql`
       title
       content
       date_posted
+      favourites {
+        user_id
+      }
       comments {
         blog_id
         id

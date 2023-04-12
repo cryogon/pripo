@@ -3,9 +3,13 @@ import { Icon } from "@iconify/vue";
 import type { Blog } from "@/types";
 import { setImageQuality } from "@/utils/setImageQuality";
 import { useTimeAgo } from "@vueuse/core";
-defineProps<{
+import { onMounted, ref } from "vue";
+import { useAuth0 } from "@auth0/auth0-vue";
+const props = defineProps<{
   post: Blog;
 }>();
+const { user } = useAuth0();
+const isFav = ref<boolean>(false);
 async function sharePost(title: string, content: string) {
   const { useShare } = await import("@vueuse/core");
   const { share, isSupported } = useShare();
@@ -23,6 +27,48 @@ async function sharePost(title: string, content: string) {
     );
   }
 }
+
+async function setLike(post: Blog) {
+  const { useMutation } = await import("@vue/apollo-composable");
+  const { SET_LIKE, REMOVE_LIKE } = await import("@/graphql");
+  if (!user.value?.email) {
+    const emitter = (await import("@/composables/EventEmitter")).useEmitter();
+    emitter.emit("alert", "You must login first in order to like");
+    return;
+  }
+  if (!isFav.value) {
+    const { mutate } = useMutation(SET_LIKE);
+    try {
+      mutate({
+        blogId: post.id,
+        userId: user.value?.uid,
+      });
+      isFav.value = true;
+    } catch (err) {
+      console.error(err);
+    }
+  } else {
+    const { mutate } = useMutation(REMOVE_LIKE);
+    try {
+      mutate({
+        blogId: post.id,
+        userId: user.value?.uid,
+      });
+      isFav.value = false;
+    } catch (err) {
+      console.error(err);
+    }
+  }
+}
+
+onMounted(() => {
+  if (
+    props.post.favourites.filter((u: any) => u.user_id === user.value?.uid)
+      .length != 0
+  ) {
+    isFav.value = true;
+  }
+});
 </script>
 <template>
   <section class="post-card">
@@ -48,8 +94,14 @@ async function sharePost(title: string, content: string) {
       </article>
     </RouterLink>
     <section class="post-card__options padding">
-      <Icon icon="mdi:cards-heart-outline" :height="30" :width="30" />
+      <Icon
+        :icon="isFav ? 'mdi:cards-heart' : 'mdi:cards-heart-outline'"
+        :height="30"
+        :width="30"
+        @click="setLike(post)"
+      />
       <span class="post-like-count">{{ post.likes }}</span>
+
       <Icon icon="mdi:comment-outline" :height="30" :width="30" />
       <span class="post-comment-count">{{ post.comments?.length }}</span>
       <Icon
