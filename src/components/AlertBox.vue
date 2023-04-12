@@ -2,19 +2,35 @@
 defineProps<{
   description: string;
 }>();
-function isFailed(error: string) {
-  return error.endsWith("!!!");
+function parseContent(content: string) {
+  if (content.endsWith("!!!")) {
+    return {
+      status: "failed",
+      content: content.replace("!!!", ""),
+    };
+  }
+  if (content.endsWith("**")) {
+    return {
+      status: "warn",
+      content: content.replace("**", ""),
+    };
+  }
+  return {
+    status: "success",
+    content,
+  };
 }
 </script>
 <template>
   <main
     class="alert-box"
-    :class="{ failed: isFailed(description) }"
+    :class="{
+      failed: parseContent(description).status === 'failed',
+      warn: parseContent(description).status === 'warn',
+    }"
     role="alert"
   >
-    <span>{{
-      isFailed(description) ? description.replace("!!!", "") : description
-    }}</span>
+    <span>{{ parseContent(description).content }}</span>
   </main>
 </template>
 <style scoped lang="scss">
@@ -40,6 +56,9 @@ function isFailed(error: string) {
   }
   &.failed {
     background-color: rgb(227, 123, 123);
+  }
+  &.warn {
+    background-color: goldenrod;
   }
 }
 </style>

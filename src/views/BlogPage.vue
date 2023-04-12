@@ -17,7 +17,6 @@ import { useEmitter } from "@/composables/EventEmitter";
 import LoadingScreen from "../components/LoadingScreen.vue";
 import { useTimeAgo } from "@vueuse/core";
 import { setMeta } from "@/utils";
-import OptionsIcon from "../components/Icons/OptionsIcon.vue";
 import { setImageQuality } from "@/utils/setImageQuality";
 import MarkdownIt from "markdown-it";
 import DOMPurify from "dompurify";
@@ -154,6 +153,11 @@ function toggleBlogOptions() {
   isBlogOptionVisible.value = !isBlogOptionVisible.value;
 }
 function toggleBlogEditMode() {
+  let temp = false;
+  if (!temp) {
+    emitter.emit("alert", "Temporarily Closed!! Working on Redesign**");
+    return;
+  }
   blogEditable.value = !blogEditable.value;
   isBlogOptionVisible.value = false;
 }
@@ -203,50 +207,7 @@ function toggleBlogEditMode() {
             icon="ph:dots-three-outline-vertical"
             :height="30"
             :width="30"
-          />
-        </div>
-      </section>
-      <!-- <div class="author">
-        <div class="author-pfp anonymous" v-if="!blog.is_public"></div>
-        <router-link :to="`/users/${blog.user.id}`" v-else>
-          <img
-            :src="
-              setImageQuality(blog.user.profile_picture, {
-                width: 196,
-                height: 196,
-              })
-            "
-            alt="author"
-            class="author-pfp"
-            referrerpolicy="no-referrer"
-          />
-        </router-link>
-        <div class="basic-post-info">
-          <span class="author-name">
-            {{ blog.is_public ? blog.user.username : "Anonymous" }}</span
-          >
-          <span class="date-posted">
-            {{ useTimeAgo(blog.date_posted).value }}
-          </span>
-        </div>
-        <div class="blog-options">
-          <EditIcon class="icon edit" />
-          <Icon
-            icon="ph:share-network-light"
-            :height="30"
-            :width="30"
-            @click="shareButton"
-          />
-          <Icon
-            icon="isFav ? 'mdi:cards-heart' : 'mdi:cards-heart-outline'"
-            :width="35"
-            :height="35"
-            @click="setLike"
-          />
-          <OptionsIcon
-            class="options-icon icon"
             @click="toggleBlogOptions"
-            v-if="blog.user.id == user?.uid"
           />
           <ul
             class="blog-options__drop-down"
@@ -258,7 +219,7 @@ function toggleBlogEditMode() {
             </li>
           </ul>
         </div>
-      </div> -->
+      </section>
       <h1 class="title" :contenteditable="blogEditable" ref="blogTitle">
         {{ blog.title }}
       </h1>
@@ -373,6 +334,26 @@ function toggleBlogEditMode() {
       gap: 30px;
       margin-inline-start: auto;
       position: relative;
+      .blog-options__drop-down {
+        display: none;
+        list-style: none;
+        flex-direction: column;
+        min-height: 5rem;
+        position: absolute;
+        top: 2.5rem;
+        gap: 1rem;
+        padding-block: 0.5rem;
+        background-color: #303030;
+        & > li {
+          padding: 0.5rem 1rem;
+          &:hover {
+            background-color: #202020;
+          }
+        }
+        &.active {
+          display: flex;
+        }
+      }
     }
   }
 
