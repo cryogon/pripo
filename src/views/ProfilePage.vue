@@ -38,7 +38,7 @@ const online = useOnline();
 const nav = ref(null);
 const background = ref();
 const userParam = router.currentRoute.value.params.user;
-const { user: u, getAccessTokenSilently } = useAuth0();
+const { user: authUser, getAccessTokenSilently } = useAuth0();
 const {
   result: user,
   onResult,
@@ -48,7 +48,8 @@ const {
 } = !isNaN(+userParam)
   ? useQuery(GET_USER_BY_ID, { id: userParam })
   : useQuery(GET_USER_BY_USERNAME, { username: userParam });
-const userFound = ref(false);
+console.log(user.value);
+const userFound = ref(user.value ? true : false);
 const { y } = useElementBounding(nav);
 const navIsCompact = ref(false);
 const tabs = ["About", "Posts", "Favourites", "Followers", "Followings"];
@@ -70,7 +71,7 @@ const coverImage = ref("");
 const currentSection = ref<string | null>("about");
 const isCoverImageLoading = ref<boolean | null>(null);
 const getFilteredBlogs = computed(() => {
-  if (user.value.users[0].username === u.value?.nickname) {
+  if (user.value.users[0].username === authUser.value?.nickname) {
     return user.value.users[0].blogs;
   }
   return user.value.users[0].blogs.filter((blog: Blog) => blog.is_public);
@@ -134,7 +135,7 @@ function changeAbout(content: string) {
   }
 
   const { mutate, onError } = useMutation(UPDATE_ABOUT);
-  mutate({ user: u.value?.nickname, content: JSON.stringify(content) });
+  mutate({ user: authUser.value?.nickname, content: JSON.stringify(content) });
   isAboutEditable.value = false;
   onError(() => {
     emitter.emit(
@@ -145,7 +146,7 @@ function changeAbout(content: string) {
 }
 
 function followUser(user: User) {
-  if (!u.value?.nickname) {
+  if (!authUser.value?.nickname) {
     return;
   }
   const { mutate } = useMutation(FOLLOW_USER, {
@@ -156,7 +157,7 @@ function followUser(user: User) {
           username: userParam,
         },
       }) as any;
-      let u = structuredClone(data.users);
+      let authUser = structuredClone(data.users);
       let follower = {
         __typename: follow.insert_follow_system.returning[0].__typename,
         user: {
@@ -168,18 +169,18 @@ function followUser(user: User) {
             follow.insert_follow_system.returning[0].followings.profile_picture,
         },
       };
-      u[0].followers.aggregate.count += 1;
-      u[0].followers.nodes.push(follower);
+      authUser[0].followers.aggregate.count += 1;
+      authUser[0].followers.nodes.push(follower);
       data = {
-        users: u[0],
+        users: authUser[0],
       };
       cache.writeQuery({ query: GET_USER_BY_USERNAME, data });
     },
   });
-  mutate({ me: u.value.nickname, user: user.username });
+  mutate({ me: authUser.value.nickname, user: user.username });
 }
 function unfollowUser(user: User) {
-  if (!u.value?.nickname) {
+  if (!authUser.value?.nickname) {
     return;
   }
   const { mutate } = useMutation(UNFOLLOW_USER, {
@@ -190,28 +191,28 @@ function unfollowUser(user: User) {
           username: userParam,
         },
       }) as any;
-      let u = structuredClone(data.users);
-      u[0].followers.aggregate.count -= 1;
-      u[0].followers.nodes = u[0].followers.nodes.filter(
+      let authUser = structuredClone(data.users);
+      authUser[0].followers.aggregate.count -= 1;
+      authUser[0].followers.nodes = authUser[0].followers.nodes.filter(
         (f: { user: User }) =>
           f.user.username !== unfollow.delete_follow_system.returning[0].user
       );
       data = {
-        users: u[0],
+        users: authUser[0],
       };
       cache.writeQuery({ query: GET_USER_BY_USERNAME, data });
     },
   });
-  mutate({ me: u.value.nickname, user: user.username });
+  mutate({ me: authUser.value.nickname, user: user.username });
 }
 
 function isMutual(user: any) {
-  if (!u.value?.nickname) {
+  if (!authUser.value?.nickname) {
     return false;
   }
-  //!!u.value is shorthand for u.value !== "" && u.value !== null && u.value !== undefined
+  //!!authUser.value is shorthand for authUser.value !== "" && authUser.value !== null && authUser.value !== undefined
   if (
-    user.username === u.value.nickname ||
+    user.username === authUser.value.nickname ||
     user.followings.nodes.length === 0
   ) {
     return false;
@@ -222,7 +223,7 @@ function isMutual(user: any) {
     return (user.followings.nodes || []).some((following: any) => {
       return (
         follower.user.username == following.user.username &&
-        following.user.username === u.value.nickname
+        following.user.username === authUser.value.nickname
       );
     });
   });
@@ -230,11 +231,11 @@ function isMutual(user: any) {
 // To Update it in real time I have to look info GQL Query and return proper id of followed user from user table not follower table
 function isFollowed(user: any) {
   //If user is not logged in return false since there is not need for futher checking
-  if (!u.value?.nickname) {
+  if (!authUser.value?.nickname) {
     return false;
   }
   for (let follower of user.followers.nodes || []) {
-    if (follower.user.username === u.value.nickname) {
+    if (follower.user.username === authUser.value.nickname) {
       return true;
     }
   }
@@ -242,7 +243,7 @@ function isFollowed(user: any) {
 }
 
 function isMe(user: User) {
-  return user.username === u.value?.nickname;
+  return user.username === authUser.value?.nickname;
 }
 
 async function uploadImage() {
@@ -270,7 +271,7 @@ async function changeCoverPicture() {
   isCoverImageLoading.value = false;
   image &&
     getAccessTokenSilently().then((token) => {
-      const url = "https://pripo-api.vercel.app/cover/" + u.value.sub;
+      const url = "https://pripo-api.vercel.app/cover/" + authUser.value.sub;
       axios
         .post(
           url,
@@ -304,6 +305,8 @@ function clearImage() {
 }
 
 //Watchers
+
+//For Making NavBar sticky
 watch(y, () => {
   //TODO:Will use different Method later
   if (y.value <= 80) {
@@ -313,6 +316,7 @@ watch(y, () => {
   }
 });
 
+//For uploading cover page
 watch(files, () => {
   if (files.value?.length) {
     if (!files.value[0].type.includes("image")) {
@@ -355,27 +359,27 @@ onMounted(() => {
 });
 
 function redirectToChat(_user: User) {
-  if (!u.value?.nickname) {
+  if (!authUser.value?.nickname) {
     return;
   }
   if (
     user.value.users[0].chatting_with.some((us: User) => {
-      return us.username === u.value.nickname;
+      return us.username === authUser.value.nickname;
     })
   ) {
     router.push(`/chat/${_user.username}`);
   } else {
     const { mutate } = useMutation(INITIALIZE_CHAT, {
       variables: {
-        user1: u.value.nickname,
+        user1: authUser.value.nickname,
         receiver1: {
           username: _user.username,
           profile_picture: _user.profile_picture,
         },
         user2: _user.username,
         receiver2: {
-          username: u.value.nickname,
-          profile_picture: u.value.picture,
+          username: authUser.value.nickname,
+          profile_picture: authUser.value.picture,
         },
       },
     });
@@ -458,7 +462,9 @@ function getFilteredUsers(user: User) {
           </div>
           <div
             class="options"
-            v-if="u?.nickname && u.nickname !== user.users[0].username"
+            v-if="
+              authUser?.nickname && authUser.nickname !== user.users[0].username
+            "
           >
             <button
               type="button"
