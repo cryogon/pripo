@@ -48,7 +48,7 @@ const {
 } = !isNaN(+userParam)
   ? useQuery(GET_USER_BY_ID, { id: userParam })
   : useQuery(GET_USER_BY_USERNAME, { username: userParam });
-console.log(user.value);
+
 const userFound = ref(user.value ? true : false);
 const { y } = useElementBounding(nav);
 const navIsCompact = ref(false);
