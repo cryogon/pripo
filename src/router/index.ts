@@ -79,6 +79,11 @@ const router = createRouter({
       component: () => import("@/views/ChatPage.vue"),
     },
     {
+      path: "/help/post",
+      name: "help_md",
+      component: () => import("@/views/help/PublishTab.vue"),
+    },
+    {
       path: "/404",
       name: "notfound",
       component: () => import("@/views/NotFound.vue"),
