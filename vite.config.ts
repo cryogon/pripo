@@ -5,6 +5,7 @@ import vue from "@vitejs/plugin-vue";
 import vueJsx from "@vitejs/plugin-vue-jsx";
 import type { VitePWAOptions } from "vite-plugin-pwa";
 import { VitePWA } from "vite-plugin-pwa";
+import Markdown from "vite-plugin-md";
 const { icons } = JSON.parse(fs.readFileSync("./icons.json", "utf-8"));
 const pwaOptions: Partial<VitePWAOptions> = {
   mode: "development",
@@ -49,7 +50,7 @@ const pwaOptions: Partial<VitePWAOptions> = {
   },
 };
 export default defineConfig({
-  plugins: [vue(), vueJsx(), VitePWA(pwaOptions)],
+  plugins: [vue(), vueJsx(), VitePWA(pwaOptions), Markdown()],
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
