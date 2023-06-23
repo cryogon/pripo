@@ -69,7 +69,7 @@ onError((err) => {
   stop();
 });
 function sanitizeHTML(html: string) {
-  return DOMPurify().sanitize(md.render(html));
+  return DOMPurify().sanitize(md.render(JSON.parse(html)));
 }
 
 function setLike() {
@@ -164,7 +164,7 @@ function toggleBlogEditMode() {
 </script>
 
 <template>
-  <main class="container" v-if="blog">
+  <main class="blog-container" v-if="blog">
     <section class="blog-section">
       <section class="post-header">
         <div class="author-pfp anonymous" v-if="!blog.is_public"></div>
@@ -191,6 +191,7 @@ function toggleBlogEditMode() {
         </div>
         <div class="blog-options">
           <Icon
+            class="icon"
             icon="ph:share-network-light"
             :height="30"
             :width="30"
@@ -198,12 +199,14 @@ function toggleBlogEditMode() {
           />
 
           <Icon
+            class="icon"
             :icon="isFav ? 'mdi:cards-heart' : 'mdi:cards-heart-outline'"
             :height="30"
             :width="30"
             @click="setLike"
           />
           <Icon
+            class="icon"
             icon="ph:dots-three-outline-vertical"
             :height="30"
             :width="30"
@@ -227,7 +230,7 @@ function toggleBlogEditMode() {
         <p
           :contenteditable="blogEditable"
           ref="blogContent"
-          v-html="sanitizeHTML(JSON.parse(blog.content))"
+          v-html="sanitizeHTML(blog.content)"
         ></p>
         <div class="tags" v-if="!blogEditable">
           <router-link
@@ -274,8 +277,8 @@ function toggleBlogEditMode() {
   <LoadingScreen v-else-if="loading && !error" />
   <main v-else-if="error || !loading">Post Not Found</main>
 </template>
-<style scoped lang="scss">
-.container {
+<style lang="scss">
+.blog-container {
   padding-block-start: 3rem;
   padding-inline: min(10rem, 10vw);
   max-width: 80rem;
@@ -288,6 +291,15 @@ function toggleBlogEditMode() {
     line-height: 1.4rem;
     white-space: pre-wrap;
     word-wrap: break-word;
+    a {
+      color: lightcoral;
+      text-decoration: none;
+    }
+    ul,
+    ol {
+      list-style-position: inside;
+      padding-inline-start: 5px;
+    }
   }
   .tags {
     display: flex;
@@ -334,6 +346,9 @@ function toggleBlogEditMode() {
       gap: 30px;
       margin-inline-start: auto;
       position: relative;
+      .icon {
+        cursor: pointer;
+      }
       .blog-options__drop-down {
         display: none;
         list-style: none;

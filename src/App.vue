@@ -6,6 +6,7 @@ import NavBar from "./components/NavBar.vue";
 import AlertBox from "./components/AlertBox.vue";
 import { useEmitter } from "./composables/EventEmitter";
 import ConfirmBox from "./components/ConfirmBox.vue";
+import "highlight.js/styles/an-old-hope.css";
 const emitter = useEmitter();
 const { isAuthenticated } = useAuth0();
 const alertDescription = ref("");
