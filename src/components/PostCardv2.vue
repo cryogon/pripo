@@ -5,8 +5,6 @@ import { setImageQuality } from "@/utils/setImageQuality";
 import { useTimeAgo } from "@vueuse/core";
 import { onMounted, ref } from "vue";
 import { useAuth0 } from "@auth0/auth0-vue";
-import DOMPurify from "dompurify";
-
 const props = defineProps<{
   post: Blog;
 }>();
@@ -75,13 +73,12 @@ onMounted(() => {
 <template>
   <section class="post-card">
     <div class="post-card__header">
-      <RouterLink :to="`users/${post.user.username}`" v-if="post.is_public">
-        <img
-          :src="setImageQuality(post.user?.profile_picture, { width: 96 })"
-          alt="user"
-          class="user-avatar"
-        />
-      </RouterLink>
+      <img
+        :src="setImageQuality(post.user?.profile_picture, { width: 96 })"
+        alt="user"
+        class="user-avatar"
+        v-if="post.is_public"
+      />
       <div class="user-avatar anonymous" v-else></div>
       <div class="post-card__header-user-info">
         <span class="post-card__user-name">{{ post.user.username }}</span>
@@ -92,10 +89,9 @@ onMounted(() => {
     </div>
     <RouterLink :to="`/posts/${post.id}`">
       <h3 class="post-card__title padding">{{ post.title }}</h3>
-      <article
-        class="post-card__content padding"
-        v-html="DOMPurify().sanitize(JSON.parse(post.content))"
-      ></article>
+      <article class="post-card__content padding">
+        {{ post.content }}
+      </article>
     </RouterLink>
     <section class="post-card__options padding">
       <Icon
