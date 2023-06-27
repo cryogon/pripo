@@ -1,4 +1,4 @@
-import mitt from "../libs/mitt";
+import mitt from "mitt";
 
 const emitter = mitt();
 
