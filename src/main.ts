@@ -25,10 +25,12 @@ app
   .use(
     createAuth0({
       domain: "pripo.us.auth0.com",
-      client_id: "gjxDd294BjPO9MUqimrzNj2iKaMzVVAr",
-      redirect_uri: window.location.origin,
+      clientId: "gjxDd294BjPO9MUqimrzNj2iKaMzVVAr",
       cacheLocation: "localstorage",
-      audience: "https://pripo-api.vercel.app",
+      authorizationParams: {
+        audience: "https://pripo-api.vercel.app",
+        redirect_uri: window.location.origin,
+      },
     })
   );
 app.mount("#app");

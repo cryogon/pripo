@@ -81,12 +81,12 @@ function toggleMobileOptions() {
   isMobileOptionVisible.value = !isMobileOptionVisible.value;
 }
 function logout() {
-  signout({ returnTo: window.location.origin });
+  signout({ logoutParams: { returnTo: window.location.origin } });
   localStorage.removeItem("token");
 }
 if (isAuthenticated) {
   //FIXME: Temporary Solution: Have to find a way to use ApolloClient.setContext
-  getAccessTokenSilently({ ignoreCache: true }).then((token) => {
+  getAccessTokenSilently({ cacheMode: "off" }).then((token) => {
     localStorage.setItem("token", token);
   });
 }
