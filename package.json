@@ -34,6 +34,7 @@
     "graphql-ws": "^5.11.2",
     "highlight.js": "^11.8.0",
     "markdown-it": "^13.0.1",
+    "mitt": "2.1.0",
     "pinia": "^2.0.23",
     "sass": "^1.56.0",
     "sass-loader": "^13.1.0",
