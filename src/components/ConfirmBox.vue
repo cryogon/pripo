@@ -11,9 +11,9 @@ function clickYep(cb: (v: any) => void, variables: any) {
   isVisible.value = false;
 }
 const emitter = useEmitter();
-emitter.on("confirm", (d) => {
-  mutate.value = (d as ConfirmRequest).mutate;
-  variables.value = { id: (d as ConfirmRequest).id };
+emitter.on("confirm", (d: ConfirmRequest) => {
+  mutate.value = d.mutate;
+  variables.value = { id: d.id };
   isVisible.value = true;
 });
 </script>

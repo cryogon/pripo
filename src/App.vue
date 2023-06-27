@@ -19,8 +19,8 @@ onMounted(() => {
     }
   }, 3000);
 
-  emitter.on("alert", (d) => {
-    alertDescription.value = d as string;
+  emitter.on("alert", (d: string) => {
+    alertDescription.value = d;
     setTimeout(() => {
       alertDescription.value = "";
     }, 3000);
