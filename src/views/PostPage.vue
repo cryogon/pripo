@@ -7,8 +7,6 @@ import { INSERT_BLOG } from "@/graphql";
 import { useEmitter } from "@/composables/EventEmitter";
 import MarkdownIt from "markdown-it";
 import DOMPurify from "dompurify";
-import hljs from "highlight.js";
-
 document.title = "Post ● Pripo";
 
 const emitter = useEmitter();
@@ -63,23 +61,6 @@ function pushPostToDB() {
 const md = new MarkdownIt({
   html: true,
   linkify: true,
-  typographer: true,
-  highlight(str, lang): string {
-    if (lang && hljs.getLanguage(lang)) {
-      try {
-        return (
-          `<pre class="hljs"><code>` +
-          hljs.highlight(str, { language: lang, ignoreIllegals: true }).value +
-          "</code></pre>"
-        );
-      } catch (err) {
-        console.log(err);
-      }
-    }
-    return (
-      '<pre class="hljs"><code>' + md.utils.escapeHtml(str) + "</code></pre>"
-    );
-  },
 });
 function syncTag(e: Event) {
   const { value } = e.target as HTMLInputElement;
@@ -156,7 +137,7 @@ function sanitizedHTML(html: string) {
           :class="{ public: isPostPublic }"
         ></div>
         <span class="preview-profile__username">{{
-          isPostPublic ? user.nickname : "Anonymous"
+          isPostPublic ? "cryogon" : "Anonymous"
         }}</span>
       </div>
       <h3 class="preview-heading">{{ postTitle }}</h3>

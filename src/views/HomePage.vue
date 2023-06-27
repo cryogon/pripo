@@ -15,7 +15,7 @@ const {
   result: posts,
   onError,
   fetchMore,
-} = useQuery(GET_ALL_BLOGS, { offset: 0, limit: 10 });
+} = useQuery(GET_ALL_BLOGS, { offset: 0, limit: 6 });
 const isOnline = useOnline();
 
 onError((e) => {
